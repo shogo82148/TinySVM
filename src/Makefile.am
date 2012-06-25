@@ -1,8 +1,9 @@
 # Process this file with automake to produce Makefile.in
 #
-# $Id: Makefile.am,v 1.15 2001/01/16 22:25:52 taku-ku Exp $;
+# $Id: Makefile.am,v 1.16 2001/05/11 09:27:48 taku-ku Exp $;
 #
 AUTOMAKE_OPTIONS = no-dependencies
+
 
 lib_LTLIBRARIES = libtinysvm.la
 libtinysvm_la_SOURCES = getopt.c getopt1.c getopt.h common.h \
@@ -20,7 +21,7 @@ libtinysvm_la_SOURCES = getopt.c getopt1.c getopt.h common.h \
 			qp_solver.h qp_solver.cc \
 			tinysvm.h
 
-libtinysvm_la_LDFLAGS = -version-info $(LTVERSION)
+libtinysvm_la_LDFLAGS = -no-undefined -version-info $(LTVERSION)
 include_HEADERS = tinysvm.h
 pkginclude_HEADERS = model.h example.h base_example.h param.h \
                      misc.h kernel.h classifier.h

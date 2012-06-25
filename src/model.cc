@@ -5,7 +5,7 @@
 #include "qp_solver.h"
 #include "example.h"
 
-// $Id: model.cc,v 1.24 2001/01/16 21:44:28 taku-ku Exp $;
+// $Id: model.cc,v 1.25 2001/02/07 08:29:24 taku-ku Exp $;
 
 #define MAKE_KERNEL { if (!kernel) \
       kernel = new Classifier( *(dynamic_cast <BaseExample *>(this)), param); };
@@ -93,7 +93,8 @@ Model::estimateVC ()
   if (!margin) margin = estimateMargin ();
   if (!sphere) sphere = estimateSphere();
 
-  return (vc = min((double)d,(sphere * sphere) / (margin * margin)) + 1);
+//  return (vc = min((double)d,(sphere * sphere) / (margin * margin)) + 1);
+  return (vc = (sphere * sphere) / (margin * margin) + 1);
 }
 
 double

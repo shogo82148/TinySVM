@@ -58,7 +58,7 @@ rm -rf $RPM_BUILD_ROOT
 
 %files
 %defattr(-, root, root)
-%doc doc/*.html
+%doc doc/*.html doc/*.css
 %{prefix}/lib/*.so.*
 %{prefix}/bin/*
 %{prefix}/man/man1/*

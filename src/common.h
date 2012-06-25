@@ -20,60 +20,28 @@ template <class S, class T> inline void clone(T*& dst, S* src, int n)
 #include "config.h.bcc32"
 #endif
 
-#ifdef HAVE_CONFIG_MINGW32MSVC_H
-#include "config.h.mingw32msvc"
-#endif
-
-#ifdef HAVE_CSTDIO
-#include <cstdio>
-#else
 #ifdef STDC_HEADERS 
 #include <stdio.h>
 #endif
-#endif
 
-#ifdef HAVE_CSTDLIB
-#include <cstdlib>
-#else
 #ifdef HAVE_STDLIB_H
 #include <stdlib.h>
 #endif
-#endif
 
-#ifdef HAVE_CCTYPE
-#include <cctype>
-#else
 #ifdef HAVE_CTYPE_H
 #include <ctype.h>
 #endif
-#endif
 
-#ifdef HAVE_CSTRING
-#include <cstring>
-#else
 #ifdef HAVE_STRING_H
 #include <string.h>
 #endif
-#endif
 
-#ifdef HAVE_CMATH
-#include <cmath>
-#else
 #ifdef HAVE_MATH_H
 #include <math.h>
 #endif
-#endif
 
-#ifdef HAVE_CUNISTD
-#include <cunistd>
-#else
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>
-#endif
-#endif
-
-#ifdef HAVE_GETOPT_H
-#include <getopt.h>
 #endif
 
 #ifdef HAVE_SYS_TYPES_H
@@ -88,11 +56,13 @@ template <class S, class T> inline void clone(T*& dst, S* src, int n)
 #include <windows.h>
 #endif
 
-#ifndef HAVE_GETOPT
-#include "getopt.h"
+#ifdef HAVE_GETOPT_H
+#include <getopt.h>
 #endif
 
-#ifndef HAVE_GETOPT_LONG
+#if defined HAVE_GETOPT_H && defined HAVE_GETOPT_LONG
+#include <getopt.h>
+#else
 #include "getopt.h"
 #endif
 

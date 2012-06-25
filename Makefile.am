@@ -1,17 +1,13 @@
 # Process this file with automake to produce Makefile.in
 #
-# $Id: Makefile.am,v 1.20 2001/01/14 02:55:27 taku-ku Exp $;
+# $Id: Makefile.am,v 1.22 2001/05/24 22:17:40 taku-ku Exp $;
 #
 @SET_MAKE@
 AUTOMAKE_OPTIONS = 1.4 no-dependencies
 
 always_built_SUBDIRS = src tests man doc
-
 EXTRA_DIRS = doc perl ruby
-
-EXTRA_DIST = tinysvm.spec \
-             src/Makefile.bcc32 config.h.bcc32 \
-             src/Makefile.mingw32msvc config.h.mingw32msvc
+EXTRA_DIST = tinysvm.spec 
 
 SUBDIRS = $(always_built_SUBDIRS)
 
@@ -31,11 +27,26 @@ rpm: dist
 	rpm -ta @PACKAGE@-@VERSION@.tar.gz
 	
 win:
-	 cd src; make -f Makefile.mingw32msvc clean; make -f Makefile.mingw32msvc;
-	 
-win-dist: dist
+	make distclean
+	env AR=i386-mingw32msvc-ar RANLIB=i386-mingw32msvc-ranlib CXX=i386-mingw32msvc-g++ CC=i386-mingw32msvc-gcc \
+	./configure --host=i386-pc-mingw32  --target=i386-pc-mingw32 --disable-shared
+	make
+
+win-dist:
 	rm -f @PACKAGE@-@VERSION@.zip
-	mkdir bin; cp src/*.exe bin/
+	mkdir bin; 
+	cp -f src/svm_learn    bin/svm_learn.exe
+	cp -f src/svm_classify bin/svm_classify.exe
+	cp -f src/svm_model    bin/svm_model.exe
 	zip @PACKAGE@-@VERSION@.zip README AUTHORS NEWS COPYING ChangeLog \
 	bin/*.exe doc/*.html doc/*.css tests/*.svmdata
 	rm -fr bin/
+	
+dist-all-package:
+	(test -f Makefile) && make distclean
+	./configure
+	make dist
+	make rpm
+	make clean
+	make win
+	make win-dist

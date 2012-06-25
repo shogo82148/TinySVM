@@ -1,5 +1,5 @@
 %define prefix /usr
-%define version 0.02
+%define version 0.03
 
 Summary: TinySVM is a small and fast SVM package
 Name: TinySVM
@@ -58,7 +58,7 @@ rm -rf $RPM_BUILD_ROOT
 
 %files
 %defattr(-, root, root)
-%doc doc/*.html
+%doc doc/*.html doc/*.css
 %{prefix}/lib/*.so.*
 %{prefix}/bin/*
 %{prefix}/man/man1/*

@@ -36,26 +36,8 @@
 /* Define if you have the memset function.  */
 #undef HAVE_MEMSET
 
-/* Define if you have the <cctype> header file.  */
-#undef HAVE_CCTYPE
-
-/* Define if you have the <cmath> header file.  */
-#undef HAVE_CMATH
-
-/* Define if you have the <cstdio> header file.  */
-#undef HAVE_CSTDIO
-
-/* Define if you have the <cstdlib> header file.  */
-#undef HAVE_CSTDLIB
-
-/* Define if you have the <cstring> header file.  */
-#undef HAVE_CSTRING
-
 /* Define if you have the <ctype.h> header file.  */
 #undef HAVE_CTYPE_H
-
-/* Define if you have the <cunistd> header file.  */
-#undef HAVE_CUNISTD
 
 /* Define if you have the <getopt.h> header file.  */
 #undef HAVE_GETOPT_H
