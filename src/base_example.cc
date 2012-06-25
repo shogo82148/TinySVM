@@ -1,7 +1,7 @@
 #include "base_example.h"
 #include "common.h"
 
-// $Id: base_example.cc,v 1.23 2001/09/02 14:27:42 taku-ku Exp $;
+// $Id: base_example.cc,v 1.24 2001/09/08 04:19:54 taku-ku Exp $;
 
 // misc function
 namespace TinySVM {
@@ -322,14 +322,12 @@ BaseExample::set (int _i, const char *s)
 
   return set (_i, _y, (const char *) (s + i));
 }
-   
 
 int
 BaseExample::add (const double _y, feature_node * _x)
 {
-  int fnum = 0;
-
   try {
+    int fnum = 0;
     feature_node *node = fix_feature_node ((feature_node *) _x);
      
     // check contents
@@ -341,9 +339,7 @@ BaseExample::add (const double _y, feature_node * _x)
      
     // incriment refcount
     inc_refcount_feature_node (node);
-
     pack_d = _max (fnum, pack_d);
-    if (! fnum) return 0; // empty node
 
     // check class type
     if (_y != +1 && _y != -1) class_type = DOUBLE_FEATURE;

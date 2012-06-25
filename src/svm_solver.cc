@@ -5,7 +5,7 @@
 #include "timer.h"
 #include "qp_solver.h"
 
-// $Id: svm_solver.cc,v 1.32 2001/09/02 14:27:42 taku-ku Exp $;
+// $Id: svm_solver.cc,v 1.34 2001/12/07 10:43:31 taku-ku Exp $;
 
 namespace TinySVM {
 
@@ -19,9 +19,8 @@ SVM_Solver::learn ()
   }
 
   try {
-    Timer timer;
     double obj, rho;
-    const double *y        = (const double *)example.y;
+    const double *y  = (const double *)example.y;
     const feature_node **x = (const feature_node **)example.x;
     double *alpha = new double [l];
     double *G     = new double [l];
@@ -34,9 +33,27 @@ SVM_Solver::learn ()
       }
     } else {
       for (int i = 0; i < l; i++) {
-	G[i] = b[i] = example.G[i];
+	G[i] =  example.G[i];
+ 	b[i] = -1;
 	alpha[i] = example.alpha[i];
       }
+    }
+     
+    int pcheck = 0;
+    int ncheck = 0;
+    for (int i = 0; i < l; i++) {
+       if (y[i] == 1)  pcheck = 1;
+       if (y[i] == -1) ncheck = 1;
+    }
+     
+    if (! pcheck) {
+       fprintf(stderr, "SVM_Solver::learn(): No positive examples are found\n");
+       return 0;
+    }
+
+    if (! ncheck) {
+       fprintf(stderr, "SVM_Solver::learn(): No negative examples are found\n");
+       return 0;
     }
 
     QP_Solver qp_solver;
@@ -62,7 +79,7 @@ SVM_Solver::learn ()
 	out_model->add (alpha[i] * y[i], (feature_node *)x[i]);
     }
 
-    out_model->bsv  =  bsv;
+    out_model->bsv  = bsv;
     out_model->loss = loss;
     out_model->svindex_size = example.l;
 
@@ -73,8 +90,7 @@ SVM_Solver::learn ()
     fprintf (stdout, "Number of SVs (BSVs)\t\t%d (%d)\n", out_model->l, out_model->bsv);
     fprintf (stdout, "Empirical Risk:\t\t\t%g (%d/%d)\n", 1.0 * err/l, err,l);
     fprintf (stdout, "L1 Loss:\t\t\t%g\n", loss);
-    fprintf (stdout, "CPU Time:\t\t\t%s\n", timer.getDiff ());
-
+    fprintf (stdout, "Object value:\t\t\t%g\n", obj);
     return out_model;
   }
 

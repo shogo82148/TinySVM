@@ -6,7 +6,7 @@
 #include "kernel.h"
 #include "param.h"
 
-// $Id: svm_model.cc,v 1.8 2001/01/16 21:14:20 taku-ku Exp $;
+// $Id: svm_model.cc,v 1.9 2001/12/07 10:43:31 taku-ku Exp $;
 
 const char *help_message = "\nUsage: svm_model [options] model-file\n\n\
 options:\n\
@@ -118,9 +118,9 @@ main (int argc, char **argv)
   if (all || loss) 
     fprintf (stdout, "L1 Loss (Empirical Risk):\t%g\n", model.getLoss());
   if (all || vcdim)
-    fprintf (stdout, "Estimated VC dimension:\t\t%g\n", model.estimateVC ());
+    fprintf (stdout, "VC dimension:\t\t\t%g\n", model.estimateVC ());
   if (all || xa)
-    fprintf (stdout, "Estimated xi-alpha(%g):\t\t%g\n", xa_rho,model.estimateXA(xa_rho));
+    fprintf (stdout, "xi-alpha(%g):\t\t\t%g\n", xa_rho,model.estimateXA(xa_rho));
 
   return EXIT_SUCCESS;
 }

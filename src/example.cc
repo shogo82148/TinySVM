@@ -4,8 +4,10 @@
 #include "base_solver.h"
 #include "svm_solver.h"
 #include "svr_solver.h"
+#include "timer.h"
+#include "oneclass_solver.h"
 
-// $Id: example.cc,v 1.23 2001/09/02 14:27:42 taku-ku Exp $;
+// $Id: example.cc,v 1.26 2001/12/07 10:43:31 taku-ku Exp $;
 
 namespace TinySVM {
    
@@ -15,11 +17,9 @@ Example::~Example() {};
 Model *
 Example::learn (const Param & p)
 {
-  if (l == 0) return 0;
-
-  BaseSolver *solver;
-
   try {
+    if (l == 0) return 0;
+    BaseSolver *solver;
     if (p.model[0]) {
       char *tmp = new char [strlen(p.model) + 5];
       strcpy (tmp, p.model);
@@ -34,7 +34,6 @@ Example::learn (const Param & p)
       } else {
 	fprintf (stderr, "Example::learn() cannot open %s, ignored.\n", tmp);
       }
-
       delete [] tmp;
     }
 
@@ -45,22 +44,26 @@ Example::learn (const Param & p)
     case SVR:
       solver = new SVR_Solver (*this, p);
       break;
+    case ONE_CLASS:
+      solver = new OneClass_Solver (*this, p);
+      break;
     default:
       fprintf (stderr, "Example::learn(): Unknown solver type [%d]\n", p.solver_type);
       return 0;
     }
+
+    Timer timer;
+    Model *m = solver->learn ();
+    delete solver;
+    fprintf (stdout, "CPU Time:\t\t\t%s\n", timer.getDiff ());
+
+    return m;
   }
 
   catch (...) {
     fprintf (stderr, "Example::learn(): Out of memory\n");
     exit (EXIT_FAILURE);
   }
-
-  // learn
-  Model *m = solver->learn ();
-  delete solver;
-
-  return m;
 }
 
 int

@@ -1,6 +1,6 @@
 # Process this file with automake to produce Makefile.in
 #
-# $Id: Makefile.am,v 1.25 2001/09/01 03:31:07 taku-ku Exp $;
+# $Id: Makefile.am,v 1.26 2001/12/07 10:54:21 taku-ku Exp $;
 #
 @SET_MAKE@
 AUTOMAKE_OPTIONS = 1.4 no-dependencies
@@ -44,10 +44,11 @@ win:
 
 win-dist:
 	rm -f @PACKAGE@-@VERSION@.zip
-	mkdir bin; 
-	cp -f src/svm_learn    bin/svm_learn.exe
-	cp -f src/svm_classify bin/svm_classify.exe
-	cp -f src/svm_model    bin/svm_model.exe
+	mkdir bin;
+	cp -f src/svm_learn.exe    bin/svm_learn.exe
+	cp -f src/svm_classify.exe bin/svm_classify.exe
+	cp -f src/svm_model.exe    bin/svm_model.exe
+
 	zip @PACKAGE@-@VERSION@.zip README AUTHORS NEWS COPYING THANKS ChangeLog \
 	bin/*.exe doc/*.html doc/*.css tests/*.svmdata
 	rm -fr bin/

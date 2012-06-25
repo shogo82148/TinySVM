@@ -1,6 +1,6 @@
-# Makefile.in generated automatically by automake 1.4 from Makefile.am
+# Makefile.in generated automatically by automake 1.4-p5 from Makefile.am
 
-# Copyright (C) 1994, 1995-8, 1999 Free Software Foundation, Inc.
+# Copyright (C) 1994, 1995-8, 1999, 2001 Free Software Foundation, Inc.
 # This Makefile.in is free software; the Free Software Foundation
 # gives unlimited permission to copy and/or distribute it,
 # with or without modifications, as long as this notice is preserved.
@@ -12,7 +12,7 @@
 
 # Process this file with automake to produce Makefile.in
 #
-# $Id: Makefile.am,v 1.25 2001/09/01 03:31:07 taku-ku Exp $;
+# $Id: Makefile.am,v 1.26 2001/12/07 10:54:21 taku-ku Exp $;
 #
 
 
@@ -66,6 +66,8 @@ AS = @AS@
 CC = @CC@
 CXX = @CXX@
 DLLTOOL = @DLLTOOL@
+ECHO = @ECHO@
+EXEEXT = @EXEEXT@
 JAR = @JAR@
 JAVA = @JAVA@
 JAVAC = @JAVAC@
@@ -75,8 +77,10 @@ LN_S = @LN_S@
 LTVERSION = @LTVERSION@
 MAKEINFO = @MAKEINFO@
 OBJDUMP = @OBJDUMP@
+OBJEXT = @OBJEXT@
 PACKAGE = @PACKAGE@
 RANLIB = @RANLIB@
+STRIP = @STRIP@
 VERSION = @VERSION@
 AUTOMAKE_OPTIONS = 1.4 no-dependencies
 
@@ -184,7 +188,7 @@ maintainer-clean-recursive:
 	dot_seen=no; \
 	rev=''; list='$(SUBDIRS)'; for subdir in $$list; do \
 	  rev="$$subdir $$rev"; \
-	  test "$$subdir" = "." && dot_seen=yes; \
+	  test "$$subdir" != "." || dot_seen=yes; \
 	done; \
 	test "$$dot_seen" = "no" && rev=". $$rev"; \
 	target=`echo $@ | sed s/-recursive//`; \
@@ -404,10 +408,11 @@ win:
 
 win-dist:
 	rm -f @PACKAGE@-@VERSION@.zip
-	mkdir bin; 
-	cp -f src/svm_learn    bin/svm_learn.exe
-	cp -f src/svm_classify bin/svm_classify.exe
-	cp -f src/svm_model    bin/svm_model.exe
+	mkdir bin;
+	cp -f src/svm_learn.exe    bin/svm_learn.exe
+	cp -f src/svm_classify.exe bin/svm_classify.exe
+	cp -f src/svm_model.exe    bin/svm_model.exe
+
 	zip @PACKAGE@-@VERSION@.zip README AUTHORS NEWS COPYING THANKS ChangeLog \
 	bin/*.exe doc/*.html doc/*.css tests/*.svmdata
 	rm -fr bin/

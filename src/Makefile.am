@@ -1,6 +1,6 @@
 # Process this file with automake to produce Makefile.in
 #
-# $Id: Makefile.am,v 1.16 2001/05/11 09:27:48 taku-ku Exp $;
+# $Id: Makefile.am,v 1.18 2001/12/06 12:58:54 taku-ku Exp $;
 #
 AUTOMAKE_OPTIONS = no-dependencies
 
@@ -16,6 +16,7 @@ libtinysvm_la_SOURCES = getopt.c getopt1.c getopt.h common.h \
 			example.cc example.h \
 			model.cc model.h \
 			base_solver.h \
+			oneclass_solver.cc oneclass_solver.h \
 			svm_solver.cc svm_solver.h \
 			svr_solver.cc svr_solver.h \
 			qp_solver.h qp_solver.cc \

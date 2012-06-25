@@ -7,7 +7,11 @@
 #include "config.h"
 #endif
 
-#ifdef STDC_HEADERS 
+#ifdef STDC_HEADERS
+#include <stdio.h>
+#endif
+
+#ifdef HAVE_STDIO_H
 #include <stdio.h>
 #endif
 

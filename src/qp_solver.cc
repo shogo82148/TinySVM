@@ -3,7 +3,7 @@
 #include "example.h"
 #include "classifier.h"
 
-// $Id: qp_solver.cc,v 1.11 2001/09/02 14:27:42 taku-ku Exp $;
+// $Id: qp_solver.cc,v 1.12 2001/09/08 04:19:54 taku-ku Exp $;
 
 namespace TinySVM {
 
@@ -272,6 +272,7 @@ QP_Solver::check_inactive ()
     int react_num = 0;
     for (int k= l-1; k >= active_size; k--) {
       double lambda_up = 1 - y[k] * tmp_model->classify (x[k]);
+      G[k] = y[k] * tmp_model->b - lambda_up;
 
       // Oops!, must be added to the active example.
       if ( (! is_lower_bound (k) && lambda_up < -eps) ||
@@ -279,6 +280,7 @@ QP_Solver::check_inactive ()
 	swap_index (k, active_size);
 	active_size++;
 	++k;
+	++react_num;
       }
     }
 

@@ -5,7 +5,7 @@ namespace TinySVM {
    
 enum { LINEAR, POLY, NEURAL, RBF, ANOVA };
 enum { DOUBLE_FEATURE, BINARY_FEATURE };
-enum { SVM, SVR };
+enum { SVM, SVR, ONE_CLASS };
 
 struct feature_node
 {

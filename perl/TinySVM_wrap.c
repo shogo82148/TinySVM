@@ -166,7 +166,7 @@ SWIG_TypeQuery(const char *name) {
  * perl5.swg
  *
  * Perl5 runtime library
- * $Header: /home/taku-ku/.cvsroot/taku-ku/TinySVM/perl/TinySVM_wrap.c,v 1.2 2001/08/29 14:52:46 taku-ku Exp $
+ * $Header: /cl/lab/cvsroot/taku-ku/TinySVM/perl/TinySVM_wrap.c,v 1.2 2001/08/29 14:52:46 taku-ku Exp $
  * ----------------------------------------------------------------------------- */
 
 #define SWIGPERL

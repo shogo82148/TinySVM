@@ -2,10 +2,9 @@
 #include "common.h"
 #include "example.h"
 #include "classifier.h"
-#include "timer.h"
 #include "qp_solver.h"
 
-// $Id: svr_solver.cc,v 1.10 2001/09/02 14:27:42 taku-ku Exp $;
+// $Id: svr_solver.cc,v 1.11 2001/12/07 10:43:31 taku-ku Exp $;
 
 namespace TinySVM {
 
@@ -13,7 +12,6 @@ Model *
 SVR_Solver::learn ()
 {
   try {
-    Timer timer;
     double obj, rho;
     const double *y        = (const double *)example.y;
     const feature_node **x = (const feature_node **)example.x;
@@ -49,7 +47,6 @@ SVR_Solver::learn ()
       double d = (G[i] - G[i+l] - b[i] + b[i+l])/2 + rho;
       double a = alpha[i] - alpha[i+l];
       double l = _max(0.0, fabs(y[i] - d) - param.insensitive_loss); 
-       // epsilon insensitive loss function
       loss += l;
       if (l > 0) err++;
       if (fabs(a) >= param.C - EPS_A) bsv++; // upper bound
@@ -68,7 +65,7 @@ SVR_Solver::learn ()
     fprintf (stdout, "Number of SVs (BSVs)\t\t%d (%d)\n", out_model->l, out_model->bsv);
     fprintf (stdout, "Empirical Risk:\t\t\t%g (%d/%d)\n", 1.0 * err/l, err,l);
     fprintf (stdout, "L1 Loss:\t\t\t%g\n", loss);
-    fprintf (stdout, "CPU Time:\t\t\t%s\n", timer.getDiff ());
+    fprintf (stdout, "Object value:\t\t\t%g\n", obj);
 
     return out_model;
   }

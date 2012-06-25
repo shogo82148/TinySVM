@@ -1,6 +1,6 @@
-# Makefile.in generated automatically by automake 1.4 from Makefile.am
+# Makefile.in generated automatically by automake 1.4-p5 from Makefile.am
 
-# Copyright (C) 1994, 1995-8, 1999 Free Software Foundation, Inc.
+# Copyright (C) 1994, 1995-8, 1999, 2001 Free Software Foundation, Inc.
 # This Makefile.in is free software; the Free Software Foundation
 # gives unlimited permission to copy and/or distribute it,
 # with or without modifications, as long as this notice is preserved.
@@ -12,7 +12,7 @@
 
 # Process this file with automake to produce Makefile.in
 #
-# $Id: Makefile.am,v 1.16 2001/05/11 09:27:48 taku-ku Exp $;
+# $Id: Makefile.am,v 1.18 2001/12/06 12:58:54 taku-ku Exp $;
 #
 
 
@@ -68,6 +68,8 @@ AS = @AS@
 CC = @CC@
 CXX = @CXX@
 DLLTOOL = @DLLTOOL@
+ECHO = @ECHO@
+EXEEXT = @EXEEXT@
 JAR = @JAR@
 JAVA = @JAVA@
 JAVAC = @JAVAC@
@@ -77,19 +79,36 @@ LN_S = @LN_S@
 LTVERSION = @LTVERSION@
 MAKEINFO = @MAKEINFO@
 OBJDUMP = @OBJDUMP@
+OBJEXT = @OBJEXT@
 PACKAGE = @PACKAGE@
 RANLIB = @RANLIB@
+STRIP = @STRIP@
 VERSION = @VERSION@
 
 AUTOMAKE_OPTIONS = no-dependencies
 
 lib_LTLIBRARIES = libtinysvm.la
-libtinysvm_la_SOURCES = getopt.c getopt1.c getopt.h common.h 			param.cc param.h 			kernel.h 			classifier.h classifier.cc 		        q_matrix.h q_matrix.cc 		        cache.h timer.h 			base_example.cc base_example.h 			example.cc example.h 			model.cc model.h 			base_solver.h 			svm_solver.cc svm_solver.h 			svr_solver.cc svr_solver.h 			qp_solver.h qp_solver.cc 			tinysvm.h
+libtinysvm_la_SOURCES = getopt.c getopt1.c getopt.h common.h \
+			param.cc param.h \
+			kernel.h \
+			classifier.h classifier.cc \
+		        q_matrix.h q_matrix.cc \
+		        cache.h timer.h \
+			base_example.cc base_example.h \
+			example.cc example.h \
+			model.cc model.h \
+			base_solver.h \
+			oneclass_solver.cc oneclass_solver.h \
+			svm_solver.cc svm_solver.h \
+			svr_solver.cc svr_solver.h \
+			qp_solver.h qp_solver.cc \
+			tinysvm.h
 
 
 libtinysvm_la_LDFLAGS = -no-undefined -version-info $(LTVERSION)
 include_HEADERS = tinysvm.h
-pkginclude_HEADERS = model.h example.h base_example.h param.h                      misc.h kernel.h classifier.h
+pkginclude_HEADERS = model.h example.h base_example.h param.h \
+                     misc.h kernel.h classifier.h
 
 
 bin_PROGRAMS = svm_learn svm_classify svm_model
@@ -114,17 +133,19 @@ LDFLAGS = @LDFLAGS@
 LIBS = @LIBS@
 libtinysvm_la_LIBADD = 
 libtinysvm_la_OBJECTS =  getopt.lo getopt1.lo param.lo classifier.lo \
-q_matrix.lo base_example.lo example.lo model.lo svm_solver.lo \
-svr_solver.lo qp_solver.lo
+q_matrix.lo base_example.lo example.lo model.lo oneclass_solver.lo \
+svm_solver.lo svr_solver.lo qp_solver.lo
+bin_PROGRAMS =  svm_learn$(EXEEXT) svm_classify$(EXEEXT) \
+svm_model$(EXEEXT)
 PROGRAMS =  $(bin_PROGRAMS)
 
-svm_learn_OBJECTS =  svm_learn.o
+svm_learn_OBJECTS =  svm_learn.$(OBJEXT)
 svm_learn_DEPENDENCIES =  libtinysvm.la
 svm_learn_LDFLAGS = 
-svm_classify_OBJECTS =  svm_classify.o
+svm_classify_OBJECTS =  svm_classify.$(OBJEXT)
 svm_classify_DEPENDENCIES =  libtinysvm.la
 svm_classify_LDFLAGS = 
-svm_model_OBJECTS =  svm_model.o
+svm_model_OBJECTS =  svm_model.$(OBJEXT)
 svm_model_DEPENDENCIES =  libtinysvm.la
 svm_model_LDFLAGS = 
 CXXFLAGS = @CXXFLAGS@
@@ -151,7 +172,7 @@ OBJECTS = $(libtinysvm_la_OBJECTS) $(svm_learn_OBJECTS) $(svm_classify_OBJECTS) 
 
 all: all-redirect
 .SUFFIXES:
-.SUFFIXES: .S .c .cc .lo .o .s
+.SUFFIXES: .S .c .cc .lo .o .obj .s
 $(srcdir)/Makefile.in: Makefile.am $(top_srcdir)/configure.in $(ACLOCAL_M4) 
 	cd $(top_srcdir) && $(AUTOMAKE) --gnu src/Makefile
 
@@ -188,6 +209,11 @@ uninstall-libLTLIBRARIES:
 .c.o:
 	$(COMPILE) -c $<
 
+# FIXME: We should only use cygpath when building on Windows,
+# and only if it is available.
+.c.obj:
+	$(COMPILE) -c `cygpath -w $<`
+
 .s.o:
 	$(COMPILE) -c $<
 
@@ -196,6 +222,7 @@ uninstall-libLTLIBRARIES:
 
 mostlyclean-compile:
 	-rm -f *.o core *.core
+	-rm -f *.$(OBJEXT)
 
 clean-compile:
 
@@ -251,19 +278,21 @@ uninstall-binPROGRAMS:
 	  rm -f $(DESTDIR)$(bindir)/`echo $$p|sed 's/$(EXEEXT)$$//'|sed '$(transform)'|sed 's/$$/$(EXEEXT)/'`; \
 	done
 
-svm_learn: $(svm_learn_OBJECTS) $(svm_learn_DEPENDENCIES)
-	@rm -f svm_learn
+svm_learn$(EXEEXT): $(svm_learn_OBJECTS) $(svm_learn_DEPENDENCIES)
+	@rm -f svm_learn$(EXEEXT)
 	$(CXXLINK) $(svm_learn_LDFLAGS) $(svm_learn_OBJECTS) $(svm_learn_LDADD) $(LIBS)
 
-svm_classify: $(svm_classify_OBJECTS) $(svm_classify_DEPENDENCIES)
-	@rm -f svm_classify
+svm_classify$(EXEEXT): $(svm_classify_OBJECTS) $(svm_classify_DEPENDENCIES)
+	@rm -f svm_classify$(EXEEXT)
 	$(CXXLINK) $(svm_classify_LDFLAGS) $(svm_classify_OBJECTS) $(svm_classify_LDADD) $(LIBS)
 
-svm_model: $(svm_model_OBJECTS) $(svm_model_DEPENDENCIES)
-	@rm -f svm_model
+svm_model$(EXEEXT): $(svm_model_OBJECTS) $(svm_model_DEPENDENCIES)
+	@rm -f svm_model$(EXEEXT)
 	$(CXXLINK) $(svm_model_LDFLAGS) $(svm_model_OBJECTS) $(svm_model_LDADD) $(LIBS)
 .cc.o:
 	$(CXXCOMPILE) -c $<
+.cc.obj:
+	$(CXXCOMPILE) -c `cygpath -w $<`
 .cc.lo:
 	$(LTCXXCOMPILE) -c $<
 

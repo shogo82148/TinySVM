@@ -4,7 +4,7 @@
 #include "model.h"
 #include "base_example.h"
 
-// $Id: example.h,v 1.12 2001/08/29 14:49:04 taku-ku Exp $;
+// $Id: example.h,v 1.13 2001/09/04 16:10:57 taku-ku Exp $;
 
 namespace TinySVM {
 
@@ -14,6 +14,7 @@ public:
   int read  (const char *, const char *mode = "r", const int offset = 0);
   int write (const char *, const char *mode = "w", const int offset = 0);
   int rebuildSVindex (Model *);
+  int rebuildSVindex (Model &m) { return rebuildSVindex(&m); };
    
   Example();
   ~Example();

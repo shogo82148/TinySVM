@@ -1,7 +1,7 @@
 # Generated automatically from Makefile.in by configure.
-# Makefile.in generated automatically by automake 1.4 from Makefile.am
+# Makefile.in generated automatically by automake 1.4-p5 from Makefile.am
 
-# Copyright (C) 1994, 1995-8, 1999 Free Software Foundation, Inc.
+# Copyright (C) 1994, 1995-8, 1999, 2001 Free Software Foundation, Inc.
 # This Makefile.in is free software; the Free Software Foundation
 # gives unlimited permission to copy and/or distribute it,
 # with or without modifications, as long as this notice is preserved.
@@ -59,12 +59,14 @@ POST_INSTALL = :
 NORMAL_UNINSTALL = :
 PRE_UNINSTALL = :
 POST_UNINSTALL = :
-host_alias = i686-pc-linux
+host_alias = i686-pc-linux-gnu
 host_triplet = i686-pc-linux-gnu
-AS = 
+AS = as
 CC = gcc
 CXX = c++
-DLLTOOL = 
+DLLTOOL = dlltool
+ECHO = echo
+EXEEXT = 
 JAR = jar
 JAVA = java
 JAVAC = javac
@@ -73,10 +75,12 @@ LIBTOOL = $(SHELL) $(top_builddir)/libtool
 LN_S = ln -s
 LTVERSION = 3:0:2
 MAKEINFO = makeinfo
-OBJDUMP = 
+OBJDUMP = objdump
+OBJEXT = o
 PACKAGE = TinySVM
 RANLIB = ranlib
-VERSION = 0.05
+STRIP = strip
+VERSION = 0.06
 
 html_HTMLS = svm_learn.html svm_classify.html svm_model.html
 EXTRA_DIST = $(html_HTMLS) index.html tinysvm.css
