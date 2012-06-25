@@ -6,7 +6,7 @@
 #include "kernel.h"
 #include "param.h"
 
-// $Id: svm_learn.cc,v 1.22 2001/08/25 13:41:53 taku-ku Exp $;
+// $Id: svm_learn.cc,v 1.23 2001/08/29 14:49:04 taku-ku Exp $;
 
 int
 main (int argc, char **argv)
@@ -45,7 +45,7 @@ main (int argc, char **argv)
 	     example.feature_type == TinySVM::BINARY_FEATURE ? "binary" : "double");
 
   TinySVM::Model *model = example.learn (param);
-   
+
   if (!model) {
     fprintf (stderr, "%s: Unexpected error occurs\n", argv[0]);
     exit (EXIT_FAILURE);

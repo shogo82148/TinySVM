@@ -1,0 +1,11 @@
+TinySVM java module
+
+$Id: README,v 1.1 2001/09/01 03:36:12 taku-ku Exp $;
+
+1. Install
+  % make
+  
+2. How to use?
+  See test.java as sample program.
+  
+  % java -classpath TinySVM.jar test

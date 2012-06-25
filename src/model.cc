@@ -5,7 +5,7 @@
 #include "qp_solver.h"
 #include "example.h"
 
-// $Id: model.cc,v 1.31 2001/08/25 13:41:53 taku-ku Exp $;
+// $Id: model.cc,v 1.33 2001/09/02 14:27:42 taku-ku Exp $;
 
 #define MAKE_KERNEL { if (!kernel) \
       kernel = new Classifier( *(dynamic_cast <BaseExample *>(this)), param); };
@@ -114,7 +114,7 @@ Model::estimateXA (const double rho)
  // I think it is good axproximation for binary vector
  double rsq = -INF;
  for (int i = 0; i < l; i++) {
-   rsq = max(rsq, kernel->getKernel (x[i], x[i]) - kernel->getKernel (x[i], org));
+   rsq = _max(rsq, kernel->getKernel (x[i], x[i]) - kernel->getKernel (x[i], org));
  }
 
  double result = 0.0;
@@ -122,8 +122,8 @@ Model::estimateXA (const double rho)
    double d = kernel->getDistance (x[i]) - b;
    double eps;
    double alpha;
-   if (y[i] > 0) { eps = max(0.0, 1 - d); alpha =  y[i]; }
-   else          { eps = max(0.0, 1 + d); alpha = -y[i]; };
+   if (y[i] > 0) { eps = _max(0.0, 1 - d); alpha =  y[i]; }
+   else          { eps = _max(0.0, 1 + d); alpha = -y[i]; };
    if ((rho * alpha * rsq + eps) >= 1.0) result++;
  }
 
@@ -145,7 +145,7 @@ Model::estimateSphere()
   double maxd = -INF;
   for (int i = 0; i < l; i++) {
     maxd =
-      max (maxd,kernel->getKernel (x[i],x[i]) - 2 * kernel->getKernel (x[i], org) + orgsq);
+      _max (maxd,kernel->getKernel (x[i],x[i]) - 2 * kernel->getKernel (x[i], org) + orgsq);
   }
 
   delete [] org;
@@ -209,7 +209,10 @@ Model::read (const char *filename, const char *mode, const int offset)
   fscanf (fp, "%lf%*[^\n]\n", &param.param_s);
   fscanf (fp, "%lf%*[^\n]\n", &param.param_r);
   fscanf (fp, "%s%*[^\n]\n",  tmpbuf);
-  
+
+  param.dot_kernel = 1;
+  if (param.kernel_type == RBF || param.kernel_type == ANOVA) param.dot_kernel = 0;
+
   buf = readLine(fp);
   if (sscanf (buf, "%d %d %d %lf%%*[^\n]\n", &tmpl, &bsv, &svindex_size, &loss) != 4) {
     sscanf (buf, "%d%*[^\n]\n", &tmpl); // old version

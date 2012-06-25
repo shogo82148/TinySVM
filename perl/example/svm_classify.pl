@@ -4,7 +4,7 @@
 # svm_classify.pl - svm_classify implementation using perl module
 #
 
-# $Id: svm_classify.pl,v 1.3 2000/12/07 10:14:00 taku-ku Exp $;
+# $Id: svm_classify.pl,v 1.5 2001/08/29 15:00:15 taku-ku Exp $;
 
 use TinySVM;
 use Getopt::Std;
@@ -14,7 +14,7 @@ my $model = $ARGV[$#ARGV];
 my $test  = $ARGV[$#ARGV-1];
 die "not enough parameters\n" if (! $model || ! $test);
 
-my $m = new Model();
+my $m = new TinySVM::Model();
 $m->read($model);
 
 my($all,$ok);

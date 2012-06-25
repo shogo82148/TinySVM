@@ -3,7 +3,7 @@
 #include "example.h"
 #include "classifier.h"
 
-// $Id: qp_solver.cc,v 1.10 2001/08/22 14:38:05 taku-ku Exp $;
+// $Id: qp_solver.cc,v 1.11 2001/09/02 14:27:42 taku-ku Exp $;
 
 namespace TinySVM {
 
@@ -11,14 +11,14 @@ namespace TinySVM {
 inline void
 QP_Solver::swap_index(const int i, const int j)
 {
-  swap (y[i],            y[j]);
-  swap (x[i],            x[j]);
-  swap (alpha[i],        alpha[j]);
-  swap (status[i],       status[j]);
-  swap (G[i],            G[j]);
-  swap (b[i],            b[j]);
-  swap (shrink_iter[i],  shrink_iter[j]);
-  swap (active2index[i], active2index[j]);
+  _swap (y[i],            y[j]);
+  _swap (x[i],            x[j]);
+  _swap (alpha[i],        alpha[j]);
+  _swap (status[i],       status[j]);
+  _swap (G[i],            G[j]);
+  _swap (b[i],            b[j]);
+  _swap (shrink_iter[i],  shrink_iter[j]);
+  _swap (active2index[i], active2index[j]);
 }
 
 int
@@ -39,11 +39,11 @@ QP_Solver::solve(const BaseExample &e,
     iter         = 0;
     hit_old      = 0;
 
-    clone (alpha, _alpha, l);
-    clone (G, _G, l);
-    clone (b, _b, l);
-    clone (y, e.y, l);
-    clone (x, e.x, l);
+    _clone (alpha, _alpha, l);
+    _clone (G, _G, l);
+    _clone (b, _b, l);
+    _clone (y, e.y, l);
+    _clone (x, e.x, l);
 
     q_matrix = new QMatrix (e, p);
     q_matrix->set (y, x);     
@@ -157,15 +157,15 @@ QP_Solver::learn_sub()
     double *Q_j = q_matrix->getQ (j, active_size);
 
     if (y[i] * y[j] < 0) {
-      double L = max (0.0, alpha[j] - alpha[i]);
-      double H = min (C, C + alpha[j] - alpha[i]);
+      double L = _max (0.0, alpha[j] - alpha[i]);
+      double H = _min (C, C + alpha[j] - alpha[i]);
       alpha[j] += (-G[i] - G[j]) / (Q_i[i] + Q_j[j] + 2 * Q_i[j]);
       if (alpha[j] >= H)      alpha[j] = H;
       else if (alpha[j] <= L) alpha[j] = L;
       alpha[i] += (alpha[j] - old_alpha_j);
     } else {
-      double L = max (0.0, alpha[i] + alpha[j] - C);
-      double H = min (C, alpha[i] + alpha[j]);
+      double L = _max (0.0, alpha[i] + alpha[j] - C);
+      double H = _min (C, alpha[i] + alpha[j]);
       alpha[j] += (G[i] - G[j]) / (Q_i[i] + Q_j[j] - 2 * Q_i[j]);
       if (alpha[j] >= H)      alpha[j] = H;
       else if (alpha[j] <= L) alpha[j] = L;

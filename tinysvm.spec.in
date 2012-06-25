@@ -73,5 +73,5 @@ rm -rf $RPM_BUILD_ROOT
 %files perl
 %defattr(-, root, root)
 %{prefix}/lib/perl5/site_perl/*
-%{prefix}/man/man3/*
+
 

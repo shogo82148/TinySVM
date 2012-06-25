@@ -3,7 +3,7 @@
 #include "misc.h"
 #include <stdio.h>
 
-// $Id: base_example.h,v 1.18 2001/08/24 13:07:52 taku-ku Exp $;
+// $Id: base_example.h,v 1.19 2001/08/29 14:49:04 taku-ku Exp $;
 
 namespace TinySVM {
    
@@ -36,6 +36,8 @@ public:
   int set (int i, const double, feature_node *);
   int set (int i, const double, const char *);
   int set (int i, const char *);
+  int get (int i, double &, feature_node *&);
+  const char *get (int i);
   int remove (int i);
    
   int clear ();

@@ -5,7 +5,7 @@
 #include "timer.h"
 #include "qp_solver.h"
 
-// $Id: svr_solver.cc,v 1.9 2001/08/24 13:07:52 taku-ku Exp $;
+// $Id: svr_solver.cc,v 1.10 2001/09/02 14:27:42 taku-ku Exp $;
 
 namespace TinySVM {
 
@@ -39,8 +39,8 @@ SVR_Solver::learn ()
     // make output model
     Model *out_model = new Model (param);
     out_model->b = -rho;
-    clone (out_model->alpha, alpha, 2 * l);
-    clone (out_model->G,     G,     2 * l);
+    _clone (out_model->alpha, alpha, 2 * l);
+    _clone (out_model->G,     G,     2 * l);
 
     double loss = 0.0;
     int bsv = 0;
@@ -48,7 +48,7 @@ SVR_Solver::learn ()
     for (int i = 0; i < l; i++) {
       double d = (G[i] - G[i+l] - b[i] + b[i+l])/2 + rho;
       double a = alpha[i] - alpha[i+l];
-      double l = max(0.0, fabs(y[i] - d) - param.insensitive_loss); 
+      double l = _max(0.0, fabs(y[i] - d) - param.insensitive_loss); 
        // epsilon insensitive loss function
       loss += l;
       if (l > 0) err++;

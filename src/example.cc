@@ -5,9 +5,12 @@
 #include "svm_solver.h"
 #include "svr_solver.h"
 
-// $Id: example.cc,v 1.21 2001/08/24 13:07:52 taku-ku Exp $;
+// $Id: example.cc,v 1.23 2001/09/02 14:27:42 taku-ku Exp $;
 
 namespace TinySVM {
+   
+Example::Example() {};
+Example::~Example() {};   
 
 Model *
 Example::learn (const Param & p)
@@ -106,8 +109,8 @@ Example::rebuildSVindex (Model *m)
 {
   if (!m ) return 0;
 
-  alpha = resize (alpha, svindex_size, l, 0.0);
-  G     = resize (G,     svindex_size, l, 0.0);
+  alpha = _resize (alpha, svindex_size, l, 0.0);
+  G     = _resize (G,     svindex_size, l, 0.0);
 
   for (int i = svindex_size; i < l; i++) {
     G[i] = y[i] * (m->classify(x[i]) + m->b) - 1;

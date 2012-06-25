@@ -13,32 +13,35 @@ use lib $ENV{PWD} . "/blib/lib";
 use lib $ENV{PWD} . "/blib/arch";
 BEGIN { $| = 1; print "1..1\n"; }
 END {print "not ok 1\n" unless $loaded;}
+
 use TinySVM;
 $loaded = 1;
 
-my $e;
-my $m;
-
-$e = new Example;
+my $e = new TinySVM::Example;
 $e->read("../tests/train.svmdata");
 
 print "Example Size = ", $e->size(),"\n";
-$m = $e->learn("-t 1 -d 2 -c 100");
+$m = $e->learn("-t 3 -d 2 -c 100");
 $m->write("model");
 
 for $i (0..5) {
-   my @a = $m->getX($i);
-   print $m->getY($i) , "@a\n";
+   my $a = $m->getX($i);
+   print $m->getY($i) , " $a\n";
 }
 
 print "\n";
 $m->remove(0);
 for $i (0..5) {
-   my @a = $m->getX($i);
-   print $m->getY($i) , "@a\n";
+   my $a = $m->getX($i);
+   print $m->getY($i) , " $a\n";
 }
 
 $m->writeSVindex("svindex");
+
+$m->clear();
+
+$m = new TinySVM::Model();
+$m->read("model");
 
 print "classify=", $m->classify("1:1 2:1"), "\n";
 print "classify=", $m->classify("4:1 6:1"), "\n";
@@ -49,7 +52,7 @@ print "VC=" ,      $m->estimateVC() , "\n";
 unlink "svindex";
 unlink "model";
 
-my $m2 = $e->learn ("");
+my $m2 = $e->learn ();
 $m2->compress();
 $m2->write("model2");
 unlink "model2";

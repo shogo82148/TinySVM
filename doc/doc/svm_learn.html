@@ -3,13 +3,13 @@ Content-type: text/html
 <HTML><HEAD><TITLE>Manpage of SVM_LEARN</TITLE>
 </HEAD><BODY>
 <H1>SVM_LEARN</H1>
-Section: TinySVM (1)<BR>Updated: August 2001<BR><A HREF="#index">Index</A>
+Section: TinySVM (1)<BR>Updated: September 2001<BR><A HREF="#index">Index</A>
 <A HREF="http://localhost/cgi-bin/man/man2html">Return to Main Contents</A><HR>
 
 <A NAME="lbAB">&nbsp;</A>
 <H2>NAME</H2>
 
-svm_learn - manual page for svm_learn of 0.04
+svm_learn - manual page for svm_learn of 0.05
 <A NAME="lbAC">&nbsp;</A>
 <H2>SYNOPSIS</H2>
 
@@ -39,7 +39,10 @@ TYPE:  0 - C-SVM (default)
 select type of kernel function.
 TYPE:  0 - linear (w * x)  (default)
 <DT><DD>
-1 - polynomial (s w*x + r)^d
+1 - polynomial (s w * x + r)^d
+2 - neural tanh(s w * x + r)
+3 - RBF    exp(-s * ||w-x||^2)
+4 - ANOVA  (sum_i [exp(-s * ||w_i-x_i||^2)])^d
 <DT><B>-d</B>, <B>--kernel-degree</B>=<I>INT</I><DD>
 set INT for parameter d in polynomial kernel. (default 1)
 <DT><B>-r</B>, <B>--kernel-param-r</B>=<I>FLOAT</I><DD>
@@ -80,8 +83,8 @@ used in C-SVR cost evaluation. (default 0.1)
 set FILE, FILE.idx for initial condition model file.
 <DT><B>-I</B>, <B>--sv-index</B><DD>
 write SV index to MODEL.idx.
-<DT><B>-W</B><DD>
-<B>--compress</B>                     calculate vector w (w * x + b) directory instead of alpha.
+<DT><B>-W</B>, <B>--compress</B><DD>
+calculate vector w (w * x + b) directory instead of alpha.
 <DT><B>-V</B>, <B>--verbose</B><DD>
 set verbose mode.
 <DT><B>-v</B>, <B>--version</B><DD>
@@ -112,6 +115,6 @@ Copyright (C) 2000-2001 Taku Kudoh All rights reserved.
 This document was created by
 <A HREF="http://localhost/cgi-bin/man/man2html">man2html</A>,
 using the manual pages.<BR>
-Time: 15:58:23 GMT, August 25, 2001
+Time: 17:38:10 GMT, September 02, 2001
 </BODY>
 </HTML>

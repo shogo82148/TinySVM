@@ -2,7 +2,7 @@
 #include "misc.h"
 #include "common.h"
 
-// $Id: param.cc,v 1.30 2001/08/25 13:41:53 taku-ku Exp $;
+// $Id: param.cc,v 1.33 2001/09/02 17:37:34 taku-ku Exp $;
 // default param
 
 #define PARAM_MAX_SIZE 512
@@ -16,7 +16,10 @@ Solver Type:\n\
 Kernel Parameter:\n\
   -t, --kernel-type=INT              select type of kernel function.\n\
                                      TYPE:  0 - linear (w * x)  (default)\n\
-                                            1 - polynomial (s w*x + r)^d\n\
+                                            1 - polynomial (s w * x + r)^d\n\
+                                            2 - neural tanh(s w * x + r)\n\
+                                            3 - RBF    exp(-s * ||w-x||^2)\n\
+                                            4 - ANOVA  (sum_i [exp(-s * ||w_i-x_i||^2)])^d\n\
   -d, --kernel-degree=INT            set INT for parameter d in polynomial kernel. (default 1)\n\
   -r, --kernel-param-r=FLOAT         set FLOAT for parameter r in polynomial kernel. (default 1)\n\
   -s, --kernel-param-s=FLOAT         set FLOAT for parameter s in polynomial kernel. (default 1)\n\
@@ -39,7 +42,7 @@ Optimization Parameter:\n\
 Miscellaneous:\n\
   -M, --model=FILE                   set FILE, FILE.idx for initial condition model file.\n\
   -I, --sv-index                     write SV index to MODEL.idx.\n\
-  -W  --compress                     calculate vector w (w * x + b) directory instead of alpha.\n\
+  -W, --compress                     calculate vector w (w * x + b) directory instead of alpha.\n\
   -V, --verbose                      set verbose mode.\n\
   -v, --version                      show the version of TinySVM and exit.\n\
   -h, --help                         show this help and exit.\n\
@@ -78,6 +81,7 @@ Param::Param ()
 {
   kernel_type = LINEAR;
   solver_type = SVM;
+  dot_kernel  = 1;
   degree = 1;
   param_g = 1;
   param_s = 1;
@@ -114,6 +118,7 @@ Param::set (int argc, char **argv)
       break;
     case 't':
       kernel_type = atoi (optarg);
+      if (kernel_type == RBF || kernel_type == ANOVA) dot_kernel = 0;
       break;
     case 'd':
       degree = atoi (optarg);

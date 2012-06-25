@@ -1,19 +1,25 @@
 # Process this file with automake to produce Makefile.in
 #
-# $Id: Makefile.am,v 1.22 2001/05/24 22:17:40 taku-ku Exp $;
+# $Id: Makefile.am,v 1.25 2001/09/01 03:31:07 taku-ku Exp $;
 #
 @SET_MAKE@
 AUTOMAKE_OPTIONS = 1.4 no-dependencies
 
 always_built_SUBDIRS = src tests man doc
-EXTRA_DIRS = doc perl ruby
+EXTRA_DIRS = doc perl ruby python java
 EXTRA_DIST = tinysvm.spec THANKS
 
 SUBDIRS = $(always_built_SUBDIRS)
 
 pkgdatadir = @datadir@/@PACKAGE@
 
-dist-hook:
+clean-swig:
+	(cd perl; rm -f Makefile.PL Makefile.old model* *.so *.o Makefile)
+	(cd ruby; rm -f extconf.rb model* Makefile *.o *.so)
+	(cd python; rm -fr Makefile Makefile.pre Setup *.o model* config.c sedscript *.pyc *.so)
+	(cd java; rm -fr *.class *.jar model* Makefile *.so *.o)
+
+dist-hook: clean-swig
 	for subdir in $(EXTRA_DIRS); do \
 		cp -rp $$subdir $(distdir)/$$subdir; \
 		rm -f $(distdir)/$$subdir/*~; \

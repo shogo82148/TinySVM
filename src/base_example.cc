@@ -1,7 +1,7 @@
 #include "base_example.h"
 #include "common.h"
 
-// $Id: base_example.cc,v 1.21 2001/08/24 13:07:52 taku-ku Exp $;
+// $Id: base_example.cc,v 1.23 2001/09/02 14:27:42 taku-ku Exp $;
 
 // misc function
 namespace TinySVM {
@@ -119,7 +119,7 @@ BaseExample::~BaseExample ()
   for (int i = 0; i < l; i++) {
      if (x && dec_refcount_feature_node(x[i]) == -1) delete [] x[i];
   }
-
+   
   delete [] x;
   delete [] y;
   delete [] alpha;
@@ -141,8 +141,8 @@ BaseExample::operator =(BaseExample & e)
     pack_d = e.pack_d;
     svindex_size = e.svindex_size;
     if (svindex_size) {
-	clone (alpha, e.alpha, svindex_size);
-	clone (G,     e.G,     svindex_size);
+	_clone (alpha, e.alpha, svindex_size);
+	_clone (G,     e.G,     svindex_size);
     }
   }
 
@@ -188,7 +188,7 @@ BaseExample::readLine (FILE * fp)
 
     while (1) {
       if (len >= strl) {
-	tstr = resize (tstr, strl, strl + MAXLEN, (char)0);
+	tstr = _resize (tstr, strl, strl + MAXLEN, (char)0);
         strl += MAXLEN;
 	stre = tstr;
       }
@@ -232,6 +232,54 @@ BaseExample::remove (int i)
   }
      
   return --l;
+}
+
+int 
+BaseExample::get (int i, double &_y, feature_node *&_x)
+{
+   if (i < 0 || i >= l || ! x || ! y) {
+      fprintf(stderr, "BaseExample::set (): Out of range\n");
+      return 0;
+   }
+   
+   _y = y[i];
+   _x = x[i];
+   return 1;
+}
+
+const char *
+BaseExample::get (int i)
+{
+  if (i < 0 || i >= l || ! x || ! y) {
+      fprintf(stderr, "BaseExample::get (): Out of range\n");
+      return 0;
+  }
+
+  try {
+    int elmnum;
+    feature_node *node = x[i];
+    for (elmnum = 0; node[elmnum].index >= 0; elmnum++);
+
+    int len = _min (strl + 1024, (elmnum + 1) * 32);
+    if (len > strl) {
+      stre = _resize (stre, strl, len, (char)0);
+      strl = len;
+    }
+
+    sprintf (stre, "%.16g", y[i]);
+    char tmp[32];
+    for (feature_node *node = x[i]; node->index >= 0; node++) {
+      sprintf (tmp, " %d:%.16g", node->index, node->value);
+      strcat(stre, tmp);
+    }
+
+    return (const char*)stre;
+  }
+
+  catch (...) {
+    fprintf (stderr, "BaseExample::get (): Out of memory\n");
+    exit (EXIT_FAILURE);
+  }
 }
      
 int 
@@ -287,22 +335,22 @@ BaseExample::add (const double _y, feature_node * _x)
     // check contents
     for (int i = 0; (node + i)->index >= 0; i++) {
       if ((node + i)->value != 1) feature_type = DOUBLE_FEATURE; // check feature type
-      d = max (d, (node + i)->index);	// save max dimension
+      d = _max (d, (node + i)->index);	// save max dimension
       fnum++;
     }
      
     // incriment refcount
     inc_refcount_feature_node (node);
 
-    pack_d = max (fnum, pack_d);
+    pack_d = _max (fnum, pack_d);
     if (! fnum) return 0; // empty node
 
     // check class type
     if (_y != +1 && _y != -1) class_type = DOUBLE_FEATURE;
 
     // resize
-    x = append (x, l, node, (feature_node*)0);
-    y = append (y, l, _y, 0.0);
+    x = _append (x, l, node, (feature_node*)0);
+    y = _append (y, l, _y, 0.0);
     l++;
 
     return 1;
@@ -378,8 +426,8 @@ BaseExample::readSVindex (const char *filename, const char *mode, const int offs
       return 0;
     }
 
-    alpha = append (alpha, _l, _alpha, 0.0);
-    G     = append (G,     _l, _G,     0.0);
+    alpha = _append (alpha, _l, _alpha, 0.0);
+    G     = _append (G,     _l, _G,     0.0);
     _l++;
   }
 

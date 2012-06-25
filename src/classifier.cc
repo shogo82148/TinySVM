@@ -10,9 +10,8 @@ Classifier::Classifier (const BaseExample & example, const Param & param):
      x = example.x;
      y = example.y;
      model_bias = 0;
-     
 
-    if (feature_type == BINARY_FEATURE) {
+    if (feature_type == BINARY_FEATURE && dot_kernel) {
       _getDistance = &Classifier::_getDistance_binary;
 
       dot_buf = new int[l];
@@ -35,12 +34,12 @@ Classifier::Classifier (const BaseExample & example, const Param & param):
 	}
 
 	// caluculate cache
-	model_bias += y[i] * (this->*_getKernel) (0.0);
+	model_bias += y[i] * (this->*_getKernel2) (0.0);
 	binary_kernel_cache[i] = new double[feature_num + 1];
 	for (int j = 1; j <= feature_num; j++) {
 	  binary_kernel_cache[i][j] =
-	    y[i] * ((this->*_getKernel) ((double) j) -
-		    (this->*_getKernel) ((double) (j - 1)));
+	    y[i] * ((this->*_getKernel2) ((double) j) -
+		    (this->*_getKernel2) ((double) (j - 1)));
 	}
       }
 
@@ -78,7 +77,7 @@ Classifier::Classifier (const BaseExample & example, const Param & param):
 
 Classifier::~Classifier ()
 {
-  if (feature_type == BINARY_FEATURE) {
+  if (feature_type == BINARY_FEATURE && dot_kernel) {
     delete [] dot_buf;
     for (int i = 0; i < l; i++)
       delete [] binary_kernel_cache[i];
@@ -97,7 +96,7 @@ Classifier::_getDistance_normal (const feature_node * _x) const
   register feature_node *node = fix_feature_node ((feature_node *) _x);
 
   for (register int i = 0; i < l; i++)
-    result += y[i] * (this->*_getKernel) (dot_normal(x[i], node));
+    result += y[i] * (this->*_getKernel) (x[i], node);
   
   return result;
 }

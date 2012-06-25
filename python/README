@@ -1,0 +1,12 @@
+TinySVM python module
+
+$Id: README,v 1.1 2001/09/01 03:36:13 taku-ku Exp $;
+
+1. Install
+  % make -f Makefile.pre.in boot
+  % make
+  % su
+  # make install
+  
+2. How to use?
+   see 'test.py' as sample program.

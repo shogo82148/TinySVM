@@ -1,6 +1,6 @@
 #include "q_matrix.h"
 
-// $Id: q_matrix.cc,v 1.5 2001/08/14 09:09:04 taku-ku Exp $;
+// $Id: q_matrix.cc,v 1.8 2001/09/02 14:27:42 taku-ku Exp $;
 
 namespace TinySVM {
 
@@ -10,12 +10,12 @@ Kernel (example, param)
   cache_binary        = 0;
   cache_normal        = 0;
   binary_kernel_cache = 0;
-
+   
   miss = hit = size = 0;
   cache_size = param.cache_size;
 
   // making cache
-  if (feature_type == BINARY_FEATURE) {
+  if (feature_type == BINARY_FEATURE && dot_kernel) {
     binary_kernel_cache = new int[pack_d + 1];
     for (int i = 0; i < (pack_d + 1); i++)
       binary_kernel_cache[i] = (int) (this->getKernel ((double) i));

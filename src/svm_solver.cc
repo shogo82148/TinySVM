@@ -5,7 +5,7 @@
 #include "timer.h"
 #include "qp_solver.h"
 
-// $Id: svm_solver.cc,v 1.31 2001/08/24 13:07:52 taku-ku Exp $;
+// $Id: svm_solver.cc,v 1.32 2001/09/02 14:27:42 taku-ku Exp $;
 
 namespace TinySVM {
 
@@ -47,8 +47,8 @@ SVM_Solver::learn ()
     out_model->b = -rho;
 
     // copy gradient and alphas
-    clone (out_model->alpha, alpha, l);
-    clone (out_model->G,     G,     l);
+    _clone (out_model->alpha, alpha, l);
+    _clone (out_model->G,     G,     l);
 
     int err = 0;
     double loss = 0.0;

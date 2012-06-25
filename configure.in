@@ -1,6 +1,6 @@
 dnl Process this file with autoconf to produce a configure script.
 AC_INIT(src/svm_learn.cc)
-AM_INIT_AUTOMAKE(TinySVM,0.04)
+AM_INIT_AUTOMAKE(TinySVM,0.05)
 
 # Before making a release, the LTVERSION string should be modified.
 # The string is of the form C:R:A.
@@ -254,12 +254,60 @@ if test "x$config_error" = xyes ; then
 fi
 AC_MSG_RESULT([yes])
 
+#----------------------------------------------------------------
+# Look for java (From SWIG)
+#----------------------------------------------------------------
+AC_ARG_WITH(java, [  --with-java=path   Set location of Java],[JAVABIN="$withval"], [JAVABIN=])
+AC_ARG_WITH(javac, [  --with-javac=path Set location of Javac],[JAVACBIN="$withval"], [JAVACBIN=])
+AC_ARG_WITH(jar, [  --with-jar=path     Set location of Jar],[JARBIN="$withval"], [JARBIN=])
+
+if test -z "$JAVABIN" ; then
+  AC_CHECK_PROGS(JAVA, java)
+else
+  JAVA="$JAVABIN"
+fi
+
+if test -z "$JAVACBIN" ; then
+  AC_CHECK_PROGS(JAVAC, javac)
+else
+  JAVAC="$JAVACBIN"
+fi
+
+if test -z "$JARBIN" ; then
+  AC_CHECK_PROGS(JAR, jar)
+else
+  JAR="$JAVRBIN"
+fi
+
+AC_MSG_CHECKING(for java include file jni.h)
+AC_ARG_WITH(javaincl, [  --with-javaincl=path    Set location of Java include directory], [JAVAINCDIR="$withval"], [JAVAINCDIR=])
+
+if test -z "$JAVAINCDIR"; then
+  JAVAINCDIR="/usr/jdk*/include /usr/local/jdk*/include /opt/jdk*/include /usr/java/include /usr/local/java/include /opt/java/include /usr/include/java /usr/local/include/java /usr/include /usr/local/include"
+fi
+
+JAVAINC=""
+for d in $JAVAINCDIR ; do
+  if test -r $d/jni.h ; then
+    AC_MSG_RESULT($d)
+    JAVAINC="-I$d"
+    break
+  fi
+done
+
+AC_SUBST(JAVA)
+AC_SUBST(JAVAC)
+AC_SUBST(JAVAINC)
+#------------------------------------------------------
+
 AM_CONFIG_HEADER(config.h)
 AC_OUTPUT([Makefile
            src/Makefile 
            tests/Makefile 
 	   man/Makefile 
 	   doc/Makefile 
+	   java/Makefile
+	   python/Setup
 	   perl/Makefile.PL
 	   ruby/extconf.rb
 	   tinysvm.spec])

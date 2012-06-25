@@ -9,6 +9,7 @@ public:
   int    kernel_type;
   int    feature_type;
   int    solver_type;
+  int    dot_kernel;
   int    degree;
   double param_g;
   double param_r;

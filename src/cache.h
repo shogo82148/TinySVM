@@ -2,7 +2,7 @@
 #define _CACHE_H
 #include "common.h"
 
-// $Id: cache.h,v 1.17 2001/08/23 02:11:46 taku-ku Exp $;
+// $Id: cache.h,v 1.18 2001/09/02 14:27:42 taku-ku Exp $;
 
 // Kernel Cache
 
@@ -27,7 +27,7 @@ private:
 
   inline int get_cache_size(const int _l, const double mem_size)
   {
-    return min (_l, max(2, (int)(1024 * 1024 * mem_size/(sizeof(T) * _l))));
+    return _min (_l, _max(2, (int)(1024 * 1024 * mem_size/(sizeof(T) * _l))));
   }
  
   // delete h from current postion
@@ -92,11 +92,11 @@ public:
 
   void swap_index(const int i, const int j)
   {
-    swap (index2head[i], index2head[j]);
+    _swap (index2head[i], index2head[j]);
     for (head_t *h = lru_head;;h = h->next) {
       if (h->index == i) h->index = j;
       if (h->index == j) h->index = i;
-      swap(h->data[i], h->data[j]);
+      _swap(h->data[i], h->data[j]);
       if (h == lru_head->prev) break;
     }
   }
@@ -172,7 +172,7 @@ void Cache<T>::update(const int _l)
     // realloc
     for (head_t *h = lru_head;;h = h->next) {
       T *new_data;
-	clone(new_data, h->data, _l);
+	_clone(new_data, h->data, _l);
 	delete [] h->data;
 	h->data = new_data; 
 	if (h == lru_head->prev) break; 

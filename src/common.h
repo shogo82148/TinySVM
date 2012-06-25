@@ -92,22 +92,20 @@ template <class T> inline void memcpy(T* &a, T &b, int c)
 #endif
 
 // Factory Functions
-
 namespace TinySVM {
-#ifndef __MINGW32__
-template <class T> inline T min (T x, T y) { return (x < y) ? x : y; }
-template <class T> inline T max (T x, T y) { return (x > y) ? x : y; }
-#endif
-template <class T> inline void swap (T &x, T &y) { T z = x; x = y; y = z; }
+   
+template <class T> inline T _min (T x, T y) { return (x < y) ? x : y; }
+template <class T> inline T _max (T x, T y) { return (x > y) ? x : y; }
+template <class T> inline void _swap (T &x, T &y) { T z = x; x = y; y = z; }
 
-template <class S, class T> inline void clone (T*& dst, S* src, int n)
+template <class S, class T> inline void _clone (T*& dst, S* src, int n)
 {
   dst = new T [n];
   memcpy ((void *)dst, (void *)src, sizeof(T)*n);
 }
 
 // resize ptr from n to l
-template <class T> inline T* resize (T* ptr, int n, int l, T v)
+template <class T> inline T* _resize (T* ptr, int n, int l, T v)
 {
   T *dst = new T [l];
 
@@ -119,15 +117,13 @@ template <class T> inline T* resize (T* ptr, int n, int l, T v)
 
 // increse size of array automatically, simple implimentation
 // you have to incriment N by yourself
-template <class T> inline T* append (T* ptr, int n, T v1, T v2)
+template <class T> inline T* _append (T* ptr, int n, T v1, T v2)
 {
-  if (n % MAXLEN == 0) ptr = resize (ptr, n, n + MAXLEN, v2);
+  if (n % MAXLEN == 0) ptr = _resize (ptr, n, n + MAXLEN, v2);
   ptr[n] = v1;
 
   return ptr;
 }
-   
-
 }
 
 #endif

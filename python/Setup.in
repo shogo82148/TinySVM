@@ -1,0 +1,5 @@
+*shared*
+# LD_LIBRARY_PATH at runtime.
+TinySVMc TinySVM_wrap.c -ltinysvm
+CC=@CXX@
+

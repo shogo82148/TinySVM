@@ -9,7 +9,7 @@
 <body bgcolor="#ffffff">
 
 <h1>libtinysvm Reference Manual</h1>
-<p>Last update: $Date: 2001/01/18 08:55:24 $</p>
+<p>Last update: $Date: 2001/08/29 14:48:57 $</p>
 <hr>
 
 <h2>List of Contents</h2>
@@ -81,8 +81,8 @@ namespace TinySVM {
 </pre>
 
 <p>
-<i>TinySVM::BaseExample</i> is a base class for <i>TinySVM::Example</i> and <i>TinySVM::Model</i>. You need not use this class
-directory.
+<i>TinySVM::BaseExample</i> is a base class for <i>TinySVM::Example</i>
+ and <i>TinySVM::Model</i>. You need not use this class directly.
 </p>
 
 <dl>
@@ -143,14 +143,14 @@ Get the size of examples (pair of <i>y</i> and <i>x</i>).
 <dt>
 <code><font color=#dc143c>TinySVM::BaseExample</font>::<font color=DarkBlue>read</font> (const char *file_name, const char *mode ="r", const int offset = 0)</code>
 <dd>
-Read all examples stored from <i>file_name</i>.
+Read all examples from <i>file_name</i>.
 <i>mode</i> is used for calling <i>fopen (3)</i>.<br>
-if <i>offset</i> is given, seek <i>offset</i> byte using <i>fseek (3)</i> before reading stored examples.<br>
+if <i>offset</i> is given, seek <i>offset</i> byte using <i>fseek (3)</i> before reading examples.<br>
 Return 1 if success, return 0 if fail.
 <dt>
 <code><font color=#dc143c>TinySVM::BaseExample</font>::<font color=DarkBlue>write</font> (const char *file_name, const char *mode ="w", const int offset = 0)</code>
 <dd>
-Save all stored examples into <i>file_name</i>. 
+Save all examples into <i>file_name</i>. 
 <i>mode</i> is used for calling fopen(3). <br>
 By setting <i>"a"</i> to <i>mode</i>, you can  append examples into <i>file_name</i>.<br>
 <i>offset</i> is reserved argument for the future. <br>
@@ -162,7 +162,7 @@ Return 1 if success, return 0 if fail.
 </dt>
 Read pairs of alpha and gradiant from <i>file_name</i>.
 <i>mode</i> is used for calling <i>fopen (3)</i>.<br>
-if <i>offset</i> is given, seek <i>offset</i> byte using <i>fseek (3)</i> before reading stored examples.<br>
+if <i>offset</i> is given, seek <i>offset</i> byte using <i>fseek (3)</i> before reading examples.<br>
 Return 1 if success, return 0 if fail.
 
 <dt>
@@ -171,7 +171,7 @@ Return 1 if success, return 0 if fail.
 </dt>
 Save pairs of alpha and gradiant into <i>file_name</i>.
 <i>mode</i> is used for calling <i>fopen (3)</i>.<br>
-if <i>offset</i> is given, seek <i>offset</i> byte using <i>fseek (3)</i> before reading stored examples.<br>
+if <i>offset</i> is given, seek <i>offset</i> byte using <i>fseek (3)</i> before reading examples.<br>
 Return 1 if success, return 0 if fail.
 </dl>
 
@@ -315,7 +315,7 @@ data) with single vector w (w * x + b).
 
 <h2><a name="sample">Sample Programming</a></h2>
 <ul>
-<li>Leaning with <i>file-name</i>, and store the result into <i>model-file</i>.
+<li>Learn with <i>file-name</i>, and store the result into <i>model-file</i>.
 <pre>
 #include &lt;tinysvm.h&gt;
 
@@ -331,7 +331,7 @@ data) with single vector w (w * x + b).
 
    delete m;
 </pre>
-<li>Classifying using stored <i>model-file</i>
+<li>Classify using stored <i>model-file</i>
 <pre>
 #include &lt;tinysvm.h&gt;
 
@@ -345,7 +345,7 @@ data) with single vector w (w * x + b).
 
 <li>svm_learn, svm_classify and svm_model, all of these included program are
 written with libtinysvm. <br>
-I think these sources would also help you to build your own programs.
+Tese sources would also help you to build your own programs.
 </ul>
 
 <h2><a name="compile">How to compile</a></h2>
@@ -357,7 +357,7 @@ c++ -I/usr/local/include -L/usr/local/lib sample.cc -o sample -ltinysvm
 
 <hr>
 <p>
-$Id: libtinysvm.html,v 1.8 2001/01/18 08:55:24 taku-ku Exp $;
+$Id: libtinysvm.html,v 1.9 2001/08/29 14:48:57 taku-ku Exp $;
 </p>
 <address>
 taku-ku@is.aist-nara.ac.jp

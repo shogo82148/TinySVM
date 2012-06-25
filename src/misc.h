@@ -3,7 +3,7 @@
 
 namespace TinySVM {
    
-enum { LINEAR, POLY };
+enum { LINEAR, POLY, NEURAL, RBF, ANOVA };
 enum { DOUBLE_FEATURE, BINARY_FEATURE };
 enum { SVM, SVR };
 

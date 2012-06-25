@@ -4,7 +4,7 @@ use ExtUtils::MakeMaker;
 WriteMakefile(
     'CC'		=> '@CXX@',
     'NAME'		=> 'TinySVM',
-    'VERSION_FROM'	=> 'TinySVM.pm',
     'INC'		=> '-I@prefix@/include',
-    'LIBS'        	=> '-L@prefix@/lib -ltinysvm'
+    'LIBS'        	=> '-L@prefix@/lib -ltinysvm',
+    'OBJECT'            => 'TinySVM_wrap.o'
 );
