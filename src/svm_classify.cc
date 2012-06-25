@@ -65,7 +65,7 @@ main (int argc, char **argv)
     exit (EXIT_FAILURE);
   }
 
-  Model model;
+  TinySVM::Model model;
   if (!model.read (argv[argc - 1])) {
     fprintf (stderr, "%s: %s: No such file or directory\n", argv[0], argv[argc - 1]);
     exit (EXIT_FAILURE);
@@ -82,8 +82,14 @@ main (int argc, char **argv)
 
   char *line;
   if (test_type == 0) {
+
     int all = 0;
-    int ok = 0;
+    int correct = 0;
+    int res_a = 0;
+    int res_b = 0;
+    int res_c = 0;
+    int res_d = 0;
+
     while ((line = model.readLine (fp)) != NULL) {
       double y = 0;
       int len = strlen (line);
@@ -93,14 +99,24 @@ main (int argc, char **argv)
       while (i < len && !isspace (line[i])) i++;
       while (i < len && isspace (line[i])) i++;
 
-      double r = model.classify ((const char *) (line + i));
-      if (verbose) printf ("%g %g\n", y, r);
+      double dist = model.classify ((const char *) (line + i));
+      if (verbose) printf ("%g %g\n", y, dist);
       fflush (stdout);
-      if (y * r >= 0) ok++;
+
       all++;
+      if(dist > 0) {
+	if(y > 0) correct++;
+	if(y > 0) res_a++; else res_b++;
+      } else {
+	if(y < 0) correct++;
+	if(y > 0) res_c++; else res_d++;
+      }
     }
-    printf ("Accuracy = %10.10f%% (%d/%d)\n", 100.0 * ok / all, ok, all);
-  } else {
+    printf ("Accuracy:   %.5f%% (%d/%d)\n", 100.0 * correct/all , correct, all);
+    printf ("Precision:  %.5f%% (%d/%d)\n", 100.0 * res_a/(res_a + res_b), res_a, res_a + res_b);
+    printf ("Recall:     %.5f%% (%d/%d)\n", 100.0 * res_a/(res_a + res_c), res_a, res_a + res_c);
+    printf ("System/Answer p/p p/n n/p n/n: %d %d %d %d\n", res_a,res_b,res_c,res_d);
+  } else { // intractive model
     while ((line = model.readLine (fp)) != NULL) {
       printf ("%g\n", model.classify ((const char *) (line)));
       fflush (stdout);

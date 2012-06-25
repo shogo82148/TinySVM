@@ -12,7 +12,7 @@
 
 # Process this file with automake to produce Makefile.in
 #
-# $Id: Makefile.am,v 1.15 2000/12/09 06:19:15 taku-ku Exp $;
+# $Id: Makefile.am,v 1.20 2001/01/14 02:55:27 taku-ku Exp $;
 #
 
 
@@ -62,6 +62,7 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 host_alias = @host_alias@
 host_triplet = @host@
+AR = @AR@
 AS = @AS@
 CC = @CC@
 CXX = @CXX@
@@ -70,17 +71,19 @@ LIBTOOL = @LIBTOOL@
 LN_S = @LN_S@
 LTVERSION = @LTVERSION@
 MAKEINFO = @MAKEINFO@
+NM = @NM@
 OBJDUMP = @OBJDUMP@
 PACKAGE = @PACKAGE@
 RANLIB = @RANLIB@
 VERSION = @VERSION@
 AUTOMAKE_OPTIONS = 1.4 no-dependencies
 
-always_built_SUBDIRS = src tests man
+always_built_SUBDIRS = src tests man doc
 
-EXTRA_DIRS = doc perl
+EXTRA_DIRS = doc perl ruby
 
-EXTRA_DIST = tinysvm.spec Makefile.bcc32 config.h.bcc32
+EXTRA_DIST = tinysvm.spec              src/Makefile.bcc32 config.h.bcc32              src/Makefile.mingw32msvc config.h.mingw32msvc
+
 
 SUBDIRS = $(always_built_SUBDIRS)
 
@@ -88,11 +91,12 @@ pkgdatadir = @datadir@/@PACKAGE@
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_HEADER = config.h
-CONFIG_CLEAN_FILES =  Makefile.bcc32 config.h.bcc32 tinysvm.spec
+CONFIG_CLEAN_FILES =  config.h.bcc32 config.h.mingw32msvc tinysvm.spec
 DIST_COMMON =  README ./stamp-h.in AUTHORS COPYING ChangeLog INSTALL \
-Makefile.am Makefile.bcc32.in Makefile.in NEWS aclocal.m4 config.guess \
-config.h.bcc32.in config.h.in config.sub configure configure.in \
-install-sh ltconfig ltmain.sh missing mkinstalldirs tinysvm.spec.in
+Makefile.am Makefile.in NEWS acconfig.h aclocal.m4 config.guess \
+config.h.bcc32.in config.h.in config.h.mingw32msvc.in config.sub \
+configure configure.in install-sh ltconfig ltmain.sh missing \
+mkinstalldirs tinysvm.spec.in
 
 
 DISTFILES = $(DIST_COMMON) $(SOURCES) $(HEADERS) $(TEXINFOS) $(EXTRA_DIST)
@@ -131,7 +135,7 @@ $(srcdir)/config.h.in: $(srcdir)/stamp-h.in
 		rm -f $(srcdir)/stamp-h.in; \
 		$(MAKE) $(srcdir)/stamp-h.in; \
 	else :; fi
-$(srcdir)/stamp-h.in: $(top_srcdir)/configure.in $(ACLOCAL_M4) 
+$(srcdir)/stamp-h.in: $(top_srcdir)/configure.in $(ACLOCAL_M4) acconfig.h
 	cd $(top_srcdir) && $(AUTOHEADER)
 	@echo timestamp > $(srcdir)/stamp-h.in 2> /dev/null
 
@@ -143,9 +147,9 @@ distclean-hdr:
 	-rm -f config.h
 
 maintainer-clean-hdr:
-Makefile.bcc32: $(top_builddir)/config.status Makefile.bcc32.in
-	cd $(top_builddir) && CONFIG_FILES=$@ CONFIG_HEADERS= $(SHELL) ./config.status
 config.h.bcc32: $(top_builddir)/config.status config.h.bcc32.in
+	cd $(top_builddir) && CONFIG_FILES=$@ CONFIG_HEADERS= $(SHELL) ./config.status
+config.h.mingw32msvc: $(top_builddir)/config.status config.h.mingw32msvc.in
 	cd $(top_builddir) && CONFIG_FILES=$@ CONFIG_HEADERS= $(SHELL) ./config.status
 tinysvm.spec: $(top_builddir)/config.status tinysvm.spec.in
 	cd $(top_builddir) && CONFIG_FILES=$@ CONFIG_HEADERS= $(SHELL) ./config.status
@@ -277,6 +281,7 @@ distdir: $(DISTFILES)
 	-rm -rf $(distdir)
 	mkdir $(distdir)
 	-chmod 777 $(distdir)
+	$(mkinstalldirs) $(distdir)/src
 	@for file in $(DISTFILES); do \
 	  d=$(srcdir); \
 	  if test -d $$d/$$file; then \
@@ -376,9 +381,6 @@ maintainer-clean-generic clean mostlyclean distclean maintainer-clean
 @SET_MAKE@
 
 dist-hook:
-	cd perl; make clean; rm -f model; cd ..
-	cd man;  make update-man; cd ..
-	cd html; make update-html; cd ..
 	for subdir in $(EXTRA_DIRS); do \
 		cp -rp $$subdir $(distdir)/$$subdir; \
 		rm -f $(distdir)/$$subdir/*~; \
@@ -391,10 +393,15 @@ dist-hook:
 rpm: dist
 	rpm -ta @PACKAGE@-@VERSION@.tar.gz
 
+win:
+	 cd src; make -f Makefile.mingw32msvc clean; make -f Makefile.mingw32msvc;
+
 win-dist: dist
-	rm -f @PACKAGE@-@VERSION@.zip 
+	rm -f @PACKAGE@-@VERSION@.zip
+	mkdir bin; cp src/*.exe bin/
 	zip @PACKAGE@-@VERSION@.zip README AUTHORS NEWS COPYING ChangeLog \
-	src/*.exe doc/*.html doc/*.css tests/*.svmdata
+	bin/*.exe doc/*.html doc/*.css tests/*.svmdata
+	rm -fr bin/
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

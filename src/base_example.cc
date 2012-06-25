@@ -1,9 +1,12 @@
 #include "base_example.h"
 #include "common.h"
 
-// $Id: base_example.cc,v 1.11 2000/12/08 15:01:02 taku-ku Exp $;
+// $Id: base_example.cc,v 1.14 2001/01/16 19:37:20 taku-ku Exp $;
 
 // misc function
+
+namespace TinySVM {
+
 int
 comp_feature_node (const void *x1, const void *x2)
 {
@@ -105,21 +108,18 @@ BaseExample::BaseExample ()
   x = NULL;
   y = NULL;
   refcount = 0;
-  feature_type = BINARY_FEATURE;
+  feature_type = class_type = BINARY_FEATURE;
 }
 
 BaseExample::~BaseExample ()
 {
   if (refcount == 0 && x) {
-    for (int i = 0; i < l; i++)
-      delete[]x[i];
+    for (int i = 0; i < l; i++) delete[] x[i];
   }
-  if (x)
-    delete[]x;
-  if (y)
-    delete[]y;
-  if (stre)
-    delete[]stre;
+
+  delete [] x;
+  delete [] y;
+  delete [] stre;
 }
 
 // copy constructor
@@ -200,8 +200,8 @@ BaseExample::add (const double _y, feature_node * _x)
 {
   int fnum = 0;
   try {
+    
     feature_node *node = fix_feature_node ((feature_node *) _x);
-
     for (int i = 0; (node + i)->index != -1; i++) {
       if ((node + i)->value != 1)
 	feature_type = DOUBLE_FEATURE;	// check feature type
@@ -210,8 +210,10 @@ BaseExample::add (const double _y, feature_node * _x)
     }
 
     pack_d = max (fnum, pack_d);
-
     if (!fnum) return 0; // empty node
+
+    // check class type
+    if (_y != +1 && _y != -1) class_type = DOUBLE_FEATURE;
 
     // malloc && realoc
     if (l == alloc_l) {
@@ -269,4 +271,6 @@ BaseExample::add (const char *s)
   }
 
   return this->add (_y, (const char *) (s + i));
+}
+
 }

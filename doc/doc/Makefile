@@ -59,23 +59,25 @@ POST_INSTALL = :
 NORMAL_UNINSTALL = :
 PRE_UNINSTALL = :
 POST_UNINSTALL = :
-host_alias = i686-pc-linux-gnu
+host_alias = i686-pc-linux
 host_triplet = i686-pc-linux-gnu
+AR = 
 AS = @AS@
 CC = gcc
 CXX = c++
 DLLTOOL = @DLLTOOL@
 LIBTOOL = $(SHELL) $(top_builddir)/libtool
 LN_S = ln -s
-LTVERSION = 1:0:0
+LTVERSION = 2:0:1
 MAKEINFO = makeinfo
+NM = /usr/bin/nm -B
 OBJDUMP = @OBJDUMP@
 PACKAGE = TinySVM
 RANLIB = ranlib
-VERSION = 0.01
+VERSION = 0.02
 
-html_HTML = svm_learn.html svm_classify.html svm_model.html
-EXTRA_DIST = $(html_HTML) index.html libtinysvm.html
+html_HTMLS = svm_learn.html svm_classify.html svm_model.html
+EXTRA_DIST = $(html_HTMLS)
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_HEADER = ../config.h
 CONFIG_CLEAN_FILES = 
@@ -182,8 +184,9 @@ mostlyclean distclean maintainer-clean
 
 
 update-html:
-	@for html in $(html_HTML); do \
-		man2html ../man/`basename $$html .html`.1 > $$html; \
+	@for html in $(html_HTMLS); do \
+		cmd=`basename $$html .html`.1 && \
+		man2html ../man/$$cmd > $$html; \
 	done
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.

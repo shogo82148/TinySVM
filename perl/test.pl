@@ -6,7 +6,7 @@
 # Change 1..1 below to 1..last_test_to_print .
 # (It may become useful if the test is moved to ./t subdirectory.)
 
-# $Id: test.pl,v 1.9 2000/12/06 14:59:57 taku-ku Exp $;
+# $Id: test.pl,v 1.10 2001/01/16 23:34:33 taku-ku Exp $;
 
 use lib "../src/.libs";
 use lib $ENV{PWD} . "/blib/lib";
@@ -37,5 +37,8 @@ print "classify=", $m->classify("1:1 2:1"), "\n";
 print "SV=" ,      $m->getSVnum() , "\n";
 print "Margin=" ,  $m->estimateMargin() , "\n";
 print "VC=" ,      $m->estimateVC() , "\n";
+
+unlink "svindex";
+unlink "model";
 
 print "ok 1\n";

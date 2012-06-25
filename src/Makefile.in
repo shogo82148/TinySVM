@@ -12,7 +12,7 @@
 
 # Process this file with automake to produce Makefile.in
 #
-# $Id: Makefile.am,v 1.9 2000/12/09 05:05:47 taku-ku Exp $;
+# $Id: Makefile.am,v 1.15 2001/01/16 22:25:52 taku-ku Exp $;
 #
 
 
@@ -64,6 +64,7 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 host_alias = @host_alias@
 host_triplet = @host@
+AR = @AR@
 AS = @AS@
 CC = @CC@
 CXX = @CXX@
@@ -72,6 +73,7 @@ LIBTOOL = @LIBTOOL@
 LN_S = @LN_S@
 LTVERSION = @LTVERSION@
 MAKEINFO = @MAKEINFO@
+NM = @NM@
 OBJDUMP = @OBJDUMP@
 PACKAGE = @PACKAGE@
 RANLIB = @RANLIB@
@@ -80,27 +82,27 @@ VERSION = @VERSION@
 AUTOMAKE_OPTIONS = no-dependencies
 
 lib_LTLIBRARIES = libtinysvm.la
-libtinysvm_la_SOURCES = getopt.c getopt1.c getopt.h common.h 			param.cc param.h kernel.h 			classifier.h classifier.cc 			gram_matrix.h gram_matrix.cc 		        cache.h timer.h 			base_example.cc base_example.h 			example.cc example.h model.cc model.h 			base_solver.h svm_solver.cc svm_solver.h 			tinysvm.h
+libtinysvm_la_SOURCES = getopt.c getopt1.c getopt.h common.h 			param.cc param.h 			kernel.h 			classifier.h classifier.cc 		        q_matrix.h q_matrix.cc 		        cache.h timer.h 			base_example.cc base_example.h 			example.cc example.h 			model.cc model.h 			base_solver.h 			svm_solver.cc svm_solver.h 			svr_solver.cc svr_solver.h 			qp_solver.h qp_solver.cc 			tinysvm.h
 
 
 libtinysvm_la_LDFLAGS = -version-info $(LTVERSION)
-libtinysvm_la_LDDADD = -lm
 include_HEADERS = tinysvm.h
-pkginclude_HEADERS = model.h example.h base_example.h param.h misc.h
+pkginclude_HEADERS = model.h example.h base_example.h param.h                      misc.h kernel.h classifier.h
+
 
 bin_PROGRAMS = svm_learn svm_classify svm_model
 
 svm_learn_SOURCES = svm_learn.cc
-svm_learn_LDADD = libtinysvm.la -lm
+svm_learn_LDADD = libtinysvm.la
 
 svm_classify_SOURCES = svm_classify.cc
-svm_classify_LDADD = libtinysvm.la -lm
+svm_classify_LDADD = libtinysvm.la
 
 svm_model_SOURCES = svm_model.cc
-svm_model_LDADD = libtinysvm.la -lm
+svm_model_LDADD = libtinysvm.la
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_HEADER = ../config.h
-CONFIG_CLEAN_FILES = 
+CONFIG_CLEAN_FILES =  Makefile.bcc32 Makefile.mingw32msvc
 LTLIBRARIES =  $(lib_LTLIBRARIES)
 
 
@@ -110,7 +112,8 @@ LDFLAGS = @LDFLAGS@
 LIBS = @LIBS@
 libtinysvm_la_LIBADD = 
 libtinysvm_la_OBJECTS =  getopt.lo getopt1.lo param.lo classifier.lo \
-gram_matrix.lo base_example.lo example.lo model.lo svm_solver.lo
+q_matrix.lo base_example.lo example.lo model.lo svm_solver.lo \
+svr_solver.lo qp_solver.lo
 PROGRAMS =  $(bin_PROGRAMS)
 
 svm_learn_OBJECTS =  svm_learn.o
@@ -134,7 +137,8 @@ CCLD = $(CC)
 LINK = $(LIBTOOL) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(LDFLAGS) -o $@
 HEADERS =  $(include_HEADERS) $(pkginclude_HEADERS)
 
-DIST_COMMON =  Makefile.am Makefile.in
+DIST_COMMON =  Makefile.am Makefile.bcc32.in Makefile.in \
+Makefile.mingw32msvc.in
 
 
 DISTFILES = $(DIST_COMMON) $(SOURCES) $(HEADERS) $(TEXINFOS) $(EXTRA_DIST)
@@ -154,6 +158,10 @@ Makefile: $(srcdir)/Makefile.in  $(top_builddir)/config.status
 	cd $(top_builddir) \
 	  && CONFIG_FILES=$(subdir)/$@ CONFIG_HEADERS= $(SHELL) ./config.status
 
+Makefile.bcc32: $(top_builddir)/config.status Makefile.bcc32.in
+	cd $(top_builddir) && CONFIG_FILES=$(subdir)/$@ CONFIG_HEADERS= $(SHELL) ./config.status
+Makefile.mingw32msvc: $(top_builddir)/config.status Makefile.mingw32msvc.in
+	cd $(top_builddir) && CONFIG_FILES=$(subdir)/$@ CONFIG_HEADERS= $(SHELL) ./config.status
 
 mostlyclean-libLTLIBRARIES:
 

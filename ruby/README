@@ -1,0 +1,13 @@
+TinySVM ruby module
+
+$Id: README,v 1.2 2001/01/16 21:14:20 taku-ku Exp $;
+
+1. Install
+  % ruby extconf.rb
+  % make
+  % su
+  # make install
+  
+2. How to use?
+   ruby module has almost same interface with original C++ library.
+   See 'test.rb' as sample program. 

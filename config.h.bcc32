@@ -7,5 +7,5 @@
 #define HAVE_WINDOWS_H
 #define HAVE_STDLIB_H
 #define PACKAGE "TinySVM"
-#define VERSION "0.01"
+#define VERSION "0.02"
 

@@ -1,0 +1,6 @@
+require 'mkmf'
+
+dir_config('@PACKAGE@')
+$CFLAGS  += ' -I'
+$LDFLAGS += ' -ltinysvm'
+create_makefile('@PACKAGE@')

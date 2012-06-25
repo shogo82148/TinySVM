@@ -3,8 +3,12 @@
 #include "common.h"
 #include "base_solver.h"
 #include "svm_solver.h"
+#include "svr_solver.h"
 
-// $Id: example.cc,v 1.11 2000/12/08 15:01:02 taku-ku Exp $;
+// $Id: example.cc,v 1.15 2001/01/16 20:13:06 taku-ku Exp $;
+
+namespace TinySVM {
+
 Model *
 Example::learn (const Param & p)
 {
@@ -13,11 +17,15 @@ Example::learn (const Param & p)
   BaseSolver *solver;
 
   try {
-    if (p.solver_type == SMO) {
+    switch (p.solver_type) {
+    case SVM:
       solver = new SVM_Solver (*this, p);
-    } else {
-      fprintf (stderr, "Example::learn(): Unknown solver type [%d]\n",
-	       p.solver_type);
+      break;
+    case SVR:
+      solver = new SVR_Solver (*this, p);
+      break;
+    default:
+      fprintf (stderr, "Example::learn(): Unknown solver type [%d]\n", p.solver_type);
       return NULL;
     }
   }
@@ -27,13 +35,15 @@ Example::learn (const Param & p)
     exit (EXIT_FAILURE);
   }
 
+  // learn
   Model *m = solver->learn ();
   delete solver;
+
   return m;
 }
 
 int
-Example::read (const char *filename, const char *mode, int offset)
+Example::read (const char *filename, const char *mode, const int offset)
 {
   FILE *fp = fopen (filename, mode);
   if (!fp) return 0;
@@ -56,7 +66,7 @@ Example::read (const char *filename, const char *mode, int offset)
 }
 
 int
-Example::write (const char *filename, const char *mode, int offset)
+Example::write (const char *filename, const char *mode, const int offset)
 {
   FILE *fp = fopen (filename, mode);
   if (!fp) return 0;
@@ -70,4 +80,6 @@ Example::write (const char *filename, const char *mode, int offset)
 
   fclose (fp);
   return 1;
+}
+
 }

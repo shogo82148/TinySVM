@@ -5,23 +5,23 @@
 #include "base_example.h"
 #include <math.h>
 
-// $Id: kernel.h,v 1.9 2000/12/01 21:13:52 taku-ku Exp $;
+// $Id: kernel.h,v 1.11 2001/01/16 19:37:20 taku-ku Exp $;
+namespace TinySVM {
+
 class Kernel
 {
 protected:
-  const int l;
-  const int d;
-  const int pack_d;
-  const feature_node ** x;
-  const double *y;
-
+  // constant param
+  const int    l;
+  const int    d;
+  const int    pack_d;
   const int    kernel_type;
   const int    feature_type;
   const int    degree;
   const double param_g;
   const double param_r;
   const double param_s;
-  
+
   double  (Kernel::*_getKernel)(const double) const;
 
   inline double Kernel::_getKernel_linear(const double _x) const
@@ -65,11 +65,15 @@ protected:
   }
 
 public:
-  Kernel(const BaseExample& prob, const Param& param)
-    :l(prob.l), d(prob.d), pack_d(prob.pack_d), 
-    x((const feature_node **)prob.x), y(prob.y),
+  feature_node ** x;
+  double         *y;
+
+  Kernel(const BaseExample& example, const Param& param):
+    l(example.l), 
+    d(example.d), 
+    pack_d(example.pack_d), 
     kernel_type(param.kernel_type),
-    feature_type(prob.feature_type),
+    feature_type(example.feature_type),
     degree(param.degree),
     param_g(param.param_g),
     param_r(param.param_r),
@@ -92,7 +96,7 @@ public:
   // wrapper for getKernel
   inline double getKernel(const feature_node *x1, const feature_node *x2)
   {
-    return this->getKernel(dot_normal(x1,x2));
+    return this->getKernel(dot_normal(x1, x2));
   }
 
   inline double getKernel(const double _x)
@@ -101,4 +105,7 @@ public:
   }
 };
 
+
+};
 #endif
+

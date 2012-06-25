@@ -1,0 +1,321 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+         "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<link rev=made href="mailto:taku-ku@is.aist-nara.ac.jp">
+<title>libtinysvm Reference Manual</title>
+<link rel=stylesheet href="tinysvm.css">
+</head>
+<body bgcolor="#ffffff">
+
+<h1>libtinysvm Reference Manual</h1>
+<p>Last update: $Date: 2001/01/18 08:55:24 $</p>
+<hr>
+
+<h2>List of Contents</h2>
+<ul>
+<li><a href="#class">Class Reference Manual</a>
+  <ul>
+  <li><a href="#param_class">TinySVM::Param class</a>
+  <li><a href="#base_example_class">TinySVM::BaseExample class</a>
+  <li><a href="#example_class">TinySVM::Example class</a>
+  <li><a href="#model_class">TinySVM::Model class</a>
+  </ul>
+<li><a href="#sample">Sample Programming</a>
+<li><a href="#compile">How to compile</a>
+</ul>
+
+<h2><a name="class">Class Reference Manual</a></h2>
+<ul>
+<pre>
+<a name="param_class"></a>
+namespace TinySVM {
+   <font width=bold>class Param</font>
+   {
+    public:
+     int set (int,  char **);
+     int set (const char *);
+   };
+};
+</pre>
+
+<dl>
+<dt>
+<code><font color=#dc143c>TinySVM::Param</font>::<font color=DarkBlue>set</font> (int argc, char **argv)</code>
+<dd>
+Set parameter with <i>argc, argv</i> style, --- arguments for
+<i>main()</i> function. <br>
+This function accepts same parameter
+used for <a href="svm_learn.html">svm_learn</a>.
+
+<dt>
+<code><font color=#dc143c>TinySVM::Param</font>::<font color=DarkBlue>set</font> (const char *s)</code>
+<dd>
+Set parameter with string <i>s</i>, e.g.<i>"-t 1 -d 3 -c
+1"</i>.<br> This function accepts same parameter
+used for <a href="svm_learn.html">svm_learn</a>.
+</dl>
+
+<pre>
+<a name="base_example_class"></a>
+namespace TinySVM {
+   <font width=bold>class BaseExample</font>
+   {
+   public:
+     int add (const double, feature_node *);
+     int add (const double, const char *);
+     int add (const char *);
+     int clear ();
+     int size ();
+
+     virtual int read  (const char *, const char *mode = "r", const int offset = 0) = 0;
+     virtual int write (const char *, const char *mode = "w", const int offset = 0) = 0;
+   };
+};
+</pre>
+
+<p>
+<i>TinySVM::BaseExample</i> is a base class for <i>TinySVM::Example</i> and <i>TinySVM::Model</i>. You need not use this class
+directory.
+</p>
+
+<dl>
+<dt>
+<code><font color=#dc143c>TinySVM::BaseExample</font>::<font color=DarkBlue>add</font> (const double y,  feature_node *x)</code>
+<dd>
+Add new example <i>y</i> and <i>x</i> into current instance.<br>
+Return 1 if success, return 0 if fail.
+
+<dt>
+<code><font color=#dc143c>TinySVM::BaseExample</font>::<font color=DarkBlue>add</font> (const double y,  char *x)</code>
+<dd>
+Add new example <i>y</i> and <i>x</i> into current instance.
+x is represented with a string , e.g. <i>"1:2 3:4 5:6"</i>. <br>
+Return 1 if success, return 0 if fail.
+
+<dt>
+<code><font color=#dc143c>TinySVM::BaseExample</font>::<font color=DarkBlue>add</font> (char *s)</code>
+<dd>
+Add new example represented with single string, e.g. <i>"+1 1:2 3:4 5:1"</i> into current instance.<br>
+Return 1 if success, return 0 if fail.
+
+<dt>
+<code><font color=#dc143c>TinySVM::BaseExample</font>::<font color=DarkBlue>clear</font> ()</code>
+<dd>
+Clear all examples (pair of <i>y</i> and <i>x</i>) stored in current instance.
+
+<dt>
+<code><font color=#dc143c>TinySVM::BaseExample</font>::<font color=DarkBlue>size</font> ()</code>
+<dd>
+Get the size of examples (pair of <i>y</i> and <i>x</i>).
+
+<dt>
+<code><font color=#dc143c>TinySVM::BaseExample</font>::<font color=DarkBlue>read</font> (const char *file_name, const char *mode ="r", const int offset = 0)</code>
+<dd>
+Add all examples stored in <i>file_name</i> into current instance,
+<i>mode</i> is used for calling <i>fopen (3)</i>.<br>
+if <i>offset</i> is given, seek <i>offset</i> byte using <i>fseek (3)</i> before reading stored examples.<br>
+Return 1 if success, return 0 if fail.
+<dt>
+<code><font color=#dc143c>TinySVM::BaseExample</font>::<font color=DarkBlue>write</font> (const char *file_name, const char *mode ="w", const int offset = 0)</code>
+<dd>
+Save all stored examples into <i>file_name</i>. 
+<i>mode</i> is used for calling fopen(3). <br>
+By setting <i>"a"</i> to <i>mode</i>, you can  append examples into <i>file_name</i>.<br>
+<i>offset</i> is reserved argument for the future. <br>
+Return 1 if success, return 0 if fail.
+</dl>
+
+<pre>
+<a name="example_class"></a>
+namespace TinySVM {
+   <font width=bold>class Example</font>: public BaseExample
+   {
+   public:
+     Model *learn (const Param &);
+     Model *learn (const char *);
+   };
+};
+</pre>
+
+<p>
+<i>TinySVM::Example</i> class is inherited from <i>TinySVM::BaseExample</i> class. 
+You can use all member functions defined in <i>TinySVM::BaseExample</i> class.
+</p>
+
+<dl>
+<dt>
+<code><font color=#dc143c>TinySVM::Example</font>::<font color=DarkBlue>learn </font> (const TinySVM::Param &p)</code>
+<dd>
+Execute learning with <i>TinySVM::Param</i> object <i>p</i>. <br>
+Return new instance (pointer) of <i>TinySVM::Model</i> object.
+
+<dt>
+<code><font color=#dc143c>TinySVM::Example</font>::<font color=DarkBlue>learn </font> (const char *s)</code>
+<dd>
+Execute learning with Parameter represented with single string
+<i>s</i>,  e.g. <i>"-t 1 -d 2 -c 1"</i>. <br>
+Return new instance (pointer) of <i>TinySVM::Model</i> object.
+</dl>
+
+<pre>
+<a name="model_class"></a>
+namespace TinySVM {
+<font width=bold>class Model</font>: public BaseExample
+   {
+    public:
+     Model ();
+     Model (const Param &);
+
+     double classify (const char *);
+     double classify (const feature_node *);
+     double estimateMargin ();
+     double estimateVC ();
+     double estimateXA (const double rho = 2.0);
+     double estimateSphere ();
+     dobble getLoss ();
+
+     int getSVnum ();
+     int getBSVnum();
+     int getTrainingDataSize();
+     const int *getSVindex ();
+     int writeSVindex (const char *, const char *mode = "r", const int offset = 0);
+   };
+};
+</pre>
+
+<p>
+<i>TinySVM::Model</i> class is inherited from <i>TinySVM::BaseExample</i> class. 
+You can use all member functions defined in <i>TinySVM::BaseExample</i> class.
+</p>
+
+<dl>
+<dt>
+<code><font color=#dc143c>TinySVM::Model</font>::<font color=DarkBlue>Model</font> (const TinySVM::Param &p)</code>
+<dd>
+Create new <i>TinySVM::Model</i> instance with <i>TinySVM::Param</i> object <i>p</i>.
+
+<dt>
+<code><font color=#dc143c>TinySVM::Model</font>::<font color=DarkBlue><font color=DarkBlue>classify</font> </font> (const char *s)</code>
+<dd>
+Classify test example represented with single string <i>s</i>, e.g. <i>"1:1 2:1 3:1"</i>.<br>
+Return distance from the decision hyperplane. 
+
+<dt>
+<code><font color=#dc143c>TinySVM::Model</font>::<font color=DarkBlue>classify </font> (const feature_node *f)</code>
+<dd>
+Classify test example represented with feature_node "f".<br>
+Return distance from the decision hyper plane. 
+
+<dt>
+<code><font color=#dc143c>TinySVM::Model</font>::<font color=DarkBlue>writeSVindex</font> (const char *file_name const char *mode = "w", const int offset = 0)</code>
+<dd>
+Write index of Support Vectors and weight y into <i>file_name</i>. <br>
+This method can be used when current instance is created by the
+<font color=#dc143c>TinySVM::Example</font>::<font color=DarkBlue>learn </font>() method. 
+</dt>
+
+<dt>
+<code><font color=#dc143c>TinySVM::Model</font>::<font color=DarkBlue>estimateMargin</font> ()</code>
+<dd>
+Return the estimated margin value
+
+<dt>
+<code><font color=#dc143c>TinySVM::Model</font>::<font color=DarkBlue>estimateVC</font> ()</code>
+<dd>
+Return the estimated VC dimension. This value is roughly approximated.
+
+<dt>
+<code><font color=#dc143c>TinySVM::Model</font>::<font color=DarkBlue>estimateXA</font>(const double rho = 2.0 )</code>
+<dd>
+Return the Xi-Alpha estimation value, which is known as a tighter bound for
+Leave-One-Out bound, with parameter rho.
+
+<dt>
+<code><font color=#dc143c>TinySVM::Model</font>::<font color=DarkBlue>estimateSphere</font> ()</code>
+<dd>
+Return the minimum diameter of sphere which encloses the all examples stored in current model.
+This value is roughly approximated.
+
+<dt>
+<code><font color=#dc143c>TinySVM::Model</font>::<font color=DarkBlue>getSVnum</font> ()</code>
+<dd>
+Return the number of Support Vectors.
+
+<dt>
+<code><font color=#dc143c>TinySVM::Model</font>::<font color=DarkBlue>getBSVnum</font> ()</code>
+<dd>
+Return the number of bounded Support Vectors, -- the number of examples whose alpha is C.
+
+<dt>
+<code><font color=#dc143c>TinySVM::Model</font>::<font color=DarkBlue>getTrainingDataSize</font> ()</code>
+<dd>
+Return the size of training data.
+
+<dt>
+<code><font color=#dc143c>TinySVM::Model</font>::<font color=DarkBlue>getLoss</font> ()</code>
+<dd>
+Return the 1-norm loss evaluated with training data. This value is useally mentioned as "Empirical Risk".
+The case of C-SVR, this function returns the "1-norm epsilon-insenstive
+loss" evaluated with given training data.
+
+<dt>
+<code><font color=#dc143c>TinySVM::Model</font>::<font color=DarkBlue>getSVindex</font> ()</code>
+<dd>
+Return the pointer of index of Support Vectors. <br>
+This method can be used when current instance is created by the
+<font color=#dc143c>TinySVM::Example</font>::<font color=DarkBlue>learn</font> () method.
+</dl>
+</ul>
+
+<h2><a name="sample">Sample Programming</a></h2>
+<ul>
+<li>Leaning with <i>file-name</i>, and store the result into <i>model-file</i>.
+<pre>
+#include &lt;tinysvm.h&gt;
+
+   TinySVM::Example e;
+   TinySVM::Param p;
+
+   if (! e.read(file-name)) throw;
+   if (! p.set("-t 1 -d 2 -c 1")) throw;
+
+   TinySVM::Model *m = e.learn(p);
+
+   m-&gt;write(model-file);
+
+   delete m;
+</pre>
+<li>Classifying using stored <i>model-file</i>
+<pre>
+#include &lt;tinysvm.h&gt;
+
+   TinySVM::Model m;
+
+   if (! m.read(model-file)) throw;
+
+   cout &lt;&lt; m.classify("1:1 2:1 3:1 4:1") &lt;&lt; endl;
+
+</pre>
+
+<li>svm_learn, svm_classify and svm_model, all of these included program are
+written with libtinysvm. <br>
+I think these sources would also help you to build your own programs.
+</ul>
+
+<h2><a name="compile">How to compile</a></h2>
+<ul>
+<pre>
+c++ -I/usr/local/include -L/usr/local/lib sample.cc -o sample -ltinysvm
+</pre>
+</ul>
+
+<hr>
+<p>
+$Id: libtinysvm.html,v 1.8 2001/01/18 08:55:24 taku-ku Exp $;
+</p>
+<address>
+taku-ku@is.aist-nara.ac.jp
+</address>
+</body>
+</html>

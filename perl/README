@@ -1,0 +1,15 @@
+TinySVM perl module
+
+$Id: README,v 1.1 2001/01/16 20:13:06 taku-ku Exp $;
+
+1. Install
+  % perl Makefile.PL
+  % make
+  % su
+  # make install
+  
+2. How to use?
+   perl module has almost same interface with original C++ library.
+   TinySVM.pm includes the simple manual file written in POD (Perl plain old
+   documentation) formats. You can access manual file via 'man TinySVM'
+   command after instllation. See also test.pl as sample program.

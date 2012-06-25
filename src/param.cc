@@ -2,15 +2,19 @@
 #include "misc.h"
 #include "common.h"
 
-// $Id: param.cc,v 1.17 2000/12/08 18:23:01 taku-ku Exp $;
+// $Id: param.cc,v 1.23 2001/01/16 22:37:32 taku-ku Exp $;
 // default param
 
 #define PARAM_MAX_SIZE 512
 
 #define TINYSVM_OPTION_INFO "\nUsage: %s [options] training-file model-file\n\
 \n\
+Solver Type:\n\
+  -l, --solver-type=INT              select type of solver.\n\
+                                     TYPE:  0 - C-SVM (default)\n\
+                                            1 - C-SVR\n\
 Kernel Parameter:\n\
-  -t, --kernel-type=TYPE             select type of kernel function.\n\
+  -t, --kernel-type=INT              select type of kernel function.\n\
                                      TYPE:  0 - linear (w * x)  (default)\n\
                                             1 - polynomial (s w*x + r)^d\n\
   -d, --kernel-degree=INT            set INT for parameter d in polynomial kernel. (default 1)\n\
@@ -23,13 +27,14 @@ Optimization Parameter:\n\
                                      trade-off between training error and margin. (default 1.0)\n\
   -e, --termination-criterion=FLOAT  set FLOAT for tolerance of termination criterion.\n\
                                      (default 0.001)\n\
-  -H, --shrinking-size=INT           set INT for number of iterations a variable needs to\n\
+  -H, --shrinking-size=INT           set INT for number of iterations variable needs to\n\
                                      be optimal before considered for shrinking. (default 100)\n\
-  -p, --shrinking-threshold=FLOAT    set FLOAT for threshold value of recursive-shrinking process.\n\
-                                     if #working/#current becomes less than FLOAT,\n\
-                                     rebuilding kernel cache. (default 0.8)\n\
+  -p, --shrinking-eps=FLOAT          set FLOAT for initial threshold value of shrinking process.\n\
+                                     (default 2.0)\n\
   -f, --do-final-check=INT           do final optimality check for variables removed\n\
                                      by shrinking. (default 1)\n\
+  -i, --insensitive-loss=FLOAT       set FLOAT for epsilon in epsilon-insensitive loss function\n\
+                                     used in C-SVR cost evaluation. (default 0.1)\n\
 \n\
 Miscellaneous:\n\
   -o, --sv-index-file=FILE           write SV indices to FILE.\n\
@@ -38,37 +43,45 @@ Miscellaneous:\n\
   -h, --help                         show this help and exit.\n\
 \n"
 
-static const char *short_options = "m:t:d:s:r:c:e:o:f:p:H:vVh";
+static const char *short_options = "l:t:d:s:r:m:c:e:H:p:f:i:o:Vvh";
 
 static struct option long_options[] = {
-  {"cache-size",                     required_argument, NULL, 'm'},
-  {"kernel-type",                    required_argument, NULL, 't'},
-  {"kernel-degree",                  required_argument, NULL, 'd'},
-  {"kernel-param-s",                 required_argument, NULL, 's'},
-  {"kernel-param-r",                 required_argument, NULL, 'r'},
-  {"cost",                           required_argument, NULL, 'c'},
-  {"termination-criterion",          required_argument, NULL, 'e'},
-  {"sv-index-file",                  required_argument, NULL, 'o'},
-  {"do-final-check",                 required_argument, NULL, 'f'},
-  {"recursive-shrinking-threshold",  required_argument, NULL, 'p'},
-  {"shrinking-size",                 required_argument, NULL, 'H'},
-  {"verbose",                        no_argument,       NULL, 'V'},
-  {"version",                        no_argument,       NULL, 'v'},
-  {"help",                           no_argument,       NULL, 'h'},
+  {"solver-type",             required_argument, NULL, 'l'},
+  {"kernel-type",             required_argument, NULL, 't'},  
+  {"kernel-degree",           required_argument, NULL, 'd'},
+  {"kernel-param-s",          required_argument, NULL, 's'},
+  {"kernel-param-r",          required_argument, NULL, 'r'},
+  {"cache-size",              required_argument, NULL, 'm'},
+  {"cost",                    required_argument, NULL, 'c'},
+  {"termination-criterion",   required_argument, NULL, 'e'},
+  {"shrinking-size",          required_argument, NULL, 'H'},
+  {"shrinking-eps",           required_argument, NULL, 'p'},
+  {"do-final-check",          required_argument, NULL, 'f'},
+  {"insensitive-loss",        required_argument, NULL, 'i'},
+  {"sv-index-file",           required_argument, NULL, 'o'},
+  {"verbose",                 no_argument,       NULL, 'V'},
+  {"version",                 no_argument,       NULL, 'v'},
+  {"help",                    no_argument,       NULL, 'h'},
   {NULL, 0, NULL, 0}
 };
+
+extern char *optarg;
+extern int optind;
+
+namespace TinySVM {
 
 Param::Param ()
 {
   kernel_type = LINEAR;
-  solver_type = SMO;
+  solver_type = SVM;
   degree = 1;
   param_g = 1;
   param_s = 1;
   param_r = 1;
   shrink_size = 100;
-  shrink_th = 0.8;
+  shrink_eps = 2.0;
   cache_size = 40;
+  insensitive_loss = 0.1;
   C = 1;
   final_check = 1;
   eps = 0.001;
@@ -81,17 +94,16 @@ Param::set (int argc, char **argv)
   if (argc == 0)
     return 0;
 
-  extern char *optarg;
-  extern int optind;
   optind = 1;
 
   while (1) {
     int opt = getopt_long (argc, argv, short_options, long_options, NULL);
     if (opt == EOF) break;
 
+    // "l:t:d:s:r:m:c:e:H:p:f:i:o:Vvh";
     switch (opt) {
-    case 'm':
-      cache_size = atof (optarg);
+    case 'l':
+      solver_type = atoi(optarg);
       break;
     case 't':
       kernel_type = atoi (optarg);
@@ -105,20 +117,26 @@ Param::set (int argc, char **argv)
     case 'r':
       param_r = atof (optarg);
       break;
+    case 'm':
+      cache_size = atof (optarg);
+      break;
     case 'c':
       C = atof (optarg);
       break;
     case 'e':
       eps = atof (optarg);
       break;
+    case 'H':
+      shrink_size = atoi (optarg);
+      break;
+    case 'p':
+      shrink_eps = atof (optarg);
+      break;
     case 'f':
       final_check = atoi (optarg);
       break;
-    case 'p':
-      shrink_th = atof (optarg);
-      break;
-    case 'H':
-      shrink_size = atoi (optarg);
+    case 'i':
+      insensitive_loss = atof (optarg);
       break;
     case 'V':
       verbose = 1;
@@ -181,3 +199,5 @@ Param::set (const char *s)
     exit (EXIT_FAILURE);
   }
 }
+
+};

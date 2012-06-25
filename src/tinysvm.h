@@ -1,7 +1,7 @@
 #ifndef _TINYSVM_H
 #define _TINYSVM_H
 
-/*  $Id: tinysvm.h,v 1.10 2000/12/06 14:52:51 taku-ku Exp $; */
+/*  $Id: tinysvm.h,v 1.11 2001/01/16 19:37:20 taku-ku Exp $; */
 
 #ifdef __cplusplus
 #include <TinySVM/misc.h>
@@ -12,3 +12,4 @@
 #endif
 
 #endif
+

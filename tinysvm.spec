@@ -1,5 +1,5 @@
 %define prefix /usr
-%define version 0.01
+%define version 0.02
 
 Summary: TinySVM is a small and fast SVM package
 Name: TinySVM
@@ -36,7 +36,7 @@ TinySVM Perl Module
 
 %build
 ./configure --prefix=%{prefix}
-make CFLAGS=$RPM_OPT_FLAGS
+make CFLAGS="$RPM_OPT_FLAGS"
 
 cd src
 ln -s . TinySVM

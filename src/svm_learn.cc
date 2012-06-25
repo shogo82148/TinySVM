@@ -6,12 +6,12 @@
 #include "kernel.h"
 #include "param.h"
 
-// $Id: svm_learn.cc,v 1.15 2000/12/08 15:01:02 taku-ku Exp $;
+// $Id: svm_learn.cc,v 1.17 2001/01/16 19:37:20 taku-ku Exp $;
 
 int
 main (int argc, char **argv)
 {
-  Param param;
+   TinySVM::Param param;
 
   if (!param.set (argc, argv) || argc < 3) {
     fprintf (stdout, "%s\n", COPYRIGHT);
@@ -22,27 +22,19 @@ main (int argc, char **argv)
   fprintf (stdout, "%s\n", COPYRIGHT);
 
   if (param.verbose) {
-    if (param.kernel_type == LINEAR) {
-      fprintf (stdout, "kernel_type:\t\tlinear\n");
-    } else if (param.kernel_type == POLY) {
-      fprintf (stdout, "kernel_type:\t\tpolynomial\n");
-    } else {
-      fprintf (stdout, "kernel_type:\t\tunknown\n");
-    }
-    fprintf (stdout, "cache_size:\t\t%g\n", param.cache_size);
-    fprintf (stdout, "param_g:\t\t%g\n", param.param_g);
-    fprintf (stdout, "param_s:\t\t%g\n", param.param_s);
-    fprintf (stdout, "param_r:\t\t%g\n", param.param_r);
-    fprintf (stdout, "degree:\t\t\t%d\n", param.degree);
-    fprintf (stdout, "eps:\t\t\t%g\n", param.eps);
-    fprintf (stdout, "C:\t\t\t%g\n", param.C);
-    if (param.solver_type == SMO)
-      fprintf (stdout, "solver_type:\t\tSMO+SVM_Light\n");
-    else
-      fprintf (stdout, "solver_type:\t\tunknown\n");
+    fprintf (stdout, "solver_type:\t\t%d\n",      param.solver_type);    
+    fprintf (stdout, "kernel_type:\t\t%d\n",      param.kernel_type);
+    fprintf (stdout, "param_g:\t\t%g\n",          param.param_g);
+    fprintf (stdout, "param_s:\t\t%g\n",          param.param_s);
+    fprintf (stdout, "param_r:\t\t%g\n",          param.param_r);
+    fprintf (stdout, "degree:\t\t\t%d\n",         param.degree);
+    fprintf (stdout, "eps:\t\t\t%g\n",            param.eps);
+    fprintf (stdout, "C:\t\t\t%g\n",              param.C);
+    fprintf (stdout, "insensitive loss:\t%g\n",   param.insensitive_loss);
+
   }
 
-  Example example;
+  TinySVM::Example example;
   if (!example.read (argv[argc - 2])) {
     fprintf (stderr, "%s: %s: No such file or directory\n", argv[0],
 	     argv[argc - 2]);
@@ -51,9 +43,9 @@ main (int argc, char **argv)
 
   if (param.verbose)
     fprintf (stdout, "feature_type:\t\t%s\n\n",
-	     example.feature_type == BINARY_FEATURE ? "binary" : "double");
+	     example.feature_type == TinySVM::BINARY_FEATURE ? "binary" : "double");
 
-  Model *model = example.learn (param);
+  TinySVM::Model *model = example.learn (param);
 
   if (!model) {
     fprintf (stderr, "%s: Unexpected error occurs\n", argv[0]);

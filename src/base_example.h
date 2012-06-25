@@ -3,10 +3,13 @@
 #include "misc.h"
 #include <stdio.h>
 
-// $Id: base_example.h,v 1.10 2000/12/06 14:52:51 taku-ku Exp $;
+// $Id: base_example.h,v 1.13 2001/01/16 19:37:20 taku-ku Exp $;
+
+namespace TinySVM {
+   
 extern feature_node *str2feature_node   (const char *);
-extern feature_node *fix_feature_node   (feature_node *);
 extern feature_node *copy_feature_node  (const feature_node *);
+extern feature_node *fix_feature_node   (feature_node *);
 
 class BaseExample
 {
@@ -23,17 +26,17 @@ public:
   double       *y;	       // class label
   feature_node **x;	       // training data
   int          feature_type;   // feature type (bin or double)
+  int          class_type;     // class type (bin or double)
 
   int ref() { return refcount++; };
-
   int add (const double, feature_node *);
   int add (const double, const char *);
   int add (const char *);
   int clear();
   int size() { return l; };
 
-  virtual int read   (const char *,  const char *mode = "r", int offset = 0) = 0;
-  virtual int write  (const char *, const char *mode = "w", int offset = 0) = 0;
+  virtual int read   (const char *, const char *mode = "r", const int offset = 0) = 0;
+  virtual int write  (const char *, const char *mode = "w", const int offset = 0) = 0;
 
   char *readLine(FILE *);
 
@@ -43,4 +46,7 @@ public:
   BaseExample();
   virtual ~BaseExample();
 };
+
+};
 #endif
+

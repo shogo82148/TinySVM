@@ -1,6 +1,8 @@
 #ifndef _PARAM_H
 #define _PARAM_H
 
+namespace TinySVM {
+
 class Param
 {
 public:
@@ -16,8 +18,9 @@ public:
   double eps;
   int    verbose;
   int    shrink_size;
-  double shrink_th;
+  double shrink_eps;
   int    final_check;
+  double insensitive_loss;
 
   int set (int,  char **);
   int set (const char *);
@@ -25,4 +28,7 @@ public:
   Param();
 };
 
+
+};
 #endif
+

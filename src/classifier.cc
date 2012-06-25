@@ -1,10 +1,15 @@
 #include "common.h"
 #include "classifier.h"
 
-Classifier::Classifier (const BaseExample & prob, const Param & param):
-Kernel (prob, param)
+namespace TinySVM {
+
+Classifier::Classifier (const BaseExample & example, const Param & param):
+  Kernel (example, param)
 {
   try {
+     x = example.x;
+     y = example.y;
+
     if (feature_type == BINARY_FEATURE) {
       _getDistance = &Classifier::_getDistance_binary;
 
@@ -73,14 +78,14 @@ Kernel (prob, param)
 Classifier::~Classifier ()
 {
   if (feature_type == BINARY_FEATURE) {
-    delete[]dot_buf;
+    delete [] dot_buf;
     for (int i = 0; i < l; i++)
-      delete[]binary_kernel_cache[i];
-    delete[]binary_kernel_cache;
+      delete [] binary_kernel_cache[i];
+    delete [] binary_kernel_cache;
 
     for (int i = 0; i < (d + 1); i++)
-      delete[]fi2si[i];
-    delete[]fi2si;
+      delete [] fi2si[i];
+    delete [] fi2si;
   }
 }
 
@@ -116,3 +121,5 @@ Classifier::_getDistance_binary (const feature_node * node) const
 
   return result;
 }
+
+};

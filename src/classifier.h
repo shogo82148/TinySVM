@@ -2,7 +2,9 @@
 #define _CLASSIFIER_H
 #include "kernel.h"
 
-// $Id: classifier.h,v 1.2 2000/12/01 21:13:52 taku-ku Exp $;
+// $Id: classifier.h,v 1.3 2001/01/16 19:37:20 taku-ku Exp $;
+namespace TinySVM {
+
 class Classifier: public Kernel
 {
  private:
@@ -33,4 +35,7 @@ class Classifier: public Kernel
   }
 };
 
+
+};
 #endif
+

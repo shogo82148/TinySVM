@@ -10,6 +10,3 @@ update-man:
 		perl -pe s/\\bFSF\\b/TinySVM/  | \
 		perl -pe 's/(LT|lt)-//g' > $$man; \
 	done
-
-
-

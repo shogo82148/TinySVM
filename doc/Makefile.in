@@ -61,6 +61,7 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 host_alias = @host_alias@
 host_triplet = @host@
+AR = @AR@
 AS = @AS@
 CC = @CC@
 CXX = @CXX@
@@ -69,13 +70,14 @@ LIBTOOL = @LIBTOOL@
 LN_S = @LN_S@
 LTVERSION = @LTVERSION@
 MAKEINFO = @MAKEINFO@
+NM = @NM@
 OBJDUMP = @OBJDUMP@
 PACKAGE = @PACKAGE@
 RANLIB = @RANLIB@
 VERSION = @VERSION@
 
-html_HTML = svm_learn.html svm_classify.html svm_model.html
-EXTRA_DIST = $(html_HTML) index.html libtinysvm.html
+html_HTMLS = svm_learn.html svm_classify.html svm_model.html
+EXTRA_DIST = $(html_HTMLS)
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_HEADER = ../config.h
 CONFIG_CLEAN_FILES = 
@@ -89,9 +91,9 @@ GZIP_ENV = --best
 all: all-redirect
 .SUFFIXES:
 $(srcdir)/Makefile.in: Makefile.am $(top_srcdir)/configure.in $(ACLOCAL_M4) 
-	cd $(top_srcdir) && $(AUTOMAKE) --gnu doc/Makefile
+	cd $(top_srcdir) && $(AUTOMAKE) --gnu --include-deps doc/Makefile
 
-Makefile: $(srcdir)/Makefile.in  $(top_builddir)/config.status $(BUILT_SOURCES)
+Makefile: $(srcdir)/Makefile.in  $(top_builddir)/config.status
 	cd $(top_builddir) \
 	  && CONFIG_FILES=$(subdir)/$@ CONFIG_HEADERS= $(SHELL) ./config.status
 
@@ -104,11 +106,6 @@ distdir = $(top_builddir)/$(PACKAGE)-$(VERSION)/$(subdir)
 subdir = doc
 
 distdir: $(DISTFILES)
-	here=`cd $(top_builddir) && pwd`; \
-	top_distdir=`cd $(top_distdir) && pwd`; \
-	distdir=`cd $(distdir) && pwd`; \
-	cd $(top_srcdir) \
-	  && $(AUTOMAKE) --include-deps --build-dir=$$here --srcdir-name=$(top_srcdir) --output-dir=$$top_distdir --gnu doc/Makefile
 	@for file in $(DISTFILES); do \
 	  d=$(srcdir); \
 	  if test -d $$d/$$file; then \
@@ -182,8 +179,9 @@ mostlyclean distclean maintainer-clean
 
 
 update-html:
-	@for html in $(html_HTML); do \
-		man2html ../man/`basename $$html .html`.1 > $$html; \
+	@for html in $(html_HTMLS); do \
+		cmd=`basename $$html .html`.1 && \
+		man2html ../man/$$cmd > $$html; \
 	done
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.

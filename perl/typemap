@@ -1,7 +1,7 @@
 TYPEMAP
-Example*           O_OBJECT
-Model*             O_OBJECT
-Param*             O_OBJECT
+TinySVM::Example*           O_OBJECT
+TinySVM::Model*             O_OBJECT
+TinySVM::Param*             O_OBJECT
 
 OUTPUT
 O_OBJECT

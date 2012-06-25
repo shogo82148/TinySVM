@@ -36,7 +36,7 @@ TinySVM Perl Module
 
 %build
 ./configure --prefix=%{prefix}
-make CFLAGS=$RPM_OPT_FLAGS
+make CFLAGS="$RPM_OPT_FLAGS"
 
 cd src
 ln -s . TinySVM

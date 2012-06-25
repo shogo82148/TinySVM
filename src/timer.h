@@ -1,7 +1,9 @@
 #ifndef _TIMER_H
 #define _TIMER_H
 
-// $Id: timer.h,v 1.2 2000/12/01 22:55:43 taku-ku Exp $;
+// $Id: timer.h,v 1.4 2001/01/16 19:37:20 taku-ku Exp $;
+
+namespace TinySVM {
 
 class Timer
 {
@@ -15,23 +17,35 @@ private:
   struct tms end_tms;
 #endif
    
- public:
+public:
+
 #ifdef _WIN32
   void start() { start_clock = GetTickCount()/10; };
   void end()   { end_clock   = GetTickCount()/10; };
 #else
-  void start() { times(&start_tms); start_clock = start_tms.tms_utime; };
-  void end()   { times(&end_tms);   end_clock   = end_tms.tms_utime;   };
+
+  void start() 
+  { 
+    times(&start_tms); 
+    start_clock = (start_tms.tms_utime + start_tms.tms_stime); 
+  };
+  
+  void end()   
+  { 
+    times(&end_tms);
+    end_clock = (end_tms.tms_utime + end_tms.tms_stime);
+  };
 #endif
 
   char *getDiff()
   {
     this->end();
-    int s  = (end_clock - start_clock) / 100;
-    int m  = s / 60;
-    int h  = s / 3600;
-    s %= 60;
-    sprintf(buf,"%d:%02d:%02d",h,m,s);
+    int t = (end_clock - start_clock)/100;
+    int sec, min, hour;
+    sec  = t % 60;
+    min  = (t / 60) % 60;
+    hour = t / 3600;
+    sprintf(buf,"%02d:%02d:%02d", hour, min, sec);
     return buf;
   }
 
@@ -41,4 +55,6 @@ private:
   }
 };
 
+};
 #endif
+

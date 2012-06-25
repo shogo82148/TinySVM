@@ -2,124 +2,139 @@
 #define _CACHE_H
 #include "common.h"
 
-// $Id: cache.h,v 1.10 2000/12/04 16:40:12 taku-ku Exp $;
+// $Id: cache.h,v 1.16 2001/01/16 19:37:20 taku-ku Exp $;
 
 // Kernel Cache
-template<class T = double> class Cache
+
+namespace TinySVM {
+
+template <class T = double> class Cache
 {
 private:
-  int l;
+  int    l;
+  int    free_mem_size;
   double cache_mem_size;
 
   struct head_t
   {
     head_t *prev, *next;    // a cicular list
-    int index;
-    T*  data;
+    int    index;
+    T*     data;
   };
 
-  head_t*  head;
   head_t*  lru_head;
-  head_t** index_to_head;
+  head_t** index2head;
 
-  head_t*  new_head;
-  head_t** new_index_to_head;
- 
-  inline void move_to_last(head_t *h)
+  inline int get_cache_size(const int _l, const double mem_size)
   {
-    if(lru_head == h) {
-      lru_head = lru_head->next;
-    } else {
-      // delete from current location
-      h->prev->next = h->next;
-      h->next->prev = h->prev;
-
-      // insert to last position
-      h->next = lru_head;
-      h->prev = lru_head->prev;
-      h->prev->next = h;
-      h->next->prev = h;
-    }
+    return min(_l, max(2, (int)(1024 * 1024 * mem_size/(sizeof(T) * _l))));
+  }
+ 
+  // delete h from current postion
+  inline void delete_lru(head_t *h)
+  {
+    h->prev->next = h->next;
+    h->next->prev = h->prev;
   }
 
-  inline void move_to_lru(head_t *h)
+  // insert h to lru - 1, position
+  inline void insert_lru(head_t *h)
   {
-    if (lru_head == h) {
-      // do nothing, h is JUST deleted next search
-    } else {
-      // delete from current location
-      h->prev->next = h->next;
-      h->next->prev = h->prev;
-
-      // insert to last position
-      h->next = lru_head;
-      h->prev = lru_head->prev;
-      h->prev->next = h;
-      h->next->prev = h;
-
-      // rewrite lru_head, h is deleted next sarch
-      lru_head = h;
-    }
+    h->next = lru_head;
+    h->prev = lru_head->prev;
+    h->prev->next = h;
+    h->next->prev = h;
   }
 
 public:
   int size;
 
-  Cache(int,double);
+  Cache(int, double);
   ~Cache();
 
-  inline int deleteData(const int index)
+  void update(const int);
+
+  void delete_index(const int index)
   {
-    head_t *h = index_to_head[index];
-    if (h != NULL) {
-      move_to_lru(h);
-      return 1;
-    } 
-    return 0;
+    head_t *h = index2head[index];
+    if (h) {
+      if (lru_head != h) {
+	delete_lru (h);
+	insert_lru (h);
+      }
+      lru_head = h;
+    }
   }
 
   inline int getData(const int index, T **data)
   {
-    head_t *h = index_to_head[index];
-    if (h != NULL) {
-      move_to_last(h);
+    head_t *h = index2head[index];
+    if (h) {
+      if(lru_head == h) {
+	lru_head = lru_head->next;
+      } else {
+	delete_lru(h);
+	insert_lru(h);
+      }
+
       *data = h->data;
       return 1;
     } else {
       h = lru_head;
       lru_head = lru_head->next;
-      if (h->index!=-1) index_to_head[h->index] = 0;
+      if (h->index!=-1) index2head[h->index] = 0;
       h->index = index;
-      index_to_head[index] = h;
+      index2head[index] = h;
       *data = h->data;
       return 0;
     }
   }
 
-  void update(const int, const int *);
+  void swap_index(const int i, const int j)
+  {
+    swap (index2head[i], index2head[j]);
+    for (head_t *h = lru_head;;h = h->next) {
+      if (h->index == i) h->index = j;
+      if (h->index == j) h->index = i;
+      swap(h->data[i], h->data[j]);
+      if (h == lru_head->prev) break;
+    }
+  }
 };
 
-template <class T> Cache<T>::Cache(int _l, double _size) :l(_l), cache_mem_size(_size)
+template <class T> 
+Cache<T>::Cache(int _l, double _cache_mem_size):
+  l(_l),
+  cache_mem_size(_cache_mem_size)
 {
   try {
-    size = max(2, (int)(1024 * 1024 * cache_mem_size/(sizeof(T) * l)));
-    size = min(size, l);
-    head = new head_t[size];
+    size = get_cache_size(l, cache_mem_size);
 
-    // build circle lsit
-    for(int i = 0; i < size; i++) {
-      head[i].next  = &head[i+1];
-      head[i].prev  = &head[i-1];
-      head[i].index = -1;
-      head[i].data  = new T[l];
+    free_mem_size = 0;
+
+    head_t *start = new head_t;
+    head_t *prev  = start;
+    start->index = -1;
+    start->data = new T [l];
+
+    int tmp_size = 1;
+
+    for(int i = 1; i < size; i++) {
+      tmp_size++;
+      head_t *head = new head_t;
+      head->prev = prev;
+      prev->next = head;
+      head->index = -1;
+      head->data = new T [l];
+      prev = head;
     }
 
-    head[0].prev      = &head[size-1];
-    head[size-1].next = &head[0];
-    lru_head          = &head[0];
+    prev->next = start;
+    start->prev = prev;
+    lru_head = start;
 
-    index_to_head = new head_t *[l];
-    for(int i = 0; i < l; i++) index_to_head[i] = NULL;
+    index2head = new head_t *[l];
+    for(int i = 0; i < l; i++) index2head[i] = 0;
   }
 
   catch (...) {
@@ -128,64 +143,56 @@ template <class T> Cache<T>::Cache(int _l, double _size) :l(_l), cache_mem_size(
   }  
 }
 
-template <class T> Cache<T>::~Cache()
+template <class T>
+Cache<T>::~Cache()
 {
-  for(int i = 0; i < size; i++)
-    delete[] head[i].data;
-  delete[] head;
-  delete[] index_to_head;
+  delete [] index2head;
+
+  int flag = 1;
+  head_t *end = lru_head->prev;
+  head_t *h = lru_head;
+
+  while (flag) {
+    delete [] h->data;
+    head_t *tmp = h->next;
+    if (h == end) flag = 0;
+    delete h;
+    h = tmp;
+  }
 }
 
-template <class T> void Cache<T>::update(const int _l, const int *active2index)
+// change the size of each elements to be _l
+// if _l < l, allocate new erea for cache
+template <class T> 
+void Cache<T>::update(const int _l)
 {
-  // make old -> new index table
-  int *index2active = new int [l];
-  for (int i = 0; i < l; i++) index2active[i] = -1;
-  for (int k,n = 0; (k = active2index[n]) != -1; n++) index2active[k] = n;
+  int new_size = get_cache_size(_l, cache_mem_size);
 
-  // update l & size
-  l = _l;
-  size = max(2, (int)(1024 * 1024 * cache_mem_size/(sizeof(T) * l)));
-  size = min(size, l);
-
-  new_head = new head_t[size];
-  for(int i = 0; i < size; i++) {
-    new_head[i].next  = &new_head[i+1];
-    new_head[i].prev  = &new_head[i-1];
-    new_head[i].index = -1;
-    new_head[i].data  = NULL;
-  }
-  new_head[0].prev      = &new_head[size-1];
-  new_head[size-1].next = &new_head[0];
-
-  new_index_to_head = new head_t *[l];
-  for (int i = 0; i < l; i++) new_index_to_head[i] = NULL;
-
-  int j = 0;
-  for (head_t *p = lru_head ; ; p = p->next) {
-    if (p->index == -1 || index2active[p->index] == -1) {
-      delete [] p->data;
-    } else {
-      new_head[j].data = new T [l];
-      for (int k,n = 0; (k = active2index[n]) != -1; n++) new_head[j].data[n] = p->data[k];
-      delete [] p->data; // delete old contents
-      new_head[j].index = index2active[p->index];
-      new_index_to_head[index2active[p->index]] = &new_head[j];
-      j++;
+  if (1.0 * new_size/size >= 1.1 && new_size < _l) {
+    // realloc
+    for (head_t *h = lru_head;;h = h->next) {
+      T *new_data;
+	clone(new_data, h->data, _l);
+	delete [] h->data;
+	h->data = new_data; 
+	if (h == lru_head->prev) break; 
+      }
+    
+    // new node
+    for (int i = 0; i < (new_size - size); i++) {
+      head_t *h = new head_t;
+      h->data  = new T [_l];
+      h->index = -1;
+      insert_lru(h);
+      lru_head = h;
     }
-
-    if (p == lru_head->prev) break;
+    
+    size = new_size;
   }
 
-  lru_head = &new_head[j];
-  for (int i = j; i < size; i++) new_head[i].data = new T[l];
-
-  delete [] head;
-  delete [] index_to_head;
-  delete [] index2active;
-
-  head          = new_head;
-  index_to_head = new_index_to_head;
+  l = _l;
 }
 
+};
 #endif
+

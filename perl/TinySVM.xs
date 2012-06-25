@@ -3,24 +3,27 @@
 #include "XSUB.h"
 #include "tinysvm.h"
 
-/* $Id: TinySVM.xs,v 1.10 2000/12/06 14:52:51 taku-ku Exp $; */
+#define TinySVM__Model TinySVM::Model
+#define TinySVM__Example TinySVM::Example
+
+/* $Id: TinySVM.xs,v 1.13 2001/01/16 23:34:33 taku-ku Exp $; */
 
 MODULE = TinySVM		PACKAGE = Example
 
-Example *
-Example::new(f = NO_INIT)
+TinySVM::Example *
+TinySVM::Example::new(f = NO_INIT)
 	char *f;
 	PREINIT:
-   	Example *e;
+   	TinySVM::Example *e;
 	CODE:
-	 e = new Example();
+	 e = new TinySVM::Example();
 	 if (items > 1) e->read(f);
 	 RETVAL = e;
 	OUTPUT:
 	RETVAL
 
 int
-Example::read(f, offset = NO_INIT)
+TinySVM::Example::read(f, offset = NO_INIT)
 	char *f
 	int offset;
 	CODE:
@@ -30,7 +33,7 @@ Example::read(f, offset = NO_INIT)
 	RETVAL
 
 int
-Example::write(f)
+TinySVM::Example::write(f)
 	char *f;
 	CODE:
 	RETVAL = THIS->write(f,"w");
@@ -38,18 +41,18 @@ Example::write(f)
 	RETVAL
 
 int
-Example::append(f)
+TinySVM::Example::append(f)
 	char *f;
 	CODE:
 	RETVAL = THIS->write(f,"a");
 	OUTPUT:
 	RETVAL
 
-Model*
-Example::learn(opt = NO_INIT)
+TinySVM::Model*
+TinySVM::Example::learn(opt = NO_INIT)
 	char *opt
 	PREINIT:
-	 Param p;
+	TinySVM::Param p;
 	 char *CLASS = "Model";
 	CODE:
 	  if (items > 1) p.set(opt);
@@ -58,7 +61,7 @@ Example::learn(opt = NO_INIT)
 	RETVAL
 
 int
-Example::add(...)
+TinySVM::Example::add(...)
 	PREINIT:
 	double y;
 	char *x;
@@ -77,7 +80,7 @@ Example::add(...)
 	RETVAL
 
 double
-Example::getY(i)
+TinySVM::Example::getY(i)
 	int i;
 	CODE:
 	 if (i >= 0 && i < THIS->size()) 
@@ -90,10 +93,10 @@ Example::getY(i)
 	 RETVAL
 
 void
-Example::getX(i)
+TinySVM::Example::getX(i)
         int i
 	PREINIT:
-	feature_node *f;
+	TinySVM::feature_node *f;
 	char tmp[256];
 	PPCODE:
 	 if (i >= 0 && i < THIS->size()) {
@@ -108,39 +111,39 @@ Example::getX(i)
           }
 
 int
-Example::size()
+TinySVM::Example::size()
 	CODE:
 	 RETVAL = THIS->size();
 	OUTPUT:
 	 RETVAL
 
 int
-Example::clear()
+TinySVM::Example::clear()
 	CODE:
 	 RETVAL = THIS->clear();
 	OUTPUT:
 	 RETVAL
 
 void
-Example::DESTROY()
+TinySVM::Example::DESTROY()
 
 
 MODULE = TinySVM		PACKAGE = Model
 
-Model *
-Model::new(f = NO_INIT)
+TinySVM::Model *
+TinySVM::Model::new(f = NO_INIT)
 	char *f;
 	PREINIT:
-   	Model *m;
+   	TinySVM::Model *m;
 	CODE:
-	 m = new Model();
+	 m = new TinySVM::Model();
 	 if (items > 1) m->read(f);
 	 RETVAL = m;
 	OUTPUT:
 	RETVAL
 
 int
-Model::read(f, offset = NO_INIT)
+TinySVM::Model::read(f, offset = NO_INIT)
 	char *f
 	int offset;
 	CODE:
@@ -150,7 +153,7 @@ Model::read(f, offset = NO_INIT)
 	RETVAL
 
 int
-Model::write(f)
+TinySVM::Model::write(f)
 	char *f;
 	CODE:
 	RETVAL = THIS->write(f,"w");
@@ -158,7 +161,7 @@ Model::write(f)
 	RETVAL
 
 int
-Model::append(f)
+TinySVM::Model::append(f)
 	char *f;
 	CODE:
 	RETVAL = THIS->write(f,"a");
@@ -166,7 +169,7 @@ Model::append(f)
 	RETVAL
 
 int
-Model::writeSVindex(f)
+TinySVM::Model::writeSVindex(f)
 	char *f;
 	CODE:
 	RETVAL = THIS->writeSVindex(f,"w");
@@ -174,7 +177,7 @@ Model::writeSVindex(f)
 	RETVAL
 
 int
-Model::appendSVindex(f)
+TinySVM::Model::appendSVindex(f)
 	char *f;
 	CODE:
 	RETVAL = THIS->writeSVindex(f,"a");
@@ -182,7 +185,7 @@ Model::appendSVindex(f)
 	RETVAL
 
 double
-Model::getY(i)
+TinySVM::Model::getY(i)
 	int i;
 	CODE:
 	 if (i >= 0 && i < THIS->size()) 
@@ -195,7 +198,7 @@ Model::getY(i)
 	 RETVAL
 
 double
-Model::getAlpha(i)
+TinySVM::Model::getAlpha(i)
 	int i;
 	CODE:
 	 if (i >= 0 && i < THIS->size()) 
@@ -208,10 +211,10 @@ Model::getAlpha(i)
 	 RETVAL
 
 void
-Model::getX(i)
+TinySVM::Model::getX(i)
         int i
 	PREINIT:
-	feature_node *f;
+	TinySVM::feature_node *f;
 	char tmp[256];
 	int j;
 	PPCODE:
@@ -227,7 +230,7 @@ Model::getX(i)
           }
 
 double
-Model::classify(x)
+TinySVM::Model::classify(x)
         char *x
         CODE:
         RETVAL = THIS->classify(x);
@@ -235,12 +238,12 @@ Model::classify(x)
         RETVAL
 
 double
-Model::classify_list(...)
+TinySVM::Model::classify_list(...)
 	PREINIT:
 	int i;
 	CODE:
-	 struct feature_node *node  = 
-	   (struct feature_node *)malloc(sizeof(struct feature_node) * (items + 1));
+	 struct TinySVM::feature_node *node  = 
+	   (struct TinySVM::feature_node *)malloc(sizeof(struct TinySVM::feature_node) * (items + 1));
 	 for (i = 0; i < items; i++) {
 	   node[i].index = SvIV(ST(i+1));
 	   node[i].value = 1;
@@ -252,40 +255,76 @@ Model::classify_list(...)
          RETVAL
 
 int
-Model::clear()
+TinySVM::Model::clear()
 	CODE:
 	 RETVAL = THIS->clear();
 	OUTPUT:
 	 RETVAL
 
 double
-Model::estimateMargin()
+TinySVM::Model::estimateMargin()
 	CODE:
 	 RETVAL = THIS->estimateMargin();
 	OUTPUT:
 	 RETVAL
 	
 double
-Model::estimateVC()
+TinySVM::Model::estimateVC()
 	CODE:
 	 RETVAL = THIS->estimateVC();
 	OUTPUT:
 	 RETVAL
 
+double
+TinySVM::Model::estimateSphere()
+	CODE:
+	 RETVAL = THIS->estimateSphere();
+	OUTPUT:
+	 RETVAL
+	 
 int
-Model::getSVnum()
+TinySVM::Model::getBSVnum()
+	CODE:
+	 RETVAL = THIS->getBSVnum();
+	OUTPUT:
+	 RETVAL
+
+int
+TinySVM::Model::getTrainingDataSize()
+	CODE:
+	 RETVAL = THIS->getTrainingDataSize();
+	OUTPUT:
+	 RETVAL
+
+double
+TinySVM::Model::getLoss()
+	CODE:
+	 RETVAL = THIS->getLoss();
+	OUTPUT:
+	 RETVAL
+
+double
+TinySVM::Model::estimateXA(lo = NO_INIT)
+	double lo
+	CODE:
+	  if (items > 1) THIS->estimateXA(lo);
+	  RETVAL = THIS->estimateXA();
+	OUTPUT:
+	RETVAL
+
+int
+TinySVM::Model::getSVnum()
 	CODE:
 	 RETVAL = THIS->getSVnum();
 	OUTPUT:
 	 RETVAL
 
 int
-Model::size()
+TinySVM::Model::size()
 	CODE:
 	 RETVAL = THIS->getSVnum();
 	OUTPUT:
 	 RETVAL
 
 void
-Model::DESTROY()
-
+TinySVM::Model::DESTROY()
