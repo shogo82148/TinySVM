@@ -2,7 +2,7 @@
 #define _CACHE_H
 #include "common.h"
 
-// $Id: cache.h,v 1.18 2001/09/02 14:27:42 taku-ku Exp $;
+// $Id: cache.h,v 1.19 2001/12/22 15:21:55 taku-ku Exp $;
 
 // Kernel Cache
 
@@ -94,8 +94,8 @@ public:
   {
     _swap (index2head[i], index2head[j]);
     for (head_t *h = lru_head;;h = h->next) {
-      if (h->index == i) h->index = j;
-      if (h->index == j) h->index = i;
+      if (h->index == i)  h->index = j;
+      else if (h->index == j) h->index = i; // fixed, 2001-12-23, fatal bug ..
       _swap(h->data[i], h->data[j]);
       if (h == lru_head->prev) break;
     }

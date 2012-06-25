@@ -15,7 +15,7 @@ print "Sphere=", model.estimateSphere(), "\n"
 print "Loss=", model.getLoss(), "\n"
 
 i = 0
-while i < 5 do
+while i < 1000 do
   print "Y[",i,"]=", model.getY(i), " X[",i,"]=", model.getX(i),"\n"
   i = i + 1
 end
@@ -23,7 +23,7 @@ end
 print "\n";
 model.remove(0)
 i = 0
-while i < 5 do
+while i < 1000 do
   print "Y[",i,"]=", model.getY(i), " X[",i,"]=", model.getX(i),"\n"
   i = i + 1
 end

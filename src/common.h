@@ -1,7 +1,7 @@
 #ifndef _COMMON_H
 #define _COMMON_H
 
-#define COPYRIGHT  "TinySVM - tiny SVM package\nCopyright (C) 2000-2001 Taku Kudoh All rights reserved.\n"
+#define COPYRIGHT  "TinySVM - tiny SVM package\nCopyright (C) 2000-2002 Taku Kudo, All rights reserved.\n"
 
 #ifdef HAVE_CONFIG_H
 #include "config.h"
