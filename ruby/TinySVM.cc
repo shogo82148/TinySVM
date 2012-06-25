@@ -5,7 +5,7 @@
 //
 //  Ruby interface for TinySVM
 //
-//  $Id: TinySVM.cc,v 1.5 2001/01/18 08:50:59 taku-ku Exp $;
+//  $Id: TinySVM.cc,v 1.8 2001/08/24 13:07:51 taku-ku Exp $;
 //
 
 #ifdef __cplusplus
@@ -20,6 +20,7 @@ extern "C" {
   static VALUE TinySVM_Model_write(VALUE, VALUE);
   static VALUE TinySVM_Model_append(VALUE, VALUE);
   static VALUE TinySVM_Model_add(int, VALUE *, VALUE);
+  static VALUE TinySVM_Model_remove(VALUE, VALUE);   
   static VALUE TinySVM_Model_getX(VALUE, VALUE);
   static VALUE TinySVM_Model_getY(VALUE, VALUE);
   static VALUE TinySVM_Model_writeSVindex(VALUE, VALUE);
@@ -27,7 +28,7 @@ extern "C" {
   static VALUE TinySVM_Model_clear(VALUE);
   static VALUE TinySVM_Model_size(VALUE);
   static VALUE TinySVM_Model_getSVnum(VALUE);
-  static VALUE TinySVM_Model_getBSVnum(VALUE);   
+  static VALUE TinySVM_Model_getBSVnum(VALUE);
   static VALUE TinySVM_Model_getTrainingDataSize(VALUE);
   static VALUE TinySVM_Model_getLoss(VALUE);   
   static VALUE TinySVM_Model_estimateMargin(VALUE);
@@ -35,6 +36,9 @@ extern "C" {
   static VALUE TinySVM_Model_estimateSphere(VALUE);
   static VALUE TinySVM_Model_estimateXA(int, VALUE *, VALUE);
   static VALUE TinySVM_Model_classify(VALUE, VALUE);
+  static VALUE TinySVM_Model_getAlpha(VALUE, VALUE);
+  static VALUE TinySVM_Model_getG(VALUE, VALUE);
+  static VALUE TinySVM_Model_compress(VALUE);   
 
   static VALUE ExampleClass;
   static VALUE TinySVM_Example_new(int, VALUE *, VALUE);
@@ -43,8 +47,11 @@ extern "C" {
   static VALUE TinySVM_Example_write(VALUE, VALUE);
   static VALUE TinySVM_Example_append(VALUE, VALUE);
   static VALUE TinySVM_Example_add(int, VALUE *, VALUE);
+  static VALUE TinySVM_Example_remove(VALUE, VALUE);      
   static VALUE TinySVM_Example_getX(VALUE, VALUE);
   static VALUE TinySVM_Example_getY(VALUE, VALUE);
+  static VALUE TinySVM_Example_getAlpha(VALUE, VALUE);
+  static VALUE TinySVM_Example_getG(VALUE, VALUE);
   static VALUE TinySVM_Example_clear(VALUE);
   static VALUE TinySVM_Example_size(VALUE);
   static VALUE TinySVM_Example_learn(int, VALUE *, VALUE);
@@ -180,7 +187,35 @@ TinySVM_Model_add(int argc, VALUE *argv, VALUE self)
 
   return Qfalse;
 }
+   
+static VALUE
+TinySVM_Model_getAlpha(VALUE self, VALUE index)
+{
+  Model *model;
+  Data_Get_Struct(self, Model, model);
 
+  int i = NUM2INT(index);
+  if (i >= 0 && i < model->getTrainingDataSize()) 
+     return rb_float_new(model->alpha[i]);
+
+  rb_raise(rb_eIndexError, "Model::getAlpha() -- index is out of range");
+  return Qfalse;
+}
+
+static VALUE
+TinySVM_Model_getG(VALUE self, VALUE index)
+{
+  Model *model;
+  Data_Get_Struct(self, Model, model);
+
+  int i = NUM2INT(index);
+  if (i >= 0 && i < model->getTrainingDataSize())
+     return rb_float_new(model->G[i]);
+
+  rb_raise(rb_eIndexError, "Model::getG() -- index is out of range");
+  return Qfalse;
+}
+   
 static VALUE
 TinySVM_Model_getX(VALUE self, VALUE index)
 {
@@ -193,7 +228,7 @@ TinySVM_Model_getX(VALUE self, VALUE index)
     feature_node *f = model->x[i];
     VALUE ary = rb_ary_new();
 
-    for (int j = 0; f[j].index != -1; j++) {
+    for (int j = 0; f[j].index >= 0; j++) {
       sprintf(tmp,"%d:%g",f[j].index,f[j].value);
       rb_ary_push(ary,rb_str_new2(tmp));
     }
@@ -219,6 +254,20 @@ TinySVM_Model_getY(VALUE self, VALUE index)
   return Qfalse;
 }
 
+static VALUE
+TinySVM_Model_remove(VALUE self, VALUE index)
+{
+  Model *model;
+  Data_Get_Struct(self, Model, model);
+
+  int i = NUM2INT(index);
+  if (i >= 0 && i < model->size())
+    return INT2NUM(model->remove(i));
+   
+  rb_raise(rb_eIndexError, "Model::remove() -- index is out of range");
+  return Qfalse;
+}
+   
 static VALUE 
 TinySVM_Model_clear(VALUE self)
 {
@@ -229,6 +278,16 @@ TinySVM_Model_clear(VALUE self)
   return self;
 }
 
+static VALUE 
+TinySVM_Model_compress(VALUE self)
+{
+  Model *model;
+  Data_Get_Struct(self, Model, model);
+
+  model->compress();
+  return self;
+}
+   
 static VALUE 
 TinySVM_Model_size(VALUE self)
 {
@@ -317,7 +376,6 @@ TinySVM_Model_classify(VALUE self, VALUE str)
 // 
 // Example
 //
-
 static VALUE
 TinySVM_Example_new(int argc, VALUE *argv, VALUE self)
 {
@@ -411,7 +469,7 @@ TinySVM_Example_add(int argc, VALUE *argv, VALUE self)
 
   return Qfalse;
 }
-
+   
 static VALUE
 TinySVM_Example_getX(VALUE self, VALUE index)
 {
@@ -424,7 +482,7 @@ TinySVM_Example_getX(VALUE self, VALUE index)
     feature_node *f = example->x[i];
     VALUE ary = rb_ary_new();
 
-    for (int j = 0; f[j].index != -1; j++) {
+    for (int j = 0; f[j].index >= 0; j++) {
       sprintf(tmp,"%d:%g",f[j].index,f[j].value);
       rb_ary_push(ary,rb_str_new2(tmp));
     }
@@ -449,6 +507,50 @@ TinySVM_Example_getY(VALUE self, VALUE index)
   rb_raise(rb_eIndexError, "Example::getY() -- index is out of range");
   return Qfalse;
 }
+   
+static VALUE
+TinySVM_Example_getAlpha(VALUE self, VALUE index)
+{
+  Example *example;
+  Data_Get_Struct(self, Example, example);
+
+  int i = NUM2INT(index);
+  if (i >= 0 && i < example->svindex_size)
+     return rb_float_new(example->alpha[i]);
+
+  rb_raise(rb_eIndexError, "Example::getAlpha() -- index is out of range");
+  return Qfalse;
+}
+
+static VALUE
+TinySVM_Example_getG(VALUE self, VALUE index)
+{
+  Example *example;
+  Data_Get_Struct(self, Example, example);
+
+  int i = NUM2INT(index);
+  if (i >= 0 && i < example->svindex_size)
+     return rb_float_new(example->G[i]);
+
+  rb_raise(rb_eIndexError, "Example::getG() -- index is out of range");
+  return Qfalse;
+}
+   
+   
+static VALUE
+TinySVM_Example_remove(VALUE self, VALUE index)
+{
+  Example *example;
+  Data_Get_Struct(self, Example, example);
+
+  int i = NUM2INT(index);
+  if (i >= 0 && i < example->size())
+    return INT2NUM(example->remove(i));
+
+  rb_raise(rb_eIndexError, "Example::remove() -- index is out of range");
+  return Qfalse;
+}
+  
 
 static VALUE
 TinySVM_Example_clear(VALUE self)
@@ -498,12 +600,13 @@ Init_TinySVM(void)
   rb_define_method(ModelClass, "add",            (VALUE(*)())TinySVM_Model_add, -1);
   rb_define_method(ModelClass, "getX",           (VALUE(*)())TinySVM_Model_getX, 1);
   rb_define_method(ModelClass, "getY",           (VALUE(*)())TinySVM_Model_getY, 1);
+  rb_define_method(ModelClass, "remove",         (VALUE(*)())TinySVM_Example_remove, 1);
   rb_define_method(ModelClass, "writeSVindex",   (VALUE(*)())TinySVM_Model_writeSVindex, 1);
   rb_define_method(ModelClass, "appendSVindex",  (VALUE(*)())TinySVM_Model_appendSVindex, 1);
   rb_define_method(ModelClass, "clear",          (VALUE(*)())TinySVM_Model_clear, 0);
   rb_define_method(ModelClass, "size",           (VALUE(*)())TinySVM_Model_size, 0);
   rb_define_method(ModelClass, "getSVnum",       (VALUE(*)())TinySVM_Model_size, 0);  
-  rb_define_method(ModelClass, "getBSVnum",      (VALUE(*)())TinySVM_Model_getBSVnum, 0);     
+  rb_define_method(ModelClass, "getBSVnum",      (VALUE(*)())TinySVM_Model_getBSVnum, 0);
   rb_define_method(ModelClass, "getTrainingDataSize", (VALUE(*)())TinySVM_Model_getTrainingDataSize, 0);        
   rb_define_method(ModelClass, "getLoss",        (VALUE(*)())TinySVM_Model_getLoss, 0);
   rb_define_method(ModelClass, "estimateMargin", (VALUE(*)())TinySVM_Model_estimateMargin, 0);
@@ -511,6 +614,7 @@ Init_TinySVM(void)
   rb_define_method(ModelClass, "estimateVC",     (VALUE(*)())TinySVM_Model_estimateVC, 0);
   rb_define_method(ModelClass, "estimateXA",     (VALUE(*)())TinySVM_Model_estimateXA, -1);
   rb_define_method(ModelClass, "classify",       (VALUE(*)())TinySVM_Model_classify, 1);
+  rb_define_method(ModelClass, "compress",       (VALUE(*)())TinySVM_Model_compress, 0);
 
   // Definition for Example class
   ExampleClass = rb_define_class("Example",rb_cObject);
@@ -521,7 +625,9 @@ Init_TinySVM(void)
   rb_define_method(ExampleClass, "add",      (VALUE(*)())TinySVM_Example_add, -1);
   rb_define_method(ExampleClass, "getX",     (VALUE(*)())TinySVM_Example_getX, 1);
   rb_define_method(ExampleClass, "getY",     (VALUE(*)())TinySVM_Example_getY, 1);
-  rb_define_method(ExampleClass, "getAlpha", (VALUE(*)())TinySVM_Example_getY, 1);
+  rb_define_method(ExampleClass, "remove",   (VALUE(*)())TinySVM_Example_remove, 1);
+  rb_define_method(ExampleClass, "getAlpha", (VALUE(*)())TinySVM_Example_getAlpha, 1);
+  rb_define_method(ExampleClass, "getG",     (VALUE(*)())TinySVM_Example_getG, 1);   
   rb_define_method(ExampleClass, "clear",    (VALUE(*)())TinySVM_Example_clear, 0);
   rb_define_method(ExampleClass, "size",     (VALUE(*)())TinySVM_Example_size, 0);
   rb_define_method(ExampleClass, "learn",    (VALUE(*)())TinySVM_Example_learn, -1); 

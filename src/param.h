@@ -20,12 +20,16 @@ public:
   int    shrink_size;
   double shrink_eps;
   int    final_check;
+  int    svindex;
   double insensitive_loss;
+  int    compress;
+  char   model[512];
 
   int set (int,  char **);
   int set (const char *);
 
   Param();
+  ~Param();
 };
 
 

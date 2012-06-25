@@ -6,7 +6,7 @@
 #include "kernel.h"
 #include "param.h"
 
-// $Id: svm_learn.cc,v 1.17 2001/01/16 19:37:20 taku-ku Exp $;
+// $Id: svm_learn.cc,v 1.22 2001/08/25 13:41:53 taku-ku Exp $;
 
 int
 main (int argc, char **argv)
@@ -31,7 +31,6 @@ main (int argc, char **argv)
     fprintf (stdout, "eps:\t\t\t%g\n",            param.eps);
     fprintf (stdout, "C:\t\t\t%g\n",              param.C);
     fprintf (stdout, "insensitive loss:\t%g\n",   param.insensitive_loss);
-
   }
 
   TinySVM::Example example;
@@ -46,21 +45,38 @@ main (int argc, char **argv)
 	     example.feature_type == TinySVM::BINARY_FEATURE ? "binary" : "double");
 
   TinySVM::Model *model = example.learn (param);
-
+   
   if (!model) {
     fprintf (stderr, "%s: Unexpected error occurs\n", argv[0]);
     exit (EXIT_FAILURE);
   }
+   
+  if (param.svindex) {
+     char *tmp =  new char[strlen(argv[argc-1]) + 5];
+     strcpy (tmp, argv[argc-1]);
+     strcat (tmp, ".idx");
+     if (!model->writeSVindex (tmp)) {
+	fprintf (stderr, "%s: %s: permission denied\n", argv[0], tmp);
+	exit (EXIT_FAILURE);
+     }
+     delete [] tmp;
+  }
 
+  if (param.compress) model->compress();
   if (!model->write (argv[argc - 1])) {
     fprintf (stderr, "%s: %s: permission denied\n", argv[0], argv[argc - 1]);
     exit (EXIT_FAILURE);
   }
 
   if (param.verbose) {
-    fprintf (stdout, "Margin:\t\t\t\t%g\n", model->estimateMargin ());
     double h = model->estimateVC ();
+    fprintf (stdout, "Margin:\t\t\t\t%g\n", model->estimateMargin ());
+    fprintf (stdout, "Number of SVs:\t\t\t%d\n", model->getSVnum ());
+    fprintf (stdout, "Number of BSVs:\t\t\t%d\n", model->getBSVnum ());
+    fprintf (stdout, "Size of training data:\t\t%d\n", model->getTrainingDataSize());
+    fprintf (stdout, "L1 Loss (Empirical Risk):\t%g\n", model->getLoss());
     fprintf (stdout, "Estimated VC dimension:\t\t%g\n", h);
+    fprintf (stdout, "Estimated xi-alpha(2.0):\t\t%g\n", model->estimateXA(2.0));
     fprintf (stdout, "Estimated VC bound (n=0.05):\t%g\n",
 	     sqrt ((h * (log (2 * example.size () / h) + 1) - log (0.05 / 4))
 		   / example.size ()));

@@ -5,18 +5,36 @@
 #include "svm_solver.h"
 #include "svr_solver.h"
 
-// $Id: example.cc,v 1.15 2001/01/16 20:13:06 taku-ku Exp $;
+// $Id: example.cc,v 1.21 2001/08/24 13:07:52 taku-ku Exp $;
 
 namespace TinySVM {
 
 Model *
 Example::learn (const Param & p)
 {
-  if (l == 0) return NULL;
+  if (l == 0) return 0;
 
   BaseSolver *solver;
 
   try {
+    if (p.model[0]) {
+      char *tmp = new char [strlen(p.model) + 5];
+      strcpy (tmp, p.model);
+      strcat (tmp, ".idx");
+      fflush(stdout);
+
+      if (readSVindex(tmp)) {
+	TinySVM::Model *m = new TinySVM::Model;
+	if (m->read (p.model)) rebuildSVindex (m);
+	else fprintf (stderr, "Example::learn() cannot open %s, ignored.\n", p.model);
+	delete m;
+      } else {
+	fprintf (stderr, "Example::learn() cannot open %s, ignored.\n", tmp);
+      }
+
+      delete [] tmp;
+    }
+
     switch (p.solver_type) {
     case SVM:
       solver = new SVM_Solver (*this, p);
@@ -26,7 +44,7 @@ Example::learn (const Param & p)
       break;
     default:
       fprintf (stderr, "Example::learn(): Unknown solver type [%d]\n", p.solver_type);
-      return NULL;
+      return 0;
     }
   }
 
@@ -61,6 +79,7 @@ Example::read (const char *filename, const char *mode, const int offset)
     }
   }
   fclose (fp);
+  svindex_size = l;
 
   return 1;
 }
@@ -73,8 +92,8 @@ Example::write (const char *filename, const char *mode, const int offset)
 
   for (int i = 0; i < l; i++) {
     fprintf (fp, "%.16g", y[i]);
-    for (feature_node * node = x[i]; node->index != -1; node++)
-      fprintf (fp, " %d:%.8g", node->index, node->value);
+    for (feature_node * node = x[i]; node->index >= 0; node++)
+      fprintf (fp, " %d:%.16g", node->index, node->value);
     fprintf (fp, "\n");
   }
 
@@ -82,4 +101,20 @@ Example::write (const char *filename, const char *mode, const int offset)
   return 1;
 }
 
+int 
+Example::rebuildSVindex (Model *m)
+{
+  if (!m ) return 0;
+
+  alpha = resize (alpha, svindex_size, l, 0.0);
+  G     = resize (G,     svindex_size, l, 0.0);
+
+  for (int i = svindex_size; i < l; i++) {
+    G[i] = y[i] * (m->classify(x[i]) + m->b) - 1;
+    alpha[i] = 0;
+  }
+
+  svindex_size = l;
+  return l;
+}
 }

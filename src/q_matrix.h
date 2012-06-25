@@ -3,7 +3,7 @@
 #include "kernel.h"
 #include "cache.h"
 
-// $Id: q_matrix.h,v 1.3 2001/01/16 19:37:20 taku-ku Exp $;
+// $Id: q_matrix.h,v 1.4 2001/08/22 14:11:49 taku-ku Exp $;
 namespace TinySVM {
 
 class QMatrix: public Kernel
@@ -34,6 +34,7 @@ class QMatrix: public Kernel
   void delete_index (const int);
   void swap_index (const int, const int);
   void rebuildCache(int);
+  void set (double *_y, feature_node **_x) { y = _y; x = _x; };
 
   // main
   inline double *getQ(const int i, const int active_size)

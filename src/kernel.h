@@ -5,7 +5,7 @@
 #include "base_example.h"
 #include <math.h>
 
-// $Id: kernel.h,v 1.11 2001/01/16 19:37:20 taku-ku Exp $;
+// $Id: kernel.h,v 1.12 2001/08/22 10:40:31 taku-ku Exp $;
 namespace TinySVM {
 
 class Kernel
@@ -37,7 +37,7 @@ protected:
   inline double dot_normal(const feature_node *x1, const feature_node *x2) const
   {
     register double sum = 0;
-    while (x1->index != -1 && x2->index != -1) {
+    while (x1->index >= 0 && x2->index >= 0) {
       if (x1->index == x2->index) {
 	sum += (x1->value * x2->value);
 	++x1; ++x2;
@@ -52,7 +52,7 @@ protected:
   inline int dot_binary(const feature_node *x1, const feature_node *x2) const
   {
     register int sum = 0;
-    while (x1->index != -1 && x2->index != -1) {
+    while (x1->index >= 0 && x2->index >= 0) {
       if (x1->index == x2->index) {
 	sum++; 
 	++x1; ++x2;

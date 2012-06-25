@@ -3,13 +3,13 @@ Content-type: text/html
 <HTML><HEAD><TITLE>Manpage of SVM_LEARN</TITLE>
 </HEAD><BODY>
 <H1>SVM_LEARN</H1>
-Section: TinySVM (1)<BR>Updated: June 2001<BR><A HREF="#index">Index</A>
+Section: TinySVM (1)<BR>Updated: August 2001<BR><A HREF="#index">Index</A>
 <A HREF="http://localhost/cgi-bin/man/man2html">Return to Main Contents</A><HR>
 
 <A NAME="lbAB">&nbsp;</A>
 <H2>NAME</H2>
 
-svm_learn - manual page for svm_learn of 0.03
+svm_learn - manual page for svm_learn of 0.04
 <A NAME="lbAC">&nbsp;</A>
 <H2>SYNOPSIS</H2>
 
@@ -76,8 +76,12 @@ used in C-SVR cost evaluation. (default 0.1)
 <H3>Miscellaneous:</H3>
 
 <DL COMPACT>
-<DT><B>-o</B>, <B>--sv-index-file</B>=<I>FILE</I><DD>
-write SV indices to FILE.
+<DT><B>-M</B>, <B>--model</B>=<I>FILE</I><DD>
+set FILE, FILE.idx for initial condition model file.
+<DT><B>-I</B>, <B>--sv-index</B><DD>
+write SV index to MODEL.idx.
+<DT><B>-W</B><DD>
+<B>--compress</B>                     calculate vector w (w * x + b) directory instead of alpha.
 <DT><B>-V</B>, <B>--verbose</B><DD>
 set verbose mode.
 <DT><B>-v</B>, <B>--version</B><DD>
@@ -108,6 +112,6 @@ Copyright (C) 2000-2001 Taku Kudoh All rights reserved.
 This document was created by
 <A HREF="http://localhost/cgi-bin/man/man2html">man2html</A>,
 using the manual pages.<BR>
-Time: 09:22:38 GMT, June 29, 2001
+Time: 15:58:23 GMT, August 25, 2001
 </BODY>
 </HTML>

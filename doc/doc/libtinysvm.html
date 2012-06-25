@@ -65,11 +65,17 @@ namespace TinySVM {
      int add (const double, feature_node *);
      int add (const double, const char *);
      int add (const char *);
+     int set (int i, const double, feature_node *);
+     int set (int i, const double, const char *);
+     int set (int i, const char *);
+     int remove (int i);
      int clear ();
      int size ();
 
      virtual int read  (const char *, const char *mode = "r", const int offset = 0) = 0;
      virtual int write (const char *, const char *mode = "w", const int offset = 0) = 0;
+     int readSVindex  (const char *, const char *mode = "r", const int offset = 0);
+     int writeSVindex (const char *, const char *mode = "w", const int offset = 0);
    };
 };
 </pre>
@@ -100,6 +106,31 @@ Add new example represented with single string, e.g. <i>"+1 1:2 3:4 5:1"</i> int
 Return 1 if success, return 0 if fail.
 
 <dt>
+<code><font color=#dc143c>TinySVM::BaseExample</font>::<font color=DarkBlue>set</font>(int i const double y,  feature_node *x)</code>
+<dd>
+Replace current i-th example with new example <i>y</i> and <i>x</i>.<br>
+Return 1 if success, return 0 if fail.
+
+<dt>
+<code><font color=#dc143c>TinySVM::BaseExample</font>::<font color=DarkBlue>set</font> (int i const double y,  char *x)</code>
+<dd>
+Replace current i-th example with new example <i>y</i> and <i>x</i> .<br>
+x is represented with a string, (e.g. <i>"1:2 3:4 5:6"</i>). <br>
+Return 1 if success, return 0 if fail.
+
+<dt>
+<code><font color=#dc143c>TinySVM::BaseExample</font>::<font color=DarkBlue>set</font> (int i char *s)</code>
+<dd>
+Replace current i-th example with new example represented with single
+string s, (e.g. <i>"+1 1:2 3:4 5:1"</i>).<br>
+Return 1 if success, return 0 if fail.
+
+<dt>
+<code><font color=#dc143c>TinySVM::BaseExample</font>::<font color=DarkBlue>remove</font> (int i)</code>
+<dd>
+Remove i-th example (pair of <i>y</i> and <i>x</i>) from current instance.
+
+<dt>
 <code><font color=#dc143c>TinySVM::BaseExample</font>::<font color=DarkBlue>clear</font> ()</code>
 <dd>
 Clear all examples (pair of <i>y</i> and <i>x</i>) stored in current instance.
@@ -112,7 +143,7 @@ Get the size of examples (pair of <i>y</i> and <i>x</i>).
 <dt>
 <code><font color=#dc143c>TinySVM::BaseExample</font>::<font color=DarkBlue>read</font> (const char *file_name, const char *mode ="r", const int offset = 0)</code>
 <dd>
-Add all examples stored in <i>file_name</i> into current instance,
+Read all examples stored from <i>file_name</i>.
 <i>mode</i> is used for calling <i>fopen (3)</i>.<br>
 if <i>offset</i> is given, seek <i>offset</i> byte using <i>fseek (3)</i> before reading stored examples.<br>
 Return 1 if success, return 0 if fail.
@@ -124,6 +155,24 @@ Save all stored examples into <i>file_name</i>.
 By setting <i>"a"</i> to <i>mode</i>, you can  append examples into <i>file_name</i>.<br>
 <i>offset</i> is reserved argument for the future. <br>
 Return 1 if success, return 0 if fail.
+
+<dt>
+<code><font color=#dc143c>TinySVM::BaseExample</font>::<font color=DarkBlue>writeSVindex</font> (const char *file_name const char *mode = "w", const int offset = 0)</code>
+<dd>
+</dt>
+Read pairs of alpha and gradiant from <i>file_name</i>.
+<i>mode</i> is used for calling <i>fopen (3)</i>.<br>
+if <i>offset</i> is given, seek <i>offset</i> byte using <i>fseek (3)</i> before reading stored examples.<br>
+Return 1 if success, return 0 if fail.
+
+<dt>
+<code><font color=#dc143c>TinySVM::BaseExample</font>::<font color=DarkBlue>readSVindex</font> (const char *file_name const char *mode = "w", const int offset = 0)</code>
+<dd>
+</dt>
+Save pairs of alpha and gradiant into <i>file_name</i>.
+<i>mode</i> is used for calling <i>fopen (3)</i>.<br>
+if <i>offset</i> is given, seek <i>offset</i> byte using <i>fseek (3)</i> before reading stored examples.<br>
+Return 1 if success, return 0 if fail.
 </dl>
 
 <pre>
@@ -134,12 +183,13 @@ namespace TinySVM {
    public:
      Model *learn (const Param &);
      Model *learn (const char *);
+     int rebuildSVindex (Model *);
    };
 };
 </pre>
 
 <p>
-<i>TinySVM::Example</i> class is inherited from <i>TinySVM::BaseExample</i> class. 
+<i>TinySVM::Example</i> class inherits it's interface from <i>TinySVM::BaseExample</i> class. 
 You can use all member functions defined in <i>TinySVM::BaseExample</i> class.
 </p>
 
@@ -156,6 +206,11 @@ Return new instance (pointer) of <i>TinySVM::Model</i> object.
 Execute learning with Parameter represented with single string
 <i>s</i>,  e.g. <i>"-t 1 -d 2 -c 1"</i>. <br>
 Return new instance (pointer) of <i>TinySVM::Model</i> object.
+
+<dt>
+<code><font color=#dc143c>TinySVM::Example</font>::<font color=DarkBlue>rebuldSVindex </font> (const TinySVM::Model *m)</code>
+<dd>
+Rebuild alpha and gradient for all examples using Model <i>m</i>.
 </dl>
 
 <pre>
@@ -173,19 +228,18 @@ namespace TinySVM {
      double estimateVC ();
      double estimateXA (const double rho = 2.0);
      double estimateSphere ();
-     dobble getLoss ();
+     double getLoss ();
+     int compress (); 
 
      int getSVnum ();
      int getBSVnum();
      int getTrainingDataSize();
-     const int *getSVindex ();
-     int writeSVindex (const char *, const char *mode = "r", const int offset = 0);
    };
 };
 </pre>
 
 <p>
-<i>TinySVM::Model</i> class is inherited from <i>TinySVM::BaseExample</i> class. 
+<i>TinySVM::Model</i> class inherits it's interface from <i>TinySVM::BaseExample</i> class. 
 You can use all member functions defined in <i>TinySVM::BaseExample</i> class.
 </p>
 
@@ -206,14 +260,6 @@ Return distance from the decision hyperplane.
 <dd>
 Classify test example represented with feature_node "f".<br>
 Return distance from the decision hyper plane. 
-
-<dt>
-<code><font color=#dc143c>TinySVM::Model</font>::<font color=DarkBlue>writeSVindex</font> (const char *file_name const char *mode = "w", const int offset = 0)</code>
-<dd>
-Write index of Support Vectors and weight y into <i>file_name</i>. <br>
-This method can be used when current instance is created by the
-<font color=#dc143c>TinySVM::Example</font>::<font color=DarkBlue>learn </font>() method. 
-</dt>
 
 <dt>
 <code><font color=#dc143c>TinySVM::Model</font>::<font color=DarkBlue>estimateMargin</font> ()</code>
@@ -260,13 +306,12 @@ The case of C-SVR, this function returns the "1-norm epsilon-insenstive
 loss" evaluated with given training data.
 
 <dt>
-<code><font color=#dc143c>TinySVM::Model</font>::<font color=DarkBlue>getSVindex</font> ()</code>
+<code><font color=#dc143c>TinySVM::Model</font>::<font color=DarkBlue>compress</font> ()</code>
 <dd>
-Return the pointer of index of Support Vectors. <br>
-This method can be used when current instance is created by the
-<font color=#dc143c>TinySVM::Example</font>::<font color=DarkBlue>learn</font> () method.
-</dl>
+Replace the current representation of model instance (lists of alpha and training
+data) with single vector w (w * x + b). 
 </ul>
+</dl>
 
 <h2><a name="sample">Sample Programming</a></h2>
 <ul>

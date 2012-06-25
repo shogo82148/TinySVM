@@ -2,7 +2,7 @@
 #include "misc.h"
 #include "common.h"
 
-// $Id: param.cc,v 1.23 2001/01/16 22:37:32 taku-ku Exp $;
+// $Id: param.cc,v 1.30 2001/08/25 13:41:53 taku-ku Exp $;
 // default param
 
 #define PARAM_MAX_SIZE 512
@@ -37,13 +37,15 @@ Optimization Parameter:\n\
                                      used in C-SVR cost evaluation. (default 0.1)\n\
 \n\
 Miscellaneous:\n\
-  -o, --sv-index-file=FILE           write SV indices to FILE.\n\
+  -M, --model=FILE                   set FILE, FILE.idx for initial condition model file.\n\
+  -I, --sv-index                     write SV index to MODEL.idx.\n\
+  -W  --compress                     calculate vector w (w * x + b) directory instead of alpha.\n\
   -V, --verbose                      set verbose mode.\n\
   -v, --version                      show the version of TinySVM and exit.\n\
   -h, --help                         show this help and exit.\n\
 \n"
 
-static const char *short_options = "l:t:d:s:r:m:c:e:H:p:f:i:o:Vvh";
+static const char *short_options = "l:t:d:s:r:m:M:c:e:H:p:f:i:WIVvh";
 
 static struct option long_options[] = {
   {"solver-type",             required_argument, NULL, 'l'},
@@ -52,13 +54,15 @@ static struct option long_options[] = {
   {"kernel-param-s",          required_argument, NULL, 's'},
   {"kernel-param-r",          required_argument, NULL, 'r'},
   {"cache-size",              required_argument, NULL, 'm'},
+  {"model",                   required_argument, NULL, 'M'},
   {"cost",                    required_argument, NULL, 'c'},
   {"termination-criterion",   required_argument, NULL, 'e'},
   {"shrinking-size",          required_argument, NULL, 'H'},
   {"shrinking-eps",           required_argument, NULL, 'p'},
   {"do-final-check",          required_argument, NULL, 'f'},
   {"insensitive-loss",        required_argument, NULL, 'i'},
-  {"sv-index-file",           required_argument, NULL, 'o'},
+  {"sv-index",                no_argument,       NULL, 'I'},
+  {"compress",                no_argument,       NULL, 'W'},
   {"verbose",                 no_argument,       NULL, 'V'},
   {"version",                 no_argument,       NULL, 'v'},
   {"help",                    no_argument,       NULL, 'h'},
@@ -82,17 +86,21 @@ Param::Param ()
   shrink_eps = 2.0;
   cache_size = 40;
   insensitive_loss = 0.1;
+  svindex = 0;
   C = 1;
   final_check = 1;
   eps = 0.001;
   verbose = 0;
+  compress = 0;
+  model[0] = 0;
 }
+
+Param::~Param() {};
 
 int
 Param::set (int argc, char **argv)
 {
-  if (argc == 0)
-    return 0;
+  if (argc == 0) return 0;
 
   optind = 1;
 
@@ -100,7 +108,6 @@ Param::set (int argc, char **argv)
     int opt = getopt_long (argc, argv, short_options, long_options, NULL);
     if (opt == EOF) break;
 
-    // "l:t:d:s:r:m:c:e:H:p:f:i:o:Vvh";
     switch (opt) {
     case 'l':
       solver_type = atoi(optarg);
@@ -120,6 +127,9 @@ Param::set (int argc, char **argv)
     case 'm':
       cache_size = atof (optarg);
       break;
+    case 'M':
+      strcpy (model, optarg);
+      break;
     case 'c':
       C = atof (optarg);
       break;
@@ -138,6 +148,12 @@ Param::set (int argc, char **argv)
     case 'i':
       insensitive_loss = atof (optarg);
       break;
+    case 'I':
+      svindex = 1;
+      break;
+    case 'W':
+     compress = 1;
+     break;
     case 'V':
       verbose = 1;
       break;
@@ -190,7 +206,7 @@ Param::set (const char *s)
     }
 
     int r = set (j, argv);
-    delete buf;
+    delete [] buf;
     return r;
   }
 
@@ -199,5 +215,4 @@ Param::set (const char *s)
     exit (EXIT_FAILURE);
   }
 }
-
 };

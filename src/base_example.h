@@ -3,7 +3,7 @@
 #include "misc.h"
 #include <stdio.h>
 
-// $Id: base_example.h,v 1.13 2001/01/16 19:37:20 taku-ku Exp $;
+// $Id: base_example.h,v 1.18 2001/08/24 13:07:52 taku-ku Exp $;
 
 namespace TinySVM {
    
@@ -14,7 +14,6 @@ extern feature_node *fix_feature_node   (feature_node *);
 class BaseExample
 {
 private:
-  int   refcount;
   char *stre;
   int   strl;
   int   alloc_l;
@@ -23,30 +22,36 @@ public:
   int          l;	       // number of SVs
   int          d;              // dimension of SVs
   int          pack_d;         // packed dimension of SVs
-  double       *y;	       // class label
+  double       *y;	       // class label,  
   feature_node **x;	       // training data
   int          feature_type;   // feature type (bin or double)
   int          class_type;     // class type (bin or double)
+  double       *alpha;         // alpha
+  double       *G;             // gradient
+  int          svindex_size;   // number of Support Vectors;
 
-  int ref() { return refcount++; };
   int add (const double, feature_node *);
   int add (const double, const char *);
   int add (const char *);
-  int clear();
-  int size() { return l; };
+  int set (int i, const double, feature_node *);
+  int set (int i, const double, const char *);
+  int set (int i, const char *);
+  int remove (int i);
+   
+  int clear ();
+  int size () { return l; };
 
   virtual int read   (const char *, const char *mode = "r", const int offset = 0) = 0;
   virtual int write  (const char *, const char *mode = "w", const int offset = 0) = 0;
+  char    *readLine (FILE *);
 
-  char *readLine(FILE *);
+  int readSVindex  (const char *, const char *mode = "r", const int offset = 0);
+  int writeSVindex (const char *, const char *mode = "w", const int offset = 0);
 
-  // copy constructor
   BaseExample& operator=(BaseExample &);
-
-  BaseExample();
+  BaseExample ();
   virtual ~BaseExample();
 };
 
 };
 #endif
-

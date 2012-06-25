@@ -6,7 +6,7 @@
 # Change 1..1 below to 1..last_test_to_print .
 # (It may become useful if the test is moved to ./t subdirectory.)
 
-# $Id: test.pl,v 1.10 2001/01/16 23:34:33 taku-ku Exp $;
+# $Id: test.pl,v 1.12 2001/08/24 13:07:49 taku-ku Exp $;
 
 use lib "../src/.libs";
 use lib $ENV{PWD} . "/blib/lib";
@@ -26,7 +26,14 @@ print "Example Size = ", $e->size(),"\n";
 $m = $e->learn("-t 1 -d 2 -c 100");
 $m->write("model");
 
-for $i (0..10) {
+for $i (0..5) {
+   my @a = $m->getX($i);
+   print $m->getY($i) , "@a\n";
+}
+
+print "\n";
+$m->remove(0);
+for $i (0..5) {
    my @a = $m->getX($i);
    print $m->getY($i) , "@a\n";
 }
@@ -34,11 +41,17 @@ for $i (0..10) {
 $m->writeSVindex("svindex");
 
 print "classify=", $m->classify("1:1 2:1"), "\n";
+print "classify=", $m->classify("4:1 6:1"), "\n";
 print "SV=" ,      $m->getSVnum() , "\n";
 print "Margin=" ,  $m->estimateMargin() , "\n";
 print "VC=" ,      $m->estimateVC() , "\n";
 
 unlink "svindex";
 unlink "model";
+
+my $m2 = $e->learn ("");
+$m2->compress();
+$m2->write("model2");
+unlink "model2";
 
 print "ok 1\n";

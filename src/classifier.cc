@@ -9,6 +9,8 @@ Classifier::Classifier (const BaseExample & example, const Param & param):
   try {
      x = example.x;
      y = example.y;
+     model_bias = 0;
+     
 
     if (feature_type == BINARY_FEATURE) {
       _getDistance = &Classifier::_getDistance_binary;
@@ -16,7 +18,6 @@ Classifier::Classifier (const BaseExample & example, const Param & param):
       dot_buf = new int[l];
       binary_kernel_cache = new double *[l];
       fi2si = new int *[d + 1];
-
       int *_fisize = new int[d + 1];
 
       // init
@@ -27,13 +28,13 @@ Classifier::Classifier (const BaseExample & example, const Param & param):
       for (int i = 0; i < l; i++) {
 	feature_node *node = (feature_node *) x[i];
 	int feature_num = 0;
-	while (node->index != -1) {
+	while (node->index >= 0) {
 	  _fisize[node->index]++;
 	  node++;
 	  feature_num++;
 	}
 
-	// caluculate cache 
+	// caluculate cache
 	model_bias += y[i] * (this->*_getKernel) (0.0);
 	binary_kernel_cache[i] = new double[feature_num + 1];
 	for (int j = 1; j <= feature_num; j++) {
@@ -52,7 +53,7 @@ Classifier::Classifier (const BaseExample & example, const Param & param):
       // 3rd, copy value
       for (int i = 0; i < l; i++) {
 	feature_node *node = (feature_node *) x[i];
-	while (node->index != -1) {
+	while (node->index >= 0) {
 	  fi2si[node->index][_fisize[node->index]++] = i;
 	  node++;
 	}
@@ -96,8 +97,8 @@ Classifier::_getDistance_normal (const feature_node * _x) const
   register feature_node *node = fix_feature_node ((feature_node *) _x);
 
   for (register int i = 0; i < l; i++)
-    result += (y[i] * (this->*_getKernel) (dot_normal (x[i], node)));
-
+    result += y[i] * (this->*_getKernel) (dot_normal(x[i], node));
+  
   return result;
 }
 
@@ -111,7 +112,7 @@ Classifier::_getDistance_binary (const feature_node * node) const
   memset (dot_buf, 0, sizeof (int) * l);
 
   feature_node *org = (feature_node *) node;
-  while (node->index != -1 && node->index <= d) {
+  while (node->index >= 0 && node->index <= d) {
     if (node->value != 1)
       return this->_getDistance_normal (org);
     for (p = fi2si[node->index], j = 0; (k = p[j]) != -1; j++)

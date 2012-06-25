@@ -701,7 +701,7 @@ fi
 
 PACKAGE=TinySVM
 
-VERSION=0.03
+VERSION=0.04
 
 if test "`cd $srcdir && pwd`" != "`pwd`" && test -f $srcdir/config.status; then
   { echo "configure: error: source directory already configured; run "make distclean" there first" 1>&2; exit 1; }
@@ -792,7 +792,7 @@ fi
 #   change to C+1:0:0
 # - If the interface is the same as the previous version, change to C:R+1:A
 
-LTVERSION="2:0:1"
+LTVERSION="3:0:2"
 
 
 # Extract the first word of "gcc", so it can be a program name with args.
@@ -2129,7 +2129,7 @@ else
 #line 2130 "configure"
 #include "confdefs.h"
 #ifdef __cplusplus
-extern "C" void exit(int);
+extern "C" void exit(int) throw();
 #endif
 #include <ctype.h>
 #define ISLOWER(c) ('a' <= (c) && (c) <= 'z')

@@ -6,29 +6,32 @@
 #define TinySVM__Model TinySVM::Model
 #define TinySVM__Example TinySVM::Example
 
-/* $Id: TinySVM.xs,v 1.13 2001/01/16 23:34:33 taku-ku Exp $; */
+/* $Id: TinySVM.xs,v 1.17 2001/08/24 13:07:49 taku-ku Exp $; */
 
 MODULE = TinySVM		PACKAGE = Example
 
 TinySVM::Example *
-TinySVM::Example::new(f = NO_INIT)
-	char *f;
+TinySVM::Example::new(...)
 	PREINIT:
    	TinySVM::Example *e;
 	CODE:
 	 e = new TinySVM::Example();
-	 if (items > 1) e->read(f);
-	 RETVAL = e;
+	 if (items > 1) {
+	   char *f = (char *) SvPV(ST(1), PL_na);
+	   e->read(f);
+	  }
+	RETVAL = e;
 	OUTPUT:
 	RETVAL
 
 int
-TinySVM::Example::read(f, offset = NO_INIT)
-	char *f
-	int offset;
+TinySVM::Example::read(f, ...)
+	char *f;
+	PREINIT:
+	int offset = 0;
 	CODE:
-	  if (items > 2) RETVAL = THIS->read(f,"r",offset);
-	  else           RETVAL = THIS->read(f,"r",0);
+	  if (items > 2) offset = (int) SvIV(ST(2));
+	RETVAL = THIS->read(f,"r",offset);
 	OUTPUT:
 	RETVAL
 
@@ -49,7 +52,7 @@ TinySVM::Example::append(f)
 	RETVAL
 
 TinySVM::Model*
-TinySVM::Example::learn(opt = NO_INIT)
+TinySVM::Example::learn(opt)
 	char *opt
 	PREINIT:
 	TinySVM::Param p;
@@ -79,6 +82,19 @@ TinySVM::Example::add(...)
 	OUTPUT:
 	RETVAL
 
+int
+TinySVM::Example::remove(i)
+	int i;
+	CODE:
+	 if (i >= 0 && i < THIS->size()) 
+	   RETVAL = THIS->remove(i);
+         else {
+	   warn( "Example::remove() -- index is out of range" );
+           XSRETURN_UNDEF;
+         }
+	OUTPUT:
+	 RETVAL
+
 double
 TinySVM::Example::getY(i)
 	int i;
@@ -101,7 +117,7 @@ TinySVM::Example::getX(i)
 	PPCODE:
 	 if (i >= 0 && i < THIS->size()) {
 	   f =  THIS->x[i];
-	   for (int j = 0; f[j].index != -1; j++) {
+	   for (int j = 0; f[j].index >= 0; j++) {
              sprintf(tmp,"%d:%g",f[j].index,f[j].value);
 	     PUSHs(sv_2mortal(newSVpv(tmp,strlen(tmp))));
 	   }
@@ -109,6 +125,32 @@ TinySVM::Example::getX(i)
 	   warn( "Example::getX() -- index is out of range" );
            XSRETURN_UNDEF;
           }
+	  
+double
+TinySVM::Example::getAlpha(i)
+	int i;
+	CODE:
+	 if (i >= 0 && i < THIS->svindex_size)
+	   RETVAL = THIS->alpha[i];
+         else  {
+	   warn( "Example::getAlpha() -- index is out of range" );
+           XSRETURN_UNDEF;
+         }
+	OUTPUT:
+	 RETVAL
+
+double
+TinySVM::Example::getG(i)
+	int i;
+	CODE:
+	 if (i >= 0 && i < THIS->svindex_size)
+	   RETVAL = THIS->G[i];
+         else  {
+	   warn( "Example::getG() -- index is out of range" );
+           XSRETURN_UNDEF;
+         }
+	OUTPUT:
+	 RETVAL
 
 int
 TinySVM::Example::size()
@@ -123,7 +165,7 @@ TinySVM::Example::clear()
 	 RETVAL = THIS->clear();
 	OUTPUT:
 	 RETVAL
-
+	 
 void
 TinySVM::Example::DESTROY()
 
@@ -131,24 +173,27 @@ TinySVM::Example::DESTROY()
 MODULE = TinySVM		PACKAGE = Model
 
 TinySVM::Model *
-TinySVM::Model::new(f = NO_INIT)
-	char *f;
+TinySVM::Model::new(...)
 	PREINIT:
    	TinySVM::Model *m;
 	CODE:
-	 m = new TinySVM::Model();
-	 if (items > 1) m->read(f);
-	 RETVAL = m;
+	m = new TinySVM::Model();
+	if (items > 1) {
+	   char *f = (char *) SvPV(ST(1), PL_na);
+	   m->read(f);
+	}
+	RETVAL = m;
 	OUTPUT:
 	RETVAL
 
 int
-TinySVM::Model::read(f, offset = NO_INIT)
+TinySVM::Model::read(f, ...)
 	char *f
-	int offset;
+	PREINIT:
+	int offset = 0;
 	CODE:
-	  if (items > 2) RETVAL = THIS->read(f,"r",offset);
-	  else           RETVAL = THIS->read(f,"r",0); 
+	if (items > 2) offset = (int) SvIV(ST(2));
+	RETVAL = THIS->read(f,"r",offset);
 	OUTPUT:
 	RETVAL
 
@@ -184,6 +229,19 @@ TinySVM::Model::appendSVindex(f)
 	OUTPUT:
 	RETVAL
 
+int
+TinySVM::Model::remove(i)
+	int i;
+	CODE:
+	 if (i >= 0 && i < THIS->size())
+	   RETVAL = THIS->remove(i);
+         else  {
+	   warn( "Model::remove() -- index is out of range" );
+           XSRETURN_UNDEF;
+         }
+	OUTPUT:
+	 RETVAL
+
 double
 TinySVM::Model::getY(i)
 	int i;
@@ -201,10 +259,23 @@ double
 TinySVM::Model::getAlpha(i)
 	int i;
 	CODE:
-	 if (i >= 0 && i < THIS->size()) 
-	   RETVAL = THIS->y[i];
+	 if (i >= 0 && i < THIS->getTrainingDataSize())
+	   RETVAL = THIS->alpha[i];
          else  {
 	   warn( "Model::getAlpha() -- index is out of range" );
+           XSRETURN_UNDEF;
+         }
+	OUTPUT:
+	 RETVAL
+
+double
+TinySVM::Model::getG(i)
+	int i;
+	CODE:
+	 if (i >= 0 && i < THIS->getTrainingDataSize())
+	   RETVAL = THIS->G[i];
+         else  {
+	   warn( "Model::getG() -- index is out of range" );
            XSRETURN_UNDEF;
          }
 	OUTPUT:
@@ -220,7 +291,7 @@ TinySVM::Model::getX(i)
 	PPCODE:
 	 if (i >= 0 && i < THIS->size()) {
 	   f =  THIS->x[i];
-	   for (j = 0; f[j].index != -1; j++) {
+	   for (j = 0; f[j].index >= 0; j++) {
              sprintf(tmp,"%d:%g",f[j].index,f[j].value);
 	     PUSHs(sv_2mortal(newSVpv(tmp,strlen(tmp))));
 	   }
@@ -258,6 +329,13 @@ int
 TinySVM::Model::clear()
 	CODE:
 	 RETVAL = THIS->clear();
+	OUTPUT:
+	 RETVAL
+	 
+int
+TinySVM::Model::compress()
+	CODE:
+	 RETVAL = THIS->compress();
 	OUTPUT:
 	 RETVAL
 
@@ -304,11 +382,16 @@ TinySVM::Model::getLoss()
 	 RETVAL
 
 double
-TinySVM::Model::estimateXA(lo = NO_INIT)
-	double lo
+TinySVM::Model::estimateXA(...)
+	PREINIT:
+	double lo = 0.0;
 	CODE:
-	  if (items > 1) THIS->estimateXA(lo);
+	if (items > 1) {
+	  lo = (double) SvIV(ST(1));
+	  RETVAL = THIS->estimateXA(lo);
+	} else {
 	  RETVAL = THIS->estimateXA();
+	}
 	OUTPUT:
 	RETVAL
 

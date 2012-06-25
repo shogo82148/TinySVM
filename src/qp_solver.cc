@@ -3,28 +3,28 @@
 #include "example.h"
 #include "classifier.h"
 
-// $Id: qp_solver.cc,v 1.7 2001/01/16 20:13:06 taku-ku Exp $;
+// $Id: qp_solver.cc,v 1.10 2001/08/22 14:38:05 taku-ku Exp $;
 
 namespace TinySVM {
 
 // swap i and j
-void
+inline void
 QP_Solver::swap_index(const int i, const int j)
 {
-  swap(y[i],            y[j]);
-  swap(x[i],            x[j]);
-  swap(alpha[i],        alpha[j]);
-  swap(status[i],       status[j]);
-  swap(G[i],            G[j]);
-  swap(b[i],            b[j]);
-  swap(shrink_iter[i],  shrink_iter[j]);
-  swap(active2index[i], active2index[j]);
+  swap (y[i],            y[j]);
+  swap (x[i],            x[j]);
+  swap (alpha[i],        alpha[j]);
+  swap (status[i],       status[j]);
+  swap (G[i],            G[j]);
+  swap (b[i],            b[j]);
+  swap (shrink_iter[i],  shrink_iter[j]);
+  swap (active2index[i], active2index[j]);
 }
 
 int
 QP_Solver::solve(const BaseExample &e,
 		 const Param &p,
-		 double *_b, double *_alpha, double *_G, 
+		 double *_b, double *_alpha, double *_G,
 		 double &rho, double &obj)
 {
   try {
@@ -39,15 +39,14 @@ QP_Solver::solve(const BaseExample &e,
     iter         = 0;
     hit_old      = 0;
 
-    clone(alpha, _alpha, l);
-    clone(G, _G, l);
-    clone(b, _b, l);
-    clone(y, e.y, l);
-    clone(x, e.x, l);
+    clone (alpha, _alpha, l);
+    clone (G, _G, l);
+    clone (b, _b, l);
+    clone (y, e.y, l);
+    clone (x, e.x, l);
 
-    q_matrix = new QMatrix(e,p);
-    q_matrix->x = x;
-    q_matrix->y = y;
+    q_matrix = new QMatrix (e, p);
+    q_matrix->set (y, x);     
 
     shrink_iter  = new int [l];
     status       = new int [l];
@@ -62,9 +61,8 @@ QP_Solver::solve(const BaseExample &e,
     for (;;) {
       learn_sub();
       if (final_check == 0 || check_inactive () == 0)  break; 
-      q_matrix->rebuildCache(active_size);
-      q_matrix->x = x;
-      q_matrix->y = y;
+      q_matrix->rebuildCache (active_size);
+      q_matrix->set (y, x);
       shrink_eps = p.shrink_eps;
     }
 
@@ -178,8 +176,8 @@ QP_Solver::learn_sub()
     //
     // update status
     // 
-    status[i] = alpha2status(alpha[i]);
-    status[j] = alpha2status(alpha[j]);
+    status[i] = alpha2status (alpha[i]);
+    status[j] = alpha2status (alpha[j]);
 
     double delta_alpha_i = alpha[i] - old_alpha_i;
     double delta_alpha_j = alpha[j] - old_alpha_j;
@@ -221,7 +219,7 @@ QP_Solver::learn_sub()
       if (lambda_up * status[k] > shrink_eps) {
 	if (shrink_iter[k]++ > shrink_size) {
 	  active_size--;
-	  swap_index(k, active_size); // remove this data from working set
+	  swap_index (k, active_size); // remove this data from working set
 	  q_matrix->swap_index(k, active_size);
 	  q_matrix->update(active_size);
 	  k--;
@@ -266,7 +264,6 @@ QP_Solver::check_inactive ()
   // make dummy classifier
   try {
     Model *tmp_model = new Model (param);
-    tmp_model->ref ();
     tmp_model->b = -lambda_eq;
     for (int i = 0; i < l; i++) {
       if (! is_lower_bound (i))	tmp_model->add (alpha[i] * y[i], (feature_node *) x[i]);
@@ -279,7 +276,7 @@ QP_Solver::check_inactive ()
       // Oops!, must be added to the active example.
       if ( (! is_lower_bound (k) && lambda_up < -eps) ||
 	   (! is_upper_bound (k) && lambda_up >  eps) ) {
-	swap_index(k, active_size);
+	swap_index (k, active_size);
 	active_size++;
 	++k;
       }
@@ -296,5 +293,4 @@ QP_Solver::check_inactive ()
     exit (EXIT_FAILURE);
   }
 }
-
 }

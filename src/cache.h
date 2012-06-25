@@ -2,7 +2,7 @@
 #define _CACHE_H
 #include "common.h"
 
-// $Id: cache.h,v 1.16 2001/01/16 19:37:20 taku-ku Exp $;
+// $Id: cache.h,v 1.17 2001/08/23 02:11:46 taku-ku Exp $;
 
 // Kernel Cache
 
@@ -27,7 +27,7 @@ private:
 
   inline int get_cache_size(const int _l, const double mem_size)
   {
-    return min(_l, max(2, (int)(1024 * 1024 * mem_size/(sizeof(T) * _l))));
+    return min (_l, max(2, (int)(1024 * 1024 * mem_size/(sizeof(T) * _l))));
   }
  
   // delete h from current postion
@@ -168,7 +168,7 @@ void Cache<T>::update(const int _l)
 {
   int new_size = get_cache_size(_l, cache_mem_size);
 
-  if (1.0 * new_size/size >= 1.1 && new_size < _l) {
+  if (100 * new_size/size >= 110 && new_size < _l) {
     // realloc
     for (head_t *h = lru_head;;h = h->next) {
       T *new_data;

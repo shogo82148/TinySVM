@@ -5,7 +5,7 @@
 #include "timer.h"
 #include "qp_solver.h"
 
-// $Id: svm_solver.cc,v 1.27 2001/01/16 20:13:06 taku-ku Exp $;
+// $Id: svm_solver.cc,v 1.31 2001/08/24 13:07:52 taku-ku Exp $;
 
 namespace TinySVM {
 
@@ -15,7 +15,7 @@ SVM_Solver::learn ()
   if (example.class_type != BINARY_FEATURE) {
     fprintf (stderr, "SVM_Solver::learn(): This data have real-value class label.\n");    
     fprintf (stderr, "SVM_Solver::learn(): Use C-SVR mode for regression estimation.\n");
-    return NULL;
+    return 0;
   }
 
   try {
@@ -27,36 +27,44 @@ SVM_Solver::learn ()
     double *G     = new double [l];
     double *b     = new double [l];
 
-    for (int i = 0; i < l; i++) {
-      G[i] = b[i] = -1;
-      alpha[i] = 0;
+    if (! example.alpha || ! example.G) {
+      for (int i = 0; i < l; i++) {
+	G[i] = b[i] = -1;
+	alpha[i] = 0;
+      }
+    } else {
+      for (int i = 0; i < l; i++) {
+	G[i] = b[i] = example.G[i];
+	alpha[i] = example.alpha[i];
+      }
     }
 
     QP_Solver qp_solver;
-    qp_solver.solve(example, param, b, alpha, G, rho, obj);
+    qp_solver.solve (example, param, b, alpha, G, rho, obj);
 
     // make output model
     Model *out_model = new Model (param);
     out_model->b = -rho;
-    out_model->svindex = new int[l];
+
+    // copy gradient and alphas
+    clone (out_model->alpha, alpha, l);
+    clone (out_model->G,     G,     l);
 
     int err = 0;
     double loss = 0.0;
     int bsv = 0;
-    for (int j = 0, i = 0; i < l; i++) {
-      double d = G[i] + y[i] * rho + 1.0;
+    for (int i = 0; i < l; i++) {
+      double d = G[i] + y[i] * rho + 1.0;       
       if (d < 0) err++;
       if (d < (1 - param.eps)) loss += (1 - d);
       if (alpha[i] >= param.C - EPS_A) bsv++; // upper bound
-      if (alpha[i] > EPS_A) {  // free 
-	out_model->add (alpha[i] * y[i], copy_feature_node (x[i]));
-	out_model->svindex[j++] = i;
-      }
+      if (alpha[i] > EPS_A)  // free 
+	out_model->add (alpha[i] * y[i], (feature_node *)x[i]);
     }
 
-    out_model->bsv =  bsv;
+    out_model->bsv  =  bsv;
     out_model->loss = loss;
-    out_model->training_data_size = example.l;
+    out_model->svindex_size = example.l;
 
     delete [] alpha;
     delete [] G;
@@ -75,5 +83,4 @@ SVM_Solver::learn ()
     exit (EXIT_FAILURE);
   }
 }
-
 }

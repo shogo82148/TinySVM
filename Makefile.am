@@ -7,7 +7,7 @@ AUTOMAKE_OPTIONS = 1.4 no-dependencies
 
 always_built_SUBDIRS = src tests man doc
 EXTRA_DIRS = doc perl ruby
-EXTRA_DIST = tinysvm.spec 
+EXTRA_DIST = tinysvm.spec THANKS
 
 SUBDIRS = $(always_built_SUBDIRS)
 
@@ -22,6 +22,10 @@ dist-hook:
 		rm -rf $(distdir)/$$subdir/CVS; \
 		rm -rf $(distdir)/$$subdir/*/CVS; \
 	done
+
+update-man:
+	cd man; make update-man
+	cd doc; make update-html
 
 rpm: dist
 	rpm -ta @PACKAGE@-@VERSION@.tar.gz
@@ -38,7 +42,7 @@ win-dist:
 	cp -f src/svm_learn    bin/svm_learn.exe
 	cp -f src/svm_classify bin/svm_classify.exe
 	cp -f src/svm_model    bin/svm_model.exe
-	zip @PACKAGE@-@VERSION@.zip README AUTHORS NEWS COPYING ChangeLog \
+	zip @PACKAGE@-@VERSION@.zip README AUTHORS NEWS COPYING THANKS ChangeLog \
 	bin/*.exe doc/*.html doc/*.css tests/*.svmdata
 	rm -fr bin/
 	

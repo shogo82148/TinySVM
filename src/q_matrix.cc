@@ -1,15 +1,15 @@
 #include "q_matrix.h"
 
-// $Id: q_matrix.cc,v 1.3 2001/01/16 19:37:20 taku-ku Exp $;
+// $Id: q_matrix.cc,v 1.5 2001/08/14 09:09:04 taku-ku Exp $;
 
 namespace TinySVM {
 
 QMatrix::QMatrix (const BaseExample &example, const Param & param):
 Kernel (example, param)
 {
-  cache_binary        = NULL;
-  cache_normal        = NULL;
-  binary_kernel_cache = NULL;
+  cache_binary        = 0;
+  cache_normal        = 0;
+  binary_kernel_cache = 0;
 
   miss = hit = size = 0;
   cache_size = param.cache_size;
@@ -107,7 +107,7 @@ QMatrix::_getQ_normal (const int i, const int active_size)
     hit++;
   } else {
     for (int j = 0; j < active_size; j++) 
-      data[j] = (y[i] * y[j] * (this->*_getKernel) (dot_normal (x[i], x[j])));
+      data[j] = y[i] * y[j] * getKernel(x[i], x[j]);
     miss++;
   }
 

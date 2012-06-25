@@ -5,7 +5,7 @@
 #include "timer.h"
 #include "qp_solver.h"
 
-// $Id: svr_solver.cc,v 1.3 2001/01/16 20:13:06 taku-ku Exp $;
+// $Id: svr_solver.cc,v 1.9 2001/08/24 13:07:52 taku-ku Exp $;
 
 namespace TinySVM {
 
@@ -30,7 +30,6 @@ SVR_Solver::learn ()
     }
 
     Example tmp_example;
-    tmp_example.ref();
     for (int i = 0; i < l; i++) tmp_example.add(1,  (feature_node *)x[i]);
     for (int i = 0; i < l; i++) tmp_example.add(-1, (feature_node *)x[i]);
 
@@ -39,13 +38,14 @@ SVR_Solver::learn ()
 
     // make output model
     Model *out_model = new Model (param);
-    out_model->b      = -rho;
-    out_model->svindex = new int[l];
+    out_model->b = -rho;
+    clone (out_model->alpha, alpha, 2 * l);
+    clone (out_model->G,     G,     2 * l);
 
     double loss = 0.0;
     int bsv = 0;
     int err = 0;
-    for (int j = 0, i = 0; i < l; i++) {
+    for (int i = 0; i < l; i++) {
       double d = (G[i] - G[i+l] - b[i] + b[i+l])/2 + rho;
       double a = alpha[i] - alpha[i+l];
       double l = max(0.0, fabs(y[i] - d) - param.insensitive_loss); 
@@ -53,15 +53,13 @@ SVR_Solver::learn ()
       loss += l;
       if (l > 0) err++;
       if (fabs(a) >= param.C - EPS_A) bsv++; // upper bound
-      if (fabs(a) > EPS_A) {  // free 
-	out_model->add (a, copy_feature_node (x[i]));
-	out_model->svindex[j++] = i;
-      }
+      if (fabs(a) > EPS_A)  // free 
+	out_model->add (a, (feature_node *)x[i]);
     }
 
     out_model->bsv =  bsv;
     out_model->loss = loss;
-    out_model->training_data_size = example.l;
+    out_model->svindex_size = 2 * example.l;
 
     delete [] alpha;
     delete [] G;
@@ -80,5 +78,4 @@ SVR_Solver::learn ()
     exit (EXIT_FAILURE);
   }
 }
-
 }
