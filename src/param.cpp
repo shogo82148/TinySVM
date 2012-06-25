@@ -1,12 +1,39 @@
+/*
+ TinySVM -- Yet Another Tiny SVM Package
+
+ $Id: param.cpp,v 1.5 2002/08/20 06:31:17 taku-ku Exp $;
+
+ Copyright (C) 2001-2002  Taku Kudo <taku-ku@is.aist-nara.ac.jp>
+ All rights reserved.
+
+ This library is free software; you can redistribute it and/or
+ modify it under the terms of the GNU Library General Public
+ License as published by the Free Software Foundation; either
+ version 2 of the License, or (at your option) any later verjsion.
+
+ This library is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ Library General Public License for more details.
+
+ You should have received a copy of the GNU Library General Public
+ License along with this library; if not, write to the
+ Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ Boston, MA 02111-1307, USA.
+*/
+
+
 #include "param.h"
 #include "misc.h"
 #include "common.h"
 
-// $Id: param.cc,v 1.36 2001/12/07 10:54:21 taku-ku Exp $;
+// $Id: param.cpp,v 1.5 2002/08/20 06:31:17 taku-ku Exp $;
 // default param
 
 #define PARAM_MAX_SIZE 512
-#define TINYSVM_OPTION_INFO "\nUsage: %s [options] training-file model-file\n\
+
+// split OPTION into two string to excape error in VC++ C2026
+#define TINYSVM_OPTION_INFO1 "\nUsage: %s [options] training-file model-file\n\
 \n\
 Solver Type:\n\
   -l, --solver-type=INT              select type of solver.\n\
@@ -23,8 +50,9 @@ Kernel Parameter:\n\
   -d, --kernel-degree=INT            set INT for parameter d in polynomial kernel. (default 1)\n\
   -r, --kernel-param-r=FLOAT         set FLOAT for parameter r in polynomial kernel. (default 1)\n\
   -s, --kernel-param-s=FLOAT         set FLOAT for parameter s in polynomial kernel. (default 1)\n\
-\n\
-Optimization Parameter:\n\
+\n"
+
+#define TINYSVM_OPTION_INFO2 "Optimization Parameter:\n\
   -m, --cache-size=FLOAT             set FLOAT for cache memory size (MB). (default 40.0)\n\
   -c, --cost=FLOAT                   set FLOAT for cost C of constraints violation,\n\
                                      trade-off between training error and margin. (default 1.0)\n\
@@ -169,7 +197,8 @@ Param::set (int argc, char **argv)
       break;
     case 'h':
       fprintf (stdout, "%s", COPYRIGHT);
-      fprintf (stdout, TINYSVM_OPTION_INFO, argv[0]);
+      fprintf (stdout, TINYSVM_OPTION_INFO1, argv[0]);
+      fprintf (stdout, TINYSVM_OPTION_INFO2);
       exit (EXIT_SUCCESS);
     default:
       return 0;
@@ -219,6 +248,7 @@ Param::set (const char *s)
   catch (...) {
     fprintf (stderr, "Param::set(): Out of memory\n");
     exit (EXIT_FAILURE);
+    return 0;
   }
 }
 };

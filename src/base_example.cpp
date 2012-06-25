@@ -1,7 +1,32 @@
+/*
+ TinySVM -- Yet Another Tiny SVM Package
+
+ $Id: base_example.cpp,v 1.5 2002/08/20 06:31:16 taku-ku Exp $;
+
+ Copyright (C) 2001-2002  Taku Kudo <taku-ku@is.aist-nara.ac.jp>
+ All rights reserved.
+
+ This library is free software; you can redistribute it and/or
+ modify it under the terms of the GNU Library General Public
+ License as published by the Free Software Foundation; either
+ version 2 of the License, or (at your option) any later verjsion.
+
+ This library is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ Library General Public License for more details.
+
+ You should have received a copy of the GNU Library General Public
+ License along with this library; if not, write to the
+ Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ Boston, MA 02111-1307, USA.
+*/
+
+
 #include "base_example.h"
 #include "common.h"
 
-// $Id: base_example.cc,v 1.25 2002/03/07 16:06:49 taku-ku Exp $;
+// $Id: base_example.cpp,v 1.5 2002/08/20 06:31:16 taku-ku Exp $;
 
 // misc function
 namespace TinySVM {
@@ -49,6 +74,7 @@ copy_feature_node (const feature_node * f)
   catch (...) {
     fprintf (stderr, "copy_feature_node(): Out of memory\n");
     exit (EXIT_FAILURE);
+    return 0;
   }
 }
 
@@ -82,6 +108,7 @@ str2feature_node (const char *s)
   catch (...) {
     fprintf (stderr, "str2feature_node(): Out of memory\n");
     exit (EXIT_FAILURE);
+    return 0;
   }
 }
 
@@ -214,6 +241,7 @@ BaseExample::readLine (FILE * fp)
   catch (...) {
     fprintf (stderr, "BaseExample::readLine(): Out of memory\n");
     exit (EXIT_FAILURE);
+    return 0; 
   }
 }
    
@@ -279,6 +307,7 @@ BaseExample::get (int i)
   catch (...) {
     fprintf (stderr, "BaseExample::get (): Out of memory\n");
     exit (EXIT_FAILURE);
+    return 0; 
   }
 }
      
@@ -355,6 +384,7 @@ BaseExample::add (const double _y, feature_node * _x)
   catch (...) {
     fprintf (stderr, "BaseExample::add(): Out of memory\n");
     exit (EXIT_FAILURE);
+    return 0;
   }
 }
 

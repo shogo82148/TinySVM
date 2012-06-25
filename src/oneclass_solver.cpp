@@ -1,3 +1,28 @@
+/*
+ TinySVM -- Yet Another Tiny SVM Package
+
+ $Id: oneclass_solver.cpp,v 1.4 2002/08/20 06:31:17 taku-ku Exp $;
+
+ Copyright (C) 2001-2002  Taku Kudo <taku-ku@is.aist-nara.ac.jp>
+ All rights reserved.
+
+ This library is free software; you can redistribute it and/or
+ modify it under the terms of the GNU Library General Public
+ License as published by the Free Software Foundation; either
+ version 2 of the License, or (at your option) any later verjsion.
+
+ This library is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ Library General Public License for more details.
+
+ You should have received a copy of the GNU Library General Public
+ License along with this library; if not, write to the
+ Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ Boston, MA 02111-1307, USA.
+*/
+
+
 #include "oneclass_solver.h"
 #include "common.h"
 #include "example.h"
@@ -5,7 +30,7 @@
 #include "timer.h"
 #include "qp_solver.h"
 
-// $Id: oneclass_solver.cc,v 1.3 2001/12/07 11:51:39 taku-ku Exp $;
+// $Id: oneclass_solver.cpp,v 1.4 2002/08/20 06:31:17 taku-ku Exp $;
 
 namespace TinySVM {
 
@@ -78,6 +103,7 @@ OneClass_Solver::learn ()
   catch (...) {
     fprintf (stderr, "SVM_Solver::learn(): Out of memory\n");
     exit (EXIT_FAILURE);
+    return 0; 
   }
 }
 }

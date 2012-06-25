@@ -1,3 +1,28 @@
+/*
+ TinySVM -- Yet Another Tiny SVM Package
+
+ $Id: common.h,v 1.36 2002/08/20 06:31:16 taku-ku Exp $;
+
+ Copyright (C) 2001-2002  Taku Kudo <taku-ku@is.aist-nara.ac.jp>
+ All rights reserved.
+
+ This library is free software; you can redistribute it and/or
+ modify it under the terms of the GNU Library General Public
+ License as published by the Free Software Foundation; either
+ version 2 of the License, or (at your option) any later verjsion.
+
+ This library is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ Library General Public License for more details.
+
+ You should have received a copy of the GNU Library General Public
+ License along with this library; if not, write to the
+ Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ Boston, MA 02111-1307, USA.
+*/
+
+
 #ifndef _COMMON_H
 #define _COMMON_H
 
@@ -59,7 +84,7 @@
 
 #ifndef HAVE_MEMSET
 #ifdef HAVE_BZERO
-#define memset (a,b,c) bzero((a),(c))
+#define memset(a,b,c) bzero((a),(c))
 #else
 template <class T> inline void memset(T* &a, int b, int c)
 {
@@ -70,7 +95,7 @@ template <class T> inline void memset(T* &a, int b, int c)
 
 #ifndef HAVE_MEMCPY
 #ifdef HAVE_BCOPY
-#define memcpy (a,b,c) bcopy((b),(a),(c))
+#define memcpy(a,b,c) bcopy((b),(a),(c))
 #else
 template <class T> inline void memcpy(T* &a, T &b, int c)
 {

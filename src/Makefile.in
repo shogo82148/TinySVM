@@ -12,7 +12,7 @@
 
 # Process this file with automake to produce Makefile.in
 #
-# $Id: Makefile.am,v 1.18 2001/12/06 12:58:54 taku-ku Exp $;
+# $Id: Makefile.am,v 1.19 2002/08/20 03:00:45 taku-ku Exp $;
 #
 
 
@@ -89,19 +89,19 @@ AUTOMAKE_OPTIONS = no-dependencies
 
 lib_LTLIBRARIES = libtinysvm.la
 libtinysvm_la_SOURCES = getopt.c getopt1.c getopt.h common.h \
-			param.cc param.h \
+			param.cpp param.h \
 			kernel.h \
-			classifier.h classifier.cc \
-		        q_matrix.h q_matrix.cc \
+			classifier.h classifier.cpp \
+		        q_matrix.h q_matrix.cpp \
 		        cache.h timer.h \
-			base_example.cc base_example.h \
-			example.cc example.h \
-			model.cc model.h \
+			base_example.cpp base_example.h \
+			example.cpp example.h \
+			model.cpp model.h \
 			base_solver.h \
-			oneclass_solver.cc oneclass_solver.h \
-			svm_solver.cc svm_solver.h \
-			svr_solver.cc svr_solver.h \
-			qp_solver.h qp_solver.cc \
+			oneclass_solver.cpp oneclass_solver.h \
+			svm_solver.cpp svm_solver.h \
+			svr_solver.cpp svr_solver.h \
+			qp_solver.h qp_solver.cpp \
 			tinysvm.h
 
 
@@ -113,17 +113,17 @@ pkginclude_HEADERS = model.h example.h base_example.h param.h \
 
 bin_PROGRAMS = svm_learn svm_classify svm_model
 
-svm_learn_SOURCES = svm_learn.cc
+svm_learn_SOURCES = svm_learn.cpp
 svm_learn_LDADD = libtinysvm.la
 
-svm_classify_SOURCES = svm_classify.cc
+svm_classify_SOURCES = svm_classify.cpp
 svm_classify_LDADD = libtinysvm.la
 
-svm_model_SOURCES = svm_model.cc
+svm_model_SOURCES = svm_model.cpp
 svm_model_LDADD = libtinysvm.la
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_HEADER = ../config.h
-CONFIG_CLEAN_FILES = 
+CONFIG_CLEAN_FILES =  Makefile.bcc32 Makefile.msvc
 LTLIBRARIES =  $(lib_LTLIBRARIES)
 
 
@@ -160,7 +160,8 @@ CCLD = $(CC)
 LINK = $(LIBTOOL) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(LDFLAGS) -o $@
 HEADERS =  $(include_HEADERS) $(pkginclude_HEADERS)
 
-DIST_COMMON =  Makefile.am Makefile.in
+DIST_COMMON =  Makefile.am Makefile.bcc32.in Makefile.in \
+Makefile.msvc.in
 
 
 DISTFILES = $(DIST_COMMON) $(SOURCES) $(HEADERS) $(TEXINFOS) $(EXTRA_DIST)
@@ -172,7 +173,7 @@ OBJECTS = $(libtinysvm_la_OBJECTS) $(svm_learn_OBJECTS) $(svm_classify_OBJECTS) 
 
 all: all-redirect
 .SUFFIXES:
-.SUFFIXES: .S .c .cc .lo .o .obj .s
+.SUFFIXES: .S .c .cpp .lo .o .obj .s
 $(srcdir)/Makefile.in: Makefile.am $(top_srcdir)/configure.in $(ACLOCAL_M4) 
 	cd $(top_srcdir) && $(AUTOMAKE) --gnu src/Makefile
 
@@ -180,6 +181,10 @@ Makefile: $(srcdir)/Makefile.in  $(top_builddir)/config.status
 	cd $(top_builddir) \
 	  && CONFIG_FILES=$(subdir)/$@ CONFIG_HEADERS= $(SHELL) ./config.status
 
+Makefile.bcc32: $(top_builddir)/config.status Makefile.bcc32.in
+	cd $(top_builddir) && CONFIG_FILES=$(subdir)/$@ CONFIG_HEADERS= $(SHELL) ./config.status
+Makefile.msvc: $(top_builddir)/config.status Makefile.msvc.in
+	cd $(top_builddir) && CONFIG_FILES=$(subdir)/$@ CONFIG_HEADERS= $(SHELL) ./config.status
 
 mostlyclean-libLTLIBRARIES:
 
@@ -289,11 +294,11 @@ svm_classify$(EXEEXT): $(svm_classify_OBJECTS) $(svm_classify_DEPENDENCIES)
 svm_model$(EXEEXT): $(svm_model_OBJECTS) $(svm_model_DEPENDENCIES)
 	@rm -f svm_model$(EXEEXT)
 	$(CXXLINK) $(svm_model_LDFLAGS) $(svm_model_OBJECTS) $(svm_model_LDADD) $(LIBS)
-.cc.o:
+.cpp.o:
 	$(CXXCOMPILE) -c $<
-.cc.obj:
+.cpp.obj:
 	$(CXXCOMPILE) -c `cygpath -w $<`
-.cc.lo:
+.cpp.lo:
 	$(LTCXXCOMPILE) -c $<
 
 install-includeHEADERS: $(include_HEADERS)

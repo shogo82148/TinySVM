@@ -629,7 +629,7 @@ echo > confdefs.h
 
 # A filename unique to this package, relative to the directory that
 # configure is in, which we can look for to find out if srcdir is correct.
-ac_unique_file=src/svm_learn.cc
+ac_unique_file=src/svm_learn.cpp
 
 # Find the source files, if location was not specified.
 if test -z "$srcdir"; then
@@ -869,7 +869,7 @@ fi
 
 PACKAGE=TinySVM
 
-VERSION=0.08
+VERSION=0.09
 
 if test "`cd $srcdir && pwd`" != "`pwd`" && test -f $srcdir/config.status; then
   { echo "configure: error: source directory already configured; run "make distclean" there first" 1>&2; exit 1; }
@@ -6924,7 +6924,9 @@ ac_given_INSTALL="$INSTALL"
 
 trap 'rm -fr `echo "Makefile
            src/Makefile 
-           tests/Makefile 
+	   src/Makefile.bcc32
+	   src/Makefile.msvc
+           tests/Makefile 	   
 	   man/Makefile 
 	   doc/Makefile 
 	   java/Makefile
@@ -7046,7 +7048,9 @@ cat >> $CONFIG_STATUS <<EOF
 
 CONFIG_FILES=\${CONFIG_FILES-"Makefile
            src/Makefile 
-           tests/Makefile 
+	   src/Makefile.bcc32
+	   src/Makefile.msvc
+           tests/Makefile 	   
 	   man/Makefile 
 	   doc/Makefile 
 	   java/Makefile

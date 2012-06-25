@@ -80,7 +80,7 @@ OBJEXT = o
 PACKAGE = TinySVM
 RANLIB = ranlib
 STRIP = strip
-VERSION = 0.08
+VERSION = 0.09
 
 html_HTMLS = svm_learn.html svm_classify.html svm_model.html
 EXTRA_DIST = $(html_HTMLS) index.html tinysvm.css
