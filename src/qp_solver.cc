@@ -3,7 +3,7 @@
 #include "example.h"
 #include "classifier.h"
 
-// $Id: qp_solver.cc,v 1.12 2001/09/08 04:19:54 taku-ku Exp $;
+// $Id: qp_solver.cc,v 1.13 2002/03/07 16:06:49 taku-ku Exp $;
 
 namespace TinySVM {
 
@@ -24,7 +24,7 @@ QP_Solver::swap_index(const int i, const int j)
 int
 QP_Solver::solve(const BaseExample &e,
 		 const Param &p,
-		 double *_b, double *_alpha, double *_G,
+		 double *b_, double *alpha_, double *G_,
 		 double &rho, double &obj)
 {
   try {
@@ -39,9 +39,9 @@ QP_Solver::solve(const BaseExample &e,
     iter         = 0;
     hit_old      = 0;
 
-    _clone (alpha, _alpha, l);
-    _clone (G, _G, l);
-    _clone (b, _b, l);
+    _clone (alpha, alpha_, l);
+    _clone (G, G_, l);
+    _clone (b, b_, l);
     _clone (y, e.y, l);
     _clone (x, e.x, l);
 
@@ -68,8 +68,8 @@ QP_Solver::solve(const BaseExample &e,
 
     // make result
     for (int i = 0; i < l; i++) {
-      _alpha[active2index[i]] = alpha[i];
-      _G[active2index[i]]     = G[i];
+      alpha_[active2index[i]] = alpha[i];
+      G_[active2index[i]]     = G[i];
     }
 
     // calculate objective value

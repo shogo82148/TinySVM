@@ -1,7 +1,7 @@
 #include "base_example.h"
 #include "common.h"
 
-// $Id: base_example.cc,v 1.24 2001/09/08 04:19:54 taku-ku Exp $;
+// $Id: base_example.cc,v 1.25 2002/03/07 16:06:49 taku-ku Exp $;
 
 // misc function
 namespace TinySVM {
@@ -415,15 +415,15 @@ BaseExample::readSVindex (const char *filename, const char *mode, const int offs
   char *buf;
 
   while ((buf = readLine (fp)) != NULL) {
-    double _alpha, _G;
-    if (2 != sscanf (buf, "%lf %lf\n", &_alpha, &_G)) {
+    double alpha_, G_;
+    if (2 != sscanf (buf, "%lf %lf\n", &alpha_, &G_)) {
       fprintf(stderr, "Fatal: Format error %s, line %d\n", filename, _l);
       fclose (fp);
       return 0;
     }
 
-    alpha = _append (alpha, _l, _alpha, 0.0);
-    G     = _append (G,     _l, _G,     0.0);
+    alpha = _append (alpha, _l, alpha_, 0.0);
+    G     = _append (G,     _l, G_,     0.0);
     _l++;
   }
 

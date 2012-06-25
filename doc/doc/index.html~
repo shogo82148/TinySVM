@@ -9,7 +9,7 @@
 <body>
 
 <h1>TinySVM: Support Vector Machines</h1>
-<p>Last update: $Date: 2002/03/07 16:19:10 $</p>
+<p>Last update: $Date: 2002/03/07 16:10:40 $</p>
 <hr>
 
 <h2>TinySVM</h2>
@@ -56,6 +56,7 @@ character recognition.
 <li><strong>2002-03-08</strong>: <a href="#download">TinySVM 0.08</a> Released<br>
 <ul>
  <li>Support Mac OS X
+</ul>
 </ul>
 <li><strong>2002-01-05</strong>
 <ul>
@@ -380,7 +381,7 @@ please contact me via email taku-ku@is.aist-nara.ac.jp.<br>
 </ul>
 <hr>
 <p>
-$Id: index.html,v 1.25 2002/03/07 16:19:10 taku-ku Exp $;
+$Id: index.html,v 1.24 2002/03/07 16:10:40 taku-ku Exp $;
 </p>
 <address>
 taku-ku@is.aist-nara.ac.jp

@@ -1,5 +1,5 @@
 %define prefix /usr
-%define version 0.07
+%define version 0.08
 
 Summary: TinySVM is a small and fast SVM package
 Name: TinySVM
