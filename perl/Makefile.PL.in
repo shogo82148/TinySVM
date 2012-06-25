@@ -1,0 +1,10 @@
+use ExtUtils::MakeMaker;
+# See lib/ExtUtils/MakeMaker.pm for details of how to influence
+# the contents of the Makefile that is written.
+WriteMakefile(
+    'CC'		=> '@CXX@',
+    'NAME'		=> 'TinySVM',
+    'VERSION_FROM'	=> 'TinySVM.pm',
+    'INC'		=> '-I@prefix@/include',
+    'LIBS'        	=> '-L@prefix@/lib -ltinysvm'
+);

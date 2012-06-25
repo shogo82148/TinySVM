@@ -1,0 +1,33 @@
+# $Id: Makefile.bcc32.in,v 1.3 2000/12/08 18:23:01 taku-ku Exp $;
+
+CFLAGS = -w- -6 -O2 -WC -I. -I.. -DHAVE_CONFIG_BCC32_H
+CC   = bcc32 
+CXXC = bcc32 -P
+AR = ar
+
+OBJ = getopt.obj getopt1.obj gram_matrix.obj classifier.obj svm_solver.obj \
+      base_example.obj example.obj model.obj param.obj 
+
+.cc.obj:
+	$(CXXC) $(CFLAGS) $(INC) $(DEFS) -c $< 
+	
+.c.obj:
+	$(CC) $(CFLAGS) $(INC) $(DEFS) -c  $< 
+
+all:  svm_learn svm_classify svm_model 
+# libtinysvm.a
+
+svm_learn: $(OBJ) svm_learn.obj 
+	$(CXXC) $(LDFLAGS) -e$@.exe $(OBJ) svm_learn.obj 
+
+svm_classify: $(OBJ) svm_classify.obj 
+	$(CXXC) $(LDFLAGS) -e$@.exe $(OBJ) svm_classify.obj 
+
+svm_model:  svm_model.obj
+	$(CXXC) $(LDFLAGS) -e$@.exe $(OBJ) svm_model.obj
+
+#libtinysvm: $(OBJ) libtinysvm.obj
+#	$(CXXC) $(LDFLAGS) -WD -e$@.dll $(OBJ) libtinysvm.obj
+
+clean:
+	del  *.exe *.obj

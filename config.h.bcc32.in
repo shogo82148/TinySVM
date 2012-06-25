@@ -1,0 +1,11 @@
+/* for BCC32 */
+
+#define STDC_HEADERS
+#define HAVE_CTYPE_H
+#define HAVE_MATH_H
+#define HAVE_STRING_H
+#define HAVE_WINDOWS_H
+#define HAVE_STDLIB_H
+#define PACKAGE "@PACKAGE@"
+#define VERSION "@VERSION@"
+
