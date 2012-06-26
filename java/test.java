@@ -4,16 +4,17 @@
 // created by SWIG.  The java class gets mapped onto the c++ class
 // and behaves as if it is a java class.
 
-import TinySVM;
+import org.chasen.tinysvm.Model;
+import org.chasen.tinysvm.Example;
 
 public class test {
   static {
-    try {
+      //try {
        System.loadLibrary("TinySVM");
-    } catch (UnsatisfiedLinkError e) {
-       System.err.println("Cannot load the example native code.\nMake sure your LD_LIBRARY_PATH contains \'.\'\n" + e);
-       System.exit(1);
-    }
+       //} catch (UnsatisfiedLinkError e) {
+       //System.err.println("Cannot load the example native code.\nMake sure your LD_LIBRARY_PATH contains \'.\'\n" + e);
+       //System.exit(1);
+       //}
   }
 
   public static void main(String argv[]) 

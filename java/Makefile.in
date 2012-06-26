@@ -8,7 +8,7 @@ LIBS=-ltinysvm
 INC=@JAVAINC@
 
 all:
-	$(CXX) -O3 -c -fpic $(TARGET)_wrap.c  $(INC)
+	$(CXX) -O3 -c -fpic $(TARGET)_wrap.cxx  $(INC)
 	$(CXX) -shared  $(TARGET)_wrap.o -o lib$(TARGET).so $(LIBS)
 	$(JAVAC) *.java
 	$(JAR) cfv $(TARGET).jar *.class

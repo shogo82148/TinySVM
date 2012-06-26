@@ -1,12 +1,11 @@
 TinySVM python module
 
-$Id: README,v 1.1 2001/09/01 03:36:13 taku-ku Exp $;
+$Id: README,v 1.1 2012/06/26 19:27:50 shogo Exp $;
 
 1. Install
-  % make -f Makefile.pre.in boot
-  % make
+  % python setup.py build
   % su
-  # make install
+  # python setup.py install
   
 2. How to use?
    see 'test.py' as sample program.

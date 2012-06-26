@@ -288,14 +288,16 @@ AC_MSG_CHECKING(for java include file jni.h)
 AC_ARG_WITH(javaincl, [  --with-javaincl=path    Set location of Java include directory], [JAVAINCDIR="$withval"], [JAVAINCDIR=])
 
 if test -z "$JAVAINCDIR"; then
-  JAVAINCDIR="/usr/jdk*/include /usr/local/jdk*/include /opt/jdk*/include /usr/java/include /usr/local/java/include /opt/java/include /usr/include/java /usr/local/include/java /usr/include /usr/local/include"
+  JAVAINCDIR="/usr/jdk*/include /usr/local/jdk*/include /opt/jdk*/include /usr/java/include /usr/local/java/include /opt/java/include /usr/include/java /usr/local/include/java /usr/include /usr/local/include /usr/lib/jvm/java-*/include"
 fi
+
+BUILD_OS=$(echo $(uname -s | tr "[A-Z]" "[a-z]"))
 
 JAVAINC=""
 for d in $JAVAINCDIR ; do
   if test -r $d/jni.h ; then
     AC_MSG_RESULT($d)
-    JAVAINC="-I$d"
+    JAVAINC="-I$d -I$d/$BUILD_OS"
     break
   fi
 done
@@ -314,7 +316,6 @@ AC_OUTPUT([Makefile
 	   man/Makefile 
 	   doc/Makefile 
 	   java/Makefile
-	   python/Setup
 	   perl/Makefile.PL
 	   ruby/extconf.rb
 	   tinysvm.spec])
