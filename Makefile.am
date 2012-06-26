@@ -10,7 +10,7 @@ EXTRA_DIRS = doc perl ruby python java
 EXTRA_DIST = tinysvm.spec THANKS
 
 SUBDIRS = $(always_built_SUBDIRS)
-
+ACLOCAL_AMFLAGS = -I m4
 pkgdatadir = @datadir@/@PACKAGE@
 
 clean-swig:

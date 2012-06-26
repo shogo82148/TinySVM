@@ -18,17 +18,21 @@ AC_PROG_CC
 AC_PROG_CXX
 AC_PROG_GCC_TRADITIONAL
 AC_PROG_MAKE_SET
+AC_PROG_RANLIB
+AC_C_INLINE
 
 AC_CANONICAL_HOST
 AC_LIBTOOL_WIN32_DLL
 AM_PROG_LIBTOOL
 AC_ISC_POSIX
 AC_LANG_CPLUSPLUS
+AC_CONFIG_MACRO_DIR([m4])
 
 dnl Checks for header files.
 AC_HEADER_STDC
+AC_CHECK_HEADER_STDBOOL
 AC_CHECK_HEADERS(stdio.h string.h math.h stdlib.h unistd.h ctype.h \
-		getopt.h sys/types.h sys/times.h windows.h)
+		getopt.h sys/types.h sys/times.h windows.h libintl.h)
 
 dnl Checks for typedefs, structures, and compiler characteristics.
 AC_TYPE_PID_T
@@ -39,7 +43,8 @@ AC_CHECK_LIB(m,pow)
 AC_CHECK_LIB(m,exp)
 
 dnl Checks for library functions
-AC_CHECK_FUNCS(isspace getopt getopt_long memset bzero memcpy bcopy)
+AC_CHECK_FUNCS(isspace getopt getopt_long memset bzero memcpy bcopy pow sqrt)
+AC_FUNC_MALLOC
 
 dnl
 dnl Check for GNU make

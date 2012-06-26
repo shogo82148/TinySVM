@@ -6,7 +6,7 @@ AUTOMAKE_OPTIONS = no-dependencies
 
 
 lib_LTLIBRARIES = libtinysvm.la
-libtinysvm_la_SOURCES = getopt.c getopt1.c getopt.h common.h \
+libtinysvm_la_SOURCES = common.h \
 			param.cpp param.h \
 			kernel.h \
 			classifier.h classifier.cpp \
