@@ -1,0 +1,45 @@
+# Compiled Object files
+*.slo
+*.lo
+*.o
+
+# Compiled Dynamic Libraries
+*.dll
+*.so
+
+# Compiled Static Libraries
+*.lai
+*.la
+*.a
+*.lib
+/src/.libs/
+
+# Executables
+*.exe
+*.out
+/src/svm_classify
+/src/svm_learn
+/src/svm_model
+
+# Emacs backup
+*~
+
+# Log files
+*.log
+
+# Cache files
+*.cache
+.DS_Store
+
+# Config files
+Makefile
+Makefile.bcc32
+Makefile.msvc
+/config.h
+/config.status
+/libtool
+/perl/Makefile.PL
+/python/Setup
+/ruby/extconf.rb
+/stamp-h
+
