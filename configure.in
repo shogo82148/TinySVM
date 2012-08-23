@@ -87,8 +87,8 @@ dnl
 dnl check gcc
 dnl
 if test -n "$GCC"; then
-   CFLAGS="-Wall -O9 -funroll-all-loops -finline -ffast-math"
-   CXXFLAGS="-Wall -O9 -funroll-all-loops -finline -ffast-math"
+   CFLAGS="$CFLAGS -Wall -O9 -funroll-all-loops -finline -ffast-math"
+   CXXFLAGS="$CXXFLAGS -Wall -O9 -funroll-all-loops -finline -ffast-math"
 fi
 
 # On Intel systems with gcc, we may need to compile with -mieee-fp to
