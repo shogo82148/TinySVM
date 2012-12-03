@@ -1,5 +1,6 @@
 #!/bin/sh
 
+set -e
 echo "900 -> 1000"
 head -900 train.svmdata > train.900
 ../src/svm_learn -I train.900 model.900
