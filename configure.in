@@ -318,4 +318,5 @@ AC_OUTPUT([Makefile
 	   java/Makefile
 	   perl/Makefile.PL
 	   ruby/extconf.rb
+	   tinysvm.pc
 	   tinysvm.spec])
