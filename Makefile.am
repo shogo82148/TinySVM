@@ -9,6 +9,9 @@ always_built_SUBDIRS = src tests man doc
 EXTRA_DIRS = doc perl ruby python java
 EXTRA_DIST = tinysvm.spec THANKS
 
+pkgconfigdir   = $(libdir)/pkgconfig
+pkgconfig_DATA = tinysvm.pc
+
 SUBDIRS = $(always_built_SUBDIRS)
 ACLOCAL_AMFLAGS = -I m4
 pkgdatadir = @datadir@/@PACKAGE@
