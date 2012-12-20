@@ -27,6 +27,7 @@ java/org/chasen/tinysvm/TinySVM.java \
 java/org/chasen/tinysvm/SWIGTYPE_p_FILE.java \
 java/org/chasen/tinysvm/Model.java \
 java/org/chasen/tinysvm/BaseExample.java \
+java/org/chasen/tinysvm/SWIGTYPE_p_p_TinySVM__feature_node.java \
 java/org/chasen/tinysvm/SWIGTYPE_p_TinySVM__Param.java \
 java/org/chasen/tinysvm/TinySVMJNI.java \
 java/org/chasen/tinysvm/SWIGTYPE_p_double.java \
