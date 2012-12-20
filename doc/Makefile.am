@@ -6,5 +6,5 @@ EXTRA_DIST = $(html_HTMLS) index.html tinysvm.css
 update-html:
 	@for html in $(html_HTMLS); do \
 		cmd=`basename $$html .html`.1 && \
-		man2html ../man/$$cmd > $$html; \
+		man2html $(top_builddir)/man/$$cmd > $$html; \
 	done
