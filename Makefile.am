@@ -6,8 +6,41 @@
 AUTOMAKE_OPTIONS = 1.4 no-dependencies
 
 always_built_SUBDIRS = src tests man doc
-EXTRA_DIRS = doc perl ruby python java
-EXTRA_DIST = tinysvm.spec THANKS
+EXTRA_DIST = tinysvm.spec THANKS \
+swig/Makefile \
+swig/TinySVM.i \
+ruby/README \
+ruby/test.rb \
+ruby/TinySVM_wrap.cpp \
+ruby/extconf.rb.in \
+perl/README \
+perl/example/hoge \
+perl/example/model \
+perl/example/svm_classify.pl \
+perl/example/svm_learn.pl \
+perl/TinySVM_wrap.cxx \
+perl/TinySVM.pm \
+perl/Makefile.PL.in \
+java/org/chasen/tinysvm/SWIGTYPE_p_TinySVM__feature_node.java \
+java/org/chasen/tinysvm/TinySVMConstants.java \
+java/org/chasen/tinysvm/TinySVM.java \
+java/org/chasen/tinysvm/SWIGTYPE_p_FILE.java \
+java/org/chasen/tinysvm/Model.java \
+java/org/chasen/tinysvm/BaseExample.java \
+java/org/chasen/tinysvm/SWIGTYPE_p_TinySVM__Param.java \
+java/org/chasen/tinysvm/TinySVMJNI.java \
+java/org/chasen/tinysvm/SWIGTYPE_p_double.java \
+java/org/chasen/tinysvm/Example.java \
+java/README \
+java/TinySVM_wrap.cxx \
+java/Makefile.in \
+java/test.java \
+python/README \
+python/test.py \
+python/TinySVM_wrap.cxx \
+python/TinySVM.py \
+python/setup.py
+
 
 pkgconfigdir   = $(libdir)/pkgconfig
 pkgconfig_DATA = tinysvm.pc
@@ -22,23 +55,13 @@ clean-swig:
 	(cd python; rm -fr Makefile Makefile.pre Setup *.o model* config.c sedscript *.pyc *.so)
 	(cd java; rm -fr *.class *.jar model* Makefile *.so *.o)
 
-dist-hook: clean-swig
-	for subdir in $(EXTRA_DIRS); do \
-		cp -rp $$subdir $(distdir)/$$subdir; \
-		rm -f $(distdir)/$$subdir/*~; \
-		rm -f $(distdir)/$$subdir/*.{bak,orig,old}; \
-		rm -f $(distdir)/$$subdir/Makefile.PL; \
-		rm -rf $(distdir)/$$subdir/CVS; \
-		rm -rf $(distdir)/$$subdir/*/CVS; \
-	done
-
 update-man:
-	cd man; make update-man
-	cd doc; make update-html
+	make -C man update-man
+	make -C doc update-html
 
 rpm: dist
 	rpm -ta @PACKAGE@-@VERSION@.tar.gz
-	
+
 win:
 	make distclean
 	env AR=i386-mingw32msvc-ar RANLIB=i386-mingw32msvc-ranlib CXX=i386-mingw32msvc-g++ CC=i386-mingw32msvc-gcc \
@@ -55,7 +78,7 @@ win-dist:
 	zip @PACKAGE@-@VERSION@.zip README AUTHORS NEWS COPYING THANKS ChangeLog \
 	bin/*.exe doc/*.html doc/*.css tests/*.svmdata
 	rm -fr bin/
-	
+
 dist-all-package:
 	(test -f Makefile) && make distclean
 	./configure
