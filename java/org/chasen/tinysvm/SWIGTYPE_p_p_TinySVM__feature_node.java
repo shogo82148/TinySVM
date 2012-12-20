@@ -8,5 +8,19 @@
 
 package org.chasen.tinysvm;
 
-public class TinySVM implements TinySVMConstants {
+public class SWIGTYPE_p_p_TinySVM__feature_node {
+  private long swigCPtr;
+
+  protected SWIGTYPE_p_p_TinySVM__feature_node(long cPtr, boolean futureUse) {
+    swigCPtr = cPtr;
+  }
+
+  protected SWIGTYPE_p_p_TinySVM__feature_node() {
+    swigCPtr = 0;
+  }
+
+  protected static long getCPtr(SWIGTYPE_p_p_TinySVM__feature_node obj) {
+    return (obj == null) ? 0 : obj.swigCPtr;
+  }
 }
+
