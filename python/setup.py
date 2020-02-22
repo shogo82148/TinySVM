@@ -1,14 +1,15 @@
 #!/usr/bin/env python
 
-from distutils.core import setup,Extension,os
-import string
+# Copyright (C) 2020 Ichinose Shogo
 
-def cmd1(s):
-    print s
-    return os.popen(s).readlines()[0][:-1]
+from setuptools import setup, Extension
+import subprocess
 
-def cmd2(s):
-    return string.split (cmd1(s))
+def cmd1(command):
+    return subprocess.check_output(command, shell=True).decode().rstrip()
+
+def cmd2(command):
+    return cmd1(command).split()
 
 setup(name = "TinySVM-python",
       version = cmd1("svm_model --version"),

@@ -2,9 +2,9 @@ use ExtUtils::MakeMaker;
 # See lib/ExtUtils/MakeMaker.pm for details of how to influence
 # the contents of the Makefile that is written.
 WriteMakefile(
-    'CC'		=> '@CXX@',
-    'NAME'		=> 'TinySVM',
-    'INC'		=> '-I@prefix@/include',
-    'LIBS'        	=> '-L@prefix@/lib -ltinysvm',
-    'OBJECT'            => 'TinySVM_wrap.o'
+    'CC'     => '@CXX@',
+    'NAME'   => 'TinySVM',
+    'INC'    => '-I@prefix@/include',
+    'LIBS'   => '-L@prefix@/lib -ltinysvm',
+    'OBJECT' => 'TinySVM_wrap.o'
 );
