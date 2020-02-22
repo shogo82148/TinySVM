@@ -34,8 +34,9 @@ jobs:
         with:
           java-version: ${{ matrix.java }}
       - run: java -version
-      - name: build
-        run: |
-          make
-          make install
-        working-directory: java
+      # TODO
+      # - name: build
+      #   run: |
+      #     make
+      #     make install
+      #   working-directory: java
