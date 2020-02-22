@@ -1,0 +1,39 @@
+name: Python Binding on Linux
+
+on:
+  pull_request:
+  push:
+    branches:
+      - master
+
+jobs:
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python:
+          - '3.8'
+          - '3.7'
+          - '3.6'
+          - '3.5'
+    steps:
+      - uses: actions/checkout@v2
+      - name: install TinySVM
+        run: |
+          ./autogen.sh
+          ./configure
+          make -j$(nproc)
+          sudo make install
+          sudo ldconfig
+      - name: setup python ${{ matrix.python }}
+        uses: actions/setup-python@v1
+        with:
+          python-version: ${{ matrix.python }}
+      - run: python -V
+      - name: build and test
+        run: |
+          python setup.py build
+          python setup.py install
+        working-directory: python
