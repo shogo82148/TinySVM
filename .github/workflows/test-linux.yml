@@ -1,0 +1,25 @@
+name: test on Linux
+
+on:
+  pull_request:
+  push:
+    branches:
+      - master
+
+jobs:
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: configure
+        run: |
+          ./autogen.sh
+          ./configure
+      - name: build
+        run: |
+          make -j$(nproc)
+      - name: test
+        run: |
+          make check
+          sudo make install
