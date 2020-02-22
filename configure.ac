@@ -329,7 +329,6 @@ AC_SUBST(JAVAINC)
 AM_CONFIG_HEADER(config.h)
 AC_OUTPUT([Makefile
            src/Makefile 
-	   src/Makefile.bcc32
 	   src/Makefile.msvc
            tests/Makefile 	   
 	   man/Makefile 
