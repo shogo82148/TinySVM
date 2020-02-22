@@ -36,6 +36,7 @@ jobs:
         run: |
           ruby extconf.rb
           make
+          make install
         working-directory: ruby
       - name: test
         run: |
