@@ -32,8 +32,12 @@ jobs:
         with:
           python-version: ${{ matrix.python }}
       - run: python -V
-      - name: build and test
+      - name: build
         run: |
           python setup.py build
           python setup.py install
+        working-directory: python
+      - name: test
+        run: |
+          python test.py
         working-directory: python
