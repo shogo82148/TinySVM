@@ -3,6 +3,7 @@
 # Copyright (C) 2020 Ichinose Shogo
 
 from setuptools import setup, Extension
+import re
 import subprocess
 
 def cmd1(command):
@@ -11,8 +12,12 @@ def cmd1(command):
 def cmd2(command):
     return cmd1(command).split()
 
+def version():
+    # "svm_model --version" prints "svm_model of 0.09" followed by banner lines
+    return re.search(r"\d+(\.\d+)+", cmd1("svm_model --version")).group(0)
+
 setup(name = "TinySVM-python",
-      version = cmd1("svm_model --version"),
+      version = version(),
       py_modules=["TinySVM"],
       ext_modules = [
         Extension("_TinySVM",
