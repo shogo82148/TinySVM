@@ -20,7 +20,7 @@ jobs:
           - "3.12"
           - "3.11"
     steps:
-      - uses: actions/checkout@v2.8.0
+      - uses: actions/checkout@v7.0.1
       - name: install TinySVM
         run: |
           ./autogen.sh
