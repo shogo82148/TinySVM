@@ -11,7 +11,7 @@ workflows:
         - 'shogo82148/actions-setup-perl@v1.44.4'
     '.github/workflows/test-linux-python.yml':
         - 'actions/checkout@v7.0.1'
-        - 'actions/setup-python@v1.2.4'
+        - 'actions/setup-python@v7.1.0'
     '.github/workflows/test-linux-ruby.yml':
         - 'actions/checkout@v7.0.1'
         - 'ruby/setup-ruby@v1.335.0'
@@ -28,9 +28,9 @@ dependencies:
         commit: 'sha1-0f62d2ad8407a414cddd4790bed06fd9ebda0f56'
         owner_id: 44036562
         repo_id: 196057608
-    'actions/setup-python@v1.2.4':
-        ref: 'v1.2.4'
-        commit: 'sha1-0f07f7f756721ebd886c2462646a35f78a8bc4de'
+    'actions/setup-python@v7.1.0':
+        ref: 'v7.1.0'
+        commit: 'sha1-6d4fd22b20465ccc0f7354476588e8df7c9ca0e0'
         owner_id: 44036562
         repo_id: 192625525
     'ruby/setup-ruby@v1.335.0':

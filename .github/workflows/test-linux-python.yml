@@ -29,7 +29,7 @@ jobs:
           sudo make install
           sudo ldconfig
       - name: setup python ${{ matrix.python }}
-        uses: actions/setup-python@v1.2.4
+        uses: actions/setup-python@v7.1.0
         with:
           python-version: ${{ matrix.python }}
       - run: python -V
