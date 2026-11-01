@@ -33,12 +33,9 @@ jobs:
         with:
           python-version: ${{ matrix.python }}
       - run: python -V
-      - name: install setuptools
-        run: python -m pip install setuptools
-      - name: build
+      - name: build and install
         run: |
-          python setup.py build
-          python setup.py install
+          python -m pip install .
         working-directory: python
       - name: test
         run: |
