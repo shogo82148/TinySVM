@@ -40,7 +40,8 @@ python/README \
 python/test.py \
 python/TinySVM_wrap.cxx \
 python/TinySVM.py \
-python/setup.py
+python/setup.py \
+python/pyproject.toml
 
 
 pkgconfigdir   = $(libdir)/pkgconfig
