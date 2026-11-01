@@ -3,7 +3,16 @@ TinySVM python module
 $Id: README,v 1.1 2012/06/26 19:27:50 shogo Exp $;
 
 1. Install
+  Install TinySVM first (svm_model, tinysvm.h and libtinysvm are required).
+  Using a virtual environment is recommended:
+
+  % python -m venv .venv
+  % . .venv/bin/activate
   % python -m pip install .
+
+  If TinySVM is installed in a custom prefix, set the native paths:
+
+  % PATH=<prefix>/bin:$PATH CPPFLAGS=-I<prefix>/include LDFLAGS=-L<prefix>/lib python -m pip install .
   
 2. How to use?
    see 'test.py' as sample program.
