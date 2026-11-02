@@ -1,4 +1,4 @@
-name: Java Binding on Linux
+name: Java Binding
 
 on:
   pull_request:

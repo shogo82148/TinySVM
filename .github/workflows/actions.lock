@@ -3,19 +3,19 @@
 # Docs: https://gh.io/actions-lockfile
 version: 'v0.0.3'
 workflows:
-    '.github/workflows/test-linux-java.yml':
+    '.github/workflows/test-java.yml':
         - 'actions/checkout@v7.0.1'
         - 'actions/setup-java@v6.1.0'
-    '.github/workflows/test-linux-perl.yml':
+    '.github/workflows/test-perl.yml':
         - 'actions/checkout@v7.0.1'
         - 'shogo82148/actions-setup-perl@v1.44.4'
-    '.github/workflows/test-linux-python.yml':
+    '.github/workflows/test-python.yml':
         - 'actions/checkout@v7.0.1'
         - 'actions/setup-python@v7.1.0'
-    '.github/workflows/test-linux-ruby.yml':
+    '.github/workflows/test-ruby.yml':
         - 'actions/checkout@v7.0.1'
         - 'ruby/setup-ruby@v1.335.0'
-    '.github/workflows/test-linux.yml':
+    '.github/workflows/test.yml':
         - 'actions/checkout@v7.0.1'
 dependencies:
     'actions/checkout@v7.0.1':
