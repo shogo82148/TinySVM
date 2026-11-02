@@ -1,4 +1,4 @@
-name: Ruby Binding on Linux
+name: Ruby Binding
 
 on:
   pull_request:

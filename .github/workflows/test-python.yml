@@ -1,4 +1,4 @@
-name: Python Binding on Linux
+name: Python Binding
 
 on:
   pull_request:

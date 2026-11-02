@@ -1,4 +1,4 @@
-name: Perl Bindings on Linux
+name: Perl Bindings
 
 on:
   pull_request:
