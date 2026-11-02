@@ -10,6 +10,10 @@ jobs:
   test:
     name: Test
     runs-on: ${{ matrix.os }}
+    env:
+      # libtool adds the deprecated -bind_at_load linker flag on macOS
+      # when MACOSX_DEPLOYMENT_TARGET is not set.
+      MACOSX_DEPLOYMENT_TARGET: "11.0"
     strategy:
       fail-fast: false
       matrix:

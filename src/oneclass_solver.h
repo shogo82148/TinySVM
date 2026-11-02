@@ -24,7 +24,7 @@
 
 
 #ifndef _ONECLASS_SOLVER_H
-#define _ONCLASSL_SOLVER_H
+#define _ONECLASS_SOLVER_H
 #include "cache.h"
 #include "param.h"
 #include "base_example.h"

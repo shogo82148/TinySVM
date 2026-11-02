@@ -34,7 +34,6 @@ namespace TinySVM {
 class QMatrix: public Kernel
 {
  private:
-  double *buf;
   int    *binary_kernel_cache;
   double *(QMatrix::*_getQ)(const int, const int);
 

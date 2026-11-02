@@ -1,6 +1,8 @@
 dnl Process this file with autoconf to produce a configure script.
-AC_INIT(src/svm_learn.cpp)
-AM_INIT_AUTOMAKE(TinySVM,0.09)
+AC_INIT([TinySVM],[0.09],[],[TinySVM])
+AC_CONFIG_SRCDIR([src/svm_learn.cpp])
+AC_CONFIG_MACRO_DIR([m4])
+AM_INIT_AUTOMAKE
 
 # Before making a release, the LTVERSION string should be modified.
 # The string is of the form C:R:A.
@@ -31,20 +33,14 @@ AC_MSG_RESULT($enable_cxxflags_setting)
 dnl Checks for programs.
 AC_PROG_CC
 AC_PROG_CXX
-AC_PROG_GCC_TRADITIONAL
 AC_PROG_MAKE_SET
-AC_PROG_RANLIB
 AC_C_INLINE
 
 AC_CANONICAL_HOST
-AC_LIBTOOL_WIN32_DLL
-AM_PROG_LIBTOOL
-AC_ISC_POSIX
-AC_LANG_CPLUSPLUS
-AC_CONFIG_MACRO_DIR([m4])
+LT_INIT([win32-dll])
+AC_LANG([C++])
 
 dnl Checks for header files.
-AC_HEADER_STDC
 AC_CHECK_HEADER_STDBOOL
 AC_CHECK_HEADERS(stdio.h string.h math.h stdlib.h unistd.h ctype.h \
 		getopt.h sys/types.h sys/times.h windows.h libintl.h)
@@ -74,28 +70,28 @@ else
         fi
 fi
 
-AC_DEFUN(ADD_CC_FLAG, [
-  AC_MSG_CHECKING(whether ${CC-cc} accepts $1)
-  AC_LANG_SAVE
-  AC_LANG_C
+AC_DEFUN([ADD_CC_FLAG], [
+  AC_MSG_CHECKING([whether ${CC-cc} accepts $1])
+  AC_LANG_PUSH([C])
   XCFLAGS="$CFLAGS"
   CFLAGS="$CFLAGS $1"
-  AC_TRY_LINK([], [], 
+  AC_LINK_IFELSE([AC_LANG_PROGRAM([], [])],
 	[AC_MSG_RESULT([ ok, adding $1 to CFLAGS])],
-	[CFLAGS="$XCFLAGS"])
-  AC_LANG_RESTORE
+	[AC_MSG_RESULT([no])
+	 CFLAGS="$XCFLAGS"])
+  AC_LANG_POP([C])
 ])
 
-AC_DEFUN(ADD_CXX_FLAG, [
-  AC_MSG_CHECKING(whether ${CXX-c++} accepts $1)
-  AC_LANG_SAVE
-  AC_LANG_CPLUSPLUS
+AC_DEFUN([ADD_CXX_FLAG], [
+  AC_MSG_CHECKING([whether ${CXX-c++} accepts $1])
+  AC_LANG_PUSH([C++])
   XCXXFLAGS="$CXXFLAGS"
   CXXFLAGS="$CXXFLAGS $1"
-  AC_TRY_LINK([], [], 
+  AC_LINK_IFELSE([AC_LANG_PROGRAM([], [])],
 	[AC_MSG_RESULT([ ok, adding $1 to CXXFLAGS])],
-	[CXXFLAGS="$XCXXFLAGS"])
-  AC_LANG_RESTORE
+	[AC_MSG_RESULT([no])
+	 CXXFLAGS="$XCXXFLAGS"])
+  AC_LANG_POP([C++])
 ])
 
 dnl
@@ -103,10 +99,10 @@ dnl check gcc
 dnl
 if test "$GCC" = "yes"; then
    if test "$enable_cflags_setting" = "yes"; then
-      CFLAGS="-Wall -O9 -funroll-all-loops -finline -ffast-math"
+      CFLAGS="-Wall -O3 -funroll-loops -finline -ffast-math"
    fi
    if test "$enable_cxxflags_setting" = "yes"; then
-      CXXFLAGS="-Wall -O9 -funroll-all-loops -finline -ffast-math"
+      CXXFLAGS="-Wall -O3 -funroll-loops -finline -ffast-math"
    fi
 fi
 
@@ -118,9 +114,7 @@ fi
 # On AIX systems, we need to limit the amount of stuff that goes in
 # the TOC.
 case "$host" in
-changequote(,)dnl
-  i[3456789]86-*-*)
-changequote([,])dnl
+  i[[3456789]]86-*-*)
     ADD_CC_FLAG(-mieee-fp)
     ADD_CXX_FLAG(-mieee-fp)
   ;;
@@ -140,96 +134,89 @@ esac
 
 # check for const_cast
 AC_MSG_CHECKING([if ${CXX-c++} supports template <class T> (required)])
-AC_TRY_COMPILE(
-[
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
    template <class T> T foo (T &i) { return i++; };
-],[
+]], [[
    int i = 0;
    double d = 0.0;
    foo(i); foo(d);
-],[
+]])],[
   ac_template=yes
 ],[
-  AC_WARN(${CXX-c++} template <class T> does not work)
+  AC_MSG_WARN([${CXX-c++} template <class T> does not work])
   config_error=yes
 ])
 AC_MSG_RESULT([$ac_template])
 
 # check for const_cast
 AC_MSG_CHECKING([if ${CXX-c++} supports const_cast<> (required)])
-AC_TRY_COMPILE(
-[
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
    class foo;
-],[
+]], [[
    const foo *c=0;
    foo *c1=const_cast<foo*>(c);
-],[
+]])],[
   ac_const_cast=yes
 ],[
-  AC_WARN(${CXX-c++} const_cast<> does not work)
+  AC_MSG_WARN([${CXX-c++} const_cast<> does not work])
   config_error=yes
 ])
 AC_MSG_RESULT([$ac_const_cast])
 
 # check for static_cast<>
 AC_MSG_CHECKING(if ${CXX-c++} supports static_cast<> (required))
-AC_TRY_COMPILE(
-[
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
    class foo;
-],[
+]], [[
    foo *c = 0;
    void *c1 = static_cast<void *>(c);
-],[
+]])],[
   ac_static_cast=yes
 ],[
-  AC_WARN(${CXX-c++} static_cast<> does not work)
+  AC_MSG_WARN([${CXX-c++} static_cast<> does not work])
   config_error=yes
 ])
 AC_MSG_RESULT([$ac_static_cast])
 
 # check for dynamic_cast<>
 AC_MSG_CHECKING(if ${CXX-c++} supports dynamic_cast<> (required))
-AC_TRY_COMPILE(
-[
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
    class foo {};
    class bar: public foo {};
-],[
+]], [[
    bar *c = 0;
    foo *c1 = dynamic_cast<foo *>(c);
-],[
+]])],[
   ac_dynamic_cast=yes
 ],[
-  AC_WARN(${CXX-c++} dynamic_cast<> does not work)
+  AC_MSG_WARN([${CXX-c++} dynamic_cast<> does not work])
   config_error=yes
 ])
 AC_MSG_RESULT([$ac_dynamic_cast])
 
 # check for bool
 AC_MSG_CHECKING(if ${CXX-c++} supports bool (required))
-AC_TRY_COMPILE(
-[
-],[
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
+]], [[
    bool b=true;
    bool b1=false;
-],[
+]])],[
   ac_bool=yes
 ],[
   config_error=yes
-  AC_WARN(bool type is not supported by your compiler)
+  AC_MSG_WARN([bool type is not supported by your compiler])
 ])
 AC_MSG_RESULT([$ac_bool])
 
 # check for namespaces
 AC_MSG_CHECKING(if ${CXX-c++} supports namespaces (required) )
-AC_TRY_COMPILE(
-[
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
 namespace Foo { struct A {}; }
 using namespace Foo;
-],[
+]], [[
 A a;
-],[
+]])],[
  ac_namespaces=yes
-dnl AC_DEFINE(HAVE_CXX_NAMESPACE)
 ],[
  config_error=yes
  ac_namespaces=no
@@ -239,30 +226,28 @@ AC_MSG_RESULT([$ac_namespaces])
 # namespace
 if test "x$ac_namespaces" = xyes ; then
 AC_MSG_CHECKING(if ${CXX-c++} uses std namespace )
-AC_TRY_COMPILE(
-[
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
 #include <iostream>
 namespace std{}
 using namespace std;
-],[
+]], [[
 cout << "test" << endl;
-],[
+]])],[
  ac_std_namespace=yes
- AC_DEFINE(HAVE_CXX_STD_NAMESPACE)
+ AC_DEFINE([HAVE_CXX_STD_NAMESPACE], [1], [Define if the C++ compiler uses the std namespace.])
 ],[
  ac_std_namespace=maybe
 ])
 if test "x$ac_std_namespace" = xmaybe ; then
-AC_TRY_COMPILE(
-[
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
 #include <iostream.h>
 namespace std{}
 using namespace std;
-],[
+]], [[
 cout << "test" << endl;
-],[
+]])],[
  ac_std_namespace=yes
- AC_DEFINE(HAVE_CXX_STD_NAMESPACE)
+ AC_DEFINE([HAVE_CXX_STD_NAMESPACE], [1], [Define if the C++ compiler uses the std namespace.])
 ],[
  ac_std_namespace=no
 ])
@@ -326,15 +311,16 @@ AC_SUBST(JAVAC)
 AC_SUBST(JAVAINC)
 #------------------------------------------------------
 
-AM_CONFIG_HEADER(config.h)
-AC_OUTPUT([Makefile
-           src/Makefile 
-	   src/Makefile.msvc
-           tests/Makefile 	   
-	   man/Makefile 
-	   doc/Makefile 
-	   java/Makefile
-	   perl/Makefile.PL
-	   ruby/extconf.rb
-	   tinysvm.pc
-	   tinysvm.spec])
+AC_CONFIG_HEADERS([config.h])
+AC_CONFIG_FILES([Makefile
+                 src/Makefile
+                 src/Makefile.msvc
+                 tests/Makefile
+                 man/Makefile
+                 doc/Makefile
+                 java/Makefile
+                 perl/Makefile.PL
+                 ruby/extconf.rb
+                 tinysvm.pc
+                 tinysvm.spec])
+AC_OUTPUT
