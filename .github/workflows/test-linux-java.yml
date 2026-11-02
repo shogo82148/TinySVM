@@ -34,9 +34,8 @@ jobs:
           distribution: temurin
           java-version: ${{ matrix.java }}
       - run: java -version
-      # TODO
-      # - name: build
-      #   run: |
-      #     make
-      #     make install
-      #   working-directory: java
+      - name: build
+        run: |
+          make
+          make install
+        working-directory: java
