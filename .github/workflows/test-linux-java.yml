@@ -15,11 +15,10 @@ jobs:
       matrix:
         java:
           - '8'
-          - '9'
-          - '10'
           - '11'
-          - '12'
-          - '13'
+          - '17'
+          - '21'
+          - '25'
     steps:
       - uses: actions/checkout@v7.0.1
       - name: install TinySVM
@@ -30,8 +29,9 @@ jobs:
           sudo make install
           sudo ldconfig
       - name: setup java ${{ matrix.java }}
-        uses: actions/setup-java@v1.4.5
+        uses: actions/setup-java@v6.1.0
         with:
+          distribution: temurin
           java-version: ${{ matrix.java }}
       - run: java -version
       # TODO
