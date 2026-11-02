@@ -1,4 +1,4 @@
-name: test on Linux
+name: test
 
 on:
   pull_request:
@@ -9,7 +9,13 @@ on:
 jobs:
   test:
     name: Test
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - ubuntu-latest
+          - macos-latest
     steps:
       - uses: actions/checkout@v7.0.1
       - name: configure
@@ -18,7 +24,11 @@ jobs:
           ./configure
       - name: build
         run: |
-          make -j$(nproc)
+          if [ "$(uname)" = "Darwin" ]; then
+            make -j$(sysctl -n hw.ncpu)
+          else
+            make -j$(nproc)
+          fi
       - name: test
         run: |
           make check

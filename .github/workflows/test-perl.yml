@@ -9,24 +9,27 @@ on:
 jobs:
   test:
     name: Test
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
+        os:
+          - ubuntu-latest
+          - macos-latest
         perl:
-          - "5.30"
-          - "5.28"
-          - "5.26"
-          - "5.24"
-          - "5.22"
-          - "5.20"
+          - "5.44"
+          - "5.42"
     steps:
       - uses: actions/checkout@v7.0.1
       - name: install TinySVM
         run: |
           ./autogen.sh
           ./configure
-          make -j$(nproc)
+          if [ "$(uname)" = "Darwin" ]; then
+            make -j$(sysctl -n hw.ncpu)
+          else
+            make -j$(nproc)
+          fi
           sudo make install
           sudo ldconfig
       - name: setup perl ${{ matrix.perl }}

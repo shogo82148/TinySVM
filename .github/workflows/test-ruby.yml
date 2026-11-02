@@ -9,10 +9,13 @@ on:
 jobs:
   test:
     name: Test
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
+        os:
+          - ubuntu-latest
+          - macos-latest
         ruby:
           - "4.0"
           - "3.4"
@@ -23,7 +26,11 @@ jobs:
         run: |
           ./autogen.sh
           ./configure
-          make -j$(nproc)
+          if [ "$(uname)" = "Darwin" ]; then
+            make -j$(sysctl -n hw.ncpu)
+          else
+            make -j$(nproc)
+          fi
           sudo make install
           sudo ldconfig
       - name: setup ruby ${{ matrix.ruby }}

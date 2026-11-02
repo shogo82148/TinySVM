@@ -9,10 +9,13 @@ on:
 jobs:
   test:
     name: Test
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
+        os:
+          - ubuntu-latest
+          - macos-latest
         python:
           - "3.15"
           - "3.14"
@@ -25,7 +28,11 @@ jobs:
         run: |
           ./autogen.sh
           ./configure
-          make -j$(nproc)
+          if [ "$(uname)" = "Darwin" ]; then
+            make -j$(sysctl -n hw.ncpu)
+          else
+            make -j$(nproc)
+          fi
           sudo make install
           sudo ldconfig
       - name: setup python ${{ matrix.python }}
