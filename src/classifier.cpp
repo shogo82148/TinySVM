@@ -117,10 +117,10 @@ Classifier::~Classifier ()
 double
 Classifier::_getDistance_normal (const feature_node * _x) const
 {
-  register double result = 0.0;
-  register feature_node *node = fix_feature_node ((feature_node *) _x);
+  double result = 0.0;
+  feature_node *node = fix_feature_node ((feature_node *) _x);
 
-  for (register int i = 0; i < l; i++)
+  for (int i = 0; i < l; i++)
     result += y[i] * (this->*_getKernel) (x[i], node);
   
   return result;
@@ -129,9 +129,9 @@ Classifier::_getDistance_normal (const feature_node * _x) const
 double
 Classifier::_getDistance_binary (const feature_node * node) const
 {
-  register double result = model_bias;
-  register int j, k;
-  register int *p;
+  double result = model_bias;
+  int j, k;
+  int *p;
 
   memset (dot_buf, 0, sizeof (int) * l);
 

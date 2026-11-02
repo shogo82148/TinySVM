@@ -115,9 +115,9 @@ str2feature_node (const char *s)
 feature_node *
 fix_feature_node (feature_node * _x)
 {
-  register int i;
-  register int cindex = -1;
-  register int sorted = 1;
+  int i;
+  int cindex = -1;
+  int sorted = 1;
 
   // check sort
   for (i = 0; _x[i].index >= 0; i++) {
@@ -132,7 +132,7 @@ fix_feature_node (feature_node * _x)
 
 BaseExample::BaseExample ()
 {
-  l = d = pack_d = strl = 0;
+  l = d = pack_d = strl = alloc_l = 0;
   stre = 0;
   x = 0;
   y = 0;
@@ -288,17 +288,16 @@ BaseExample::get (int i)
     feature_node *node = x[i];
     for (elmnum = 0; node[elmnum].index >= 0; elmnum++);
 
-    int len = _min (strl + 1024, (elmnum + 1) * 32);
+    // " %d:%.16g" needs at most 1 + 11 + 1 + 24 bytes per element
+    int len = (elmnum + 1) * 64;
     if (len > strl) {
       stre = _resize (stre, strl, len, (char)0);
       strl = len;
     }
 
-    sprintf (stre, "%.16g", y[i]);
-    char tmp[32];
+    int pos = snprintf (stre, strl, "%.16g", y[i]);
     for (feature_node *node = x[i]; node->index >= 0; node++) {
-      sprintf (tmp, " %d:%.16g", node->index, node->value);
-      strcat(stre, tmp);
+      pos += snprintf (stre + pos, strl - pos, " %d:%.16g", node->index, node->value);
     }
 
     return (const char*)stre;

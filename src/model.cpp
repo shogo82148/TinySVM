@@ -227,13 +227,17 @@ Model::read (const char *filename, const char *mode, const int offset)
   int tmpl;
 
   // read parameter
-  fscanf (fp, "%s Version %s%*[^\n]\n", tmpbuf, version);
-  fscanf (fp, "%d%*[^\n]\n",  &param.kernel_type);
-  fscanf (fp, "%d%*[^\n]\n",  &param.degree);
-  fscanf (fp, "%lf%*[^\n]\n", &param.param_g);
-  fscanf (fp, "%lf%*[^\n]\n", &param.param_s);
-  fscanf (fp, "%lf%*[^\n]\n", &param.param_r);
-  fscanf (fp, "%s%*[^\n]\n",  tmpbuf);
+  if (fscanf (fp, "%1023s Version %511s%*[^\n]\n", tmpbuf, version) != 2 ||
+      fscanf (fp, "%d%*[^\n]\n",  &param.kernel_type) != 1 ||
+      fscanf (fp, "%d%*[^\n]\n",  &param.degree) != 1 ||
+      fscanf (fp, "%lf%*[^\n]\n", &param.param_g) != 1 ||
+      fscanf (fp, "%lf%*[^\n]\n", &param.param_s) != 1 ||
+      fscanf (fp, "%lf%*[^\n]\n", &param.param_r) != 1 ||
+      fscanf (fp, "%1023s%*[^\n]\n",  tmpbuf) != 1) {
+    fprintf (stderr, "WARNING: Format Error in file [%s] header\n", filename);
+    fclose (fp);
+    return 0;
+  }
 
   param.dot_kernel = 1;
   if (param.kernel_type == RBF || param.kernel_type == ANOVA) param.dot_kernel = 0;
@@ -246,7 +250,11 @@ Model::read (const char *filename, const char *mode, const int offset)
   }
 
   tmpl--;
-  fscanf (fp, "%lf%*[^\n]\n", &b);
+  if (fscanf (fp, "%lf%*[^\n]\n", &b) != 1) {
+    fprintf (stderr, "WARNING: Format Error in file [%s] threshold\n", filename);
+    fclose (fp);
+    return 0;
+  }
 
   int line = 0;
   while ((buf = readLine (fp)) != NULL && line < tmpl) {

@@ -70,7 +70,7 @@ public:
     sec  = t % 60;
     min  = (t / 60) % 60;
     hour = t / 3600;
-    sprintf(buf,"%02d:%02d:%02d", hour, min, sec);
+    snprintf(buf, sizeof(buf), "%02d:%02d:%02d", hour, min, sec);
     return buf;
   }
 

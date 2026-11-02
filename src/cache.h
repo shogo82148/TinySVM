@@ -142,10 +142,7 @@ Cache<T>::Cache(int _l, double _cache_mem_size):
     start->index = -1;
     start->data = new T [l];
 
-    int tmp_size = 1;
-
     for(int i = 1; i < size; i++) {
-      tmp_size++;
       head_t *head = new head_t;
       head->prev = prev;
       prev->next = head;

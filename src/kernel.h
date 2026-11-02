@@ -102,8 +102,8 @@ protected:
   // ANOVA
   inline double _getKernel_anova(const feature_node *x1, const feature_node *x2) const 
   { 
-    register double sum = 0;
-    register int zero = d;
+    double sum = 0;
+    int zero = d;
 
     while (x1->index >= 0 && x2->index >= 0) {
       if (x1->index == x2->index) {
@@ -131,7 +131,7 @@ protected:
 
   inline double norm2(const feature_node *x1, const feature_node *x2) const
   {
-    register double sum = 0;
+    double sum = 0;
      
     while (x1->index >= 0 && x2->index >= 0) {
       if(x1->index == x2->index) {
@@ -161,7 +161,7 @@ protected:
 
   inline double dot_normal(const feature_node *x1, const feature_node *x2) const
   {
-    register double sum = 0;
+    double sum = 0;
     while (x1->index >= 0 && x2->index >= 0) {
       if (x1->index == x2->index) {
 	sum += (x1->value * x2->value);
@@ -177,7 +177,7 @@ protected:
 
   inline int dot_binary(const feature_node *x1, const feature_node *x2) const
   {
-    register int sum = 0;
+    int sum = 0;
     while (x1->index >= 0 && x2->index >= 0) {
       if (x1->index == x2->index) {
 	sum++; 

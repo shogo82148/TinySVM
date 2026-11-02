@@ -61,7 +61,6 @@ private:
   int           *status;       // LOWER_BOUND, UPPER_BOUND, FREE
   int           *shrink_iter;  // # of iterations of lower(upper) bound
   int           *active2index; // active -> index  table
-  int           active_num;    // # of active (working) set
   double        lambda_eq;     // threshold b;
   double        shrink_eps;    // shirinking threshold 
   QMatrix       *q_matrix;  // gram_matrix;
