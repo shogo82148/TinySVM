@@ -300,14 +300,14 @@ fi
 if test -z "$JARBIN" ; then
   AC_CHECK_PROGS(JAR, jar)
 else
-  JAR="$JAVRBIN"
+  JAR="$JARBIN"
 fi
 
 AC_MSG_CHECKING(for java include file jni.h)
 AC_ARG_WITH(javaincl, [  --with-javaincl=path    Set location of Java include directory], [JAVAINCDIR="$withval"], [JAVAINCDIR=])
 
 if test -z "$JAVAINCDIR"; then
-  JAVAINCDIR="/usr/jdk*/include /usr/local/jdk*/include /opt/jdk*/include /usr/java/include /usr/local/java/include /opt/java/include /usr/include/java /usr/local/include/java /usr/include /usr/local/include /usr/lib/jvm/java-*/include"
+  JAVAINCDIR="${JAVA_HOME:+$JAVA_HOME/include }/usr/jdk*/include /usr/local/jdk*/include /opt/jdk*/include /usr/java/include /usr/local/java/include /opt/java/include /usr/include/java /usr/local/include/java /usr/include /usr/local/include /usr/lib/jvm/java-*/include"
 fi
 
 BUILD_OS=$(echo $(uname -s | tr "[A-Z]" "[a-z]"))

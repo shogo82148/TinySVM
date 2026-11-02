@@ -11,16 +11,16 @@ all:
 	$(CXX) -O3 -c -fpic $(TARGET)_wrap.cxx  $(INC)
 	$(CXX) -shared  $(TARGET)_wrap.o -o lib$(TARGET).so $(LIBS)
 	$(JAVAC) *.java
-	$(JAR) cfv $(TARGET).jar *.class
+	$(JAR) cfv $(TARGET).jar *.class org/chasen/tinysvm/*.class
 
 swig:
 	swig -java -shadow -c++ $(TARGET).i
 
 test:
-	$(JAVA) -classpath $(TARGET).jar test
+	$(JAVA) -Djava.library.path=. -classpath $(TARGET).jar test
 
 clean:
-	rm -fr *.jar *.o *.so *.class   model*
+	rm -fr *.jar *.o *.so *.class org/chasen/tinysvm/*.class model*
 	
 cleanall:
 	rm -fr BaseExample.java Example.java Model.java *.c

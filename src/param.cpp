@@ -215,7 +215,7 @@ Param::set (const char *s)
     if (!s) return 1;
 
     char *tmp = "TinySVM::Param::set";
-    char *buf = new char[strlen (s)];
+    char *buf = new char[strlen (s) + 1];
     strcpy (buf, s);
     int len = strlen (buf);
     int j = 1;
