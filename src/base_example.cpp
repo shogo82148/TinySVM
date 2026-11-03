@@ -26,6 +26,7 @@
 #include "base_example.h"
 #include "common.h"
 #include <limits.h>
+#include <errno.h>
 
 // $Id: base_example.cpp,v 1.5 2002/08/20 06:31:16 taku-ku Exp $;
 
@@ -81,7 +82,8 @@ copy_feature_node (const feature_node * f)
 
 // A negative index terminates a feature_node list, and BaseExample reuses
 // that terminator as a reference counter, so a parsed index must be a
-// non-negative int. Parsing stops at the first index that is not, and
+// non-negative int below INT_MAX (so that index + 1 cannot overflow).
+// Parsing stops at the first index that is not, and
 // *invalid is set.
 static feature_node *
 _str2feature_node (const char *s, int *invalid)
@@ -99,8 +101,10 @@ _str2feature_node (const char *s, int *invalid)
     int j = 0;
     for (int i = 0; j < elmnum && i < len;) {
       while (i < len && isspace (s[i]))	i++;
-      long index = strtol (s + i, 0, 10);
-      if (index < 0 || index > INT_MAX) {
+      char *end;
+      errno = 0;
+      long index = strtol (s + i, &end, 10);
+      if (end == s + i || errno == ERANGE || index < 0 || index >= INT_MAX) {
 	*invalid = 1;
 	break;
       }
@@ -480,6 +484,7 @@ BaseExample::readSVindex (const char *filename, const char *mode, const int offs
   delete [] G;
   alpha = 0;
   G = 0;
+  svindex_size = 0;
 
   int _l = 0;
   char *buf;
@@ -493,6 +498,7 @@ BaseExample::readSVindex (const char *filename, const char *mode, const int offs
       delete [] G;
       alpha = 0;
       G = 0;
+      svindex_size = 0;
       return 0;
     }
 
