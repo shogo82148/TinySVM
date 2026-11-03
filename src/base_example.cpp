@@ -83,14 +83,15 @@ copy_feature_node (const feature_node * f)
 // A negative index terminates a feature_node list, and BaseExample reuses
 // that terminator as a reference counter, so a parsed index must be a
 // non-negative int below INT_MAX (so that index + 1 cannot overflow).
-// Parsing stops at the first index that is not, and
-// *invalid is set.
+// A token whose index is not is skipped and *invalid is set. Text after
+// '#' is a comment.
 static feature_node *
 _str2feature_node (const char *s, int *invalid)
 {
   int elmnum = 0;
   int len = strlen (s);
 
+  for (int i = 0; i < len; i++) if (s[i] == '#') { len = i; break; }
   for (int i = 0; i < len; i++) if (s[i] == ':') elmnum++;
 
   *invalid = 0;
@@ -106,7 +107,8 @@ _str2feature_node (const char *s, int *invalid)
       long index = strtol (s + i, &end, 10);
       if (end == s + i || errno == ERANGE || index < 0 || index >= INT_MAX) {
 	*invalid = 1;
-	break;
+	while (i < len && !isspace (s[i])) i++;
+	continue;
       }
       _x[j].index = (int) index;
       while (i + 1 < len && s[i] != ':') i++;
@@ -478,13 +480,14 @@ BaseExample::readSVindex (const char *filename, const char *mode, const int offs
   }
 
   FILE *fp = fopen (filename, mode);
-  if (!fp) return 0;
 
   delete [] alpha;
   delete [] G;
   alpha = 0;
   G = 0;
   svindex_size = 0;
+
+  if (!fp) return 0;
 
   int _l = 0;
   char *buf;
