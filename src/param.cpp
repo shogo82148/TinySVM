@@ -147,6 +147,10 @@ Param::set (int argc, char **argv)
       break;
     case 't':
       kernel_type = atoi (optarg);
+      if (kernel_type < LINEAR || kernel_type > ANOVA) {
+	fprintf (stderr, "Param::set(): Unknown kernel type [%s]\n", optarg);
+	return 0;
+      }
       if (kernel_type == RBF || kernel_type == ANOVA) dot_kernel = 0;
       break;
     case 'd':

@@ -51,7 +51,7 @@ SVM_Solver::learn ()
     double *G     = new double [l];
     double *b     = new double [l];
 
-    if (! example.alpha || ! example.G) {
+    if (! example.alpha || ! example.G || example.svindex_size < l) {
       for (int i = 0; i < l; i++) {
 	G[i] = b[i] = -1;
 	alpha[i] = 0;

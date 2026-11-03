@@ -150,12 +150,12 @@ QMatrix::_getQ_binary_char (const int i, const int active_size)
     unsigned char *data2;
     if (cache_binary->getData (i, &data2)) {
       for (int j = 0; j < active_size; j++) 
-	data1[j] = y[i] * y[j] * binary_kernel_cache[data2[j]];
+	data1[j] = y[i] * y[j] * getBinaryKernel (data2[j]);
       hit++;
     } else {
       for (int j = 0; j < active_size; j++) {
 	data2[j] = (unsigned char) dot_binary (x[i], x[j]);
-	data1[j] = y[i] * y[j] * binary_kernel_cache[data2[j]];
+	data1[j] = y[i] * y[j] * getBinaryKernel (data2[j]);
       }
       miss++;
     }
@@ -173,7 +173,7 @@ QMatrix::_getQ_binary_double (const int i, const int active_size)
     hit++;
   } else {
     for (int j = 0; j < active_size; j++) 
-      data[j] =	(y[i] * y[j] * binary_kernel_cache[dot_binary (x[i], x[j])]);
+      data[j] =	(y[i] * y[j] * getBinaryKernel (dot_binary (x[i], x[j])));
     miss++;
   }
 

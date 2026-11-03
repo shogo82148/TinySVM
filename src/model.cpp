@@ -239,6 +239,13 @@ Model::read (const char *filename, const char *mode, const int offset)
     return 0;
   }
 
+  if (param.kernel_type < LINEAR || param.kernel_type > ANOVA) {
+    fprintf (stderr, "WARNING: Unknown kernel type [%d] in file [%s]\n",
+	     param.kernel_type, filename);
+    fclose (fp);
+    return 0;
+  }
+
   param.dot_kernel = 1;
   if (param.kernel_type == RBF || param.kernel_type == ANOVA) param.dot_kernel = 0;
 

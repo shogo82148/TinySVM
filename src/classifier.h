@@ -35,6 +35,7 @@ class Classifier: public Kernel
  private:
   double model_bias;
   int    *dot_buf;
+  int    *fnum;
   double **binary_kernel_cache;
   int    **fi2si;
 
