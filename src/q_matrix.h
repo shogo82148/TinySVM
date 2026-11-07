@@ -41,6 +41,12 @@ class QMatrix: public Kernel
   double *_getQ_binary_char   (const int, const int);
   double *_getQ_binary_double (const int, const int);
 
+  // binary_kernel_cache has only pack_d + 1 entries; never index past it
+  inline int getBinaryKernel (const int k)
+  {
+    return (k >= 0 && k <= pack_d) ? binary_kernel_cache[k] : (int) getKernel ((double) k);
+  }
+
   Cache <double>        *cache_normal;
   Cache <unsigned char> *cache_binary;
 

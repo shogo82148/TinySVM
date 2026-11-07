@@ -231,6 +231,7 @@ public:
       break;
     default:
       fprintf(stderr,"Kernel::Kernel: Unknown kernel function\n");
+      exit (EXIT_FAILURE);
     }
   }
 

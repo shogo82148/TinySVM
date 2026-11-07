@@ -40,6 +40,7 @@ Classifier::Classifier (const BaseExample & example, const Param & param):
       _getDistance = &Classifier::_getDistance_binary;
 
       dot_buf = new int[l];
+      fnum = new int[l];
       binary_kernel_cache = new double *[l];
       fi2si = new int *[d + 1];
       int *_fisize = new int[d + 1];
@@ -60,6 +61,7 @@ Classifier::Classifier (const BaseExample & example, const Param & param):
 
 	// caluculate cache
 	model_bias += y[i] * (this->*_getKernel2) (0.0);
+	fnum[i] = feature_num;
 	binary_kernel_cache[i] = new double[feature_num + 1];
 	for (int j = 1; j <= feature_num; j++) {
 	  binary_kernel_cache[i][j] =
@@ -104,6 +106,7 @@ Classifier::~Classifier ()
 {
   if (feature_type == BINARY_FEATURE && dot_kernel) {
     delete [] dot_buf;
+    delete [] fnum;
     for (int i = 0; i < l; i++)
       delete [] binary_kernel_cache[i];
     delete [] binary_kernel_cache;
@@ -139,8 +142,11 @@ Classifier::_getDistance_binary (const feature_node * node) const
   while (node->index >= 0 && node->index <= d) {
     if (node->value != 1)
       return this->_getDistance_normal (org);
+    // binary_kernel_cache[k] has only fnum[k] + 1 entries;
+    // a query with duplicate indices must not run past it.
     for (p = fi2si[node->index], j = 0; (k = p[j]) != -1; j++)
-      result += (binary_kernel_cache[k][++dot_buf[k]]);
+      if (dot_buf[k] < fnum[k])
+	result += (binary_kernel_cache[k][++dot_buf[k]]);
     node++;
   }
 

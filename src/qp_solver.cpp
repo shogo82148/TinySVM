@@ -63,6 +63,7 @@ QP_Solver::solve(const BaseExample &e,
     active_size  = l;
     iter         = 0;
     hit_old      = 0;
+    lambda_eq    = 0.0;
 
     _clone (alpha, alpha_, l);
     _clone (G, G_, l);
@@ -171,6 +172,10 @@ QP_Solver::learn_sub()
 	}
       }
     }
+
+    // no feasible working set (e.g. active_size == 0, every variable
+    // at a bound, or non-finite gradients); nothing more can be optimized.
+    if (i == -1 || j == -1) break;
 
     /////////////////////////////////////////////////////////
     //

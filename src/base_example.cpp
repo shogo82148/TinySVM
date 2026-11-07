@@ -25,6 +25,8 @@
 
 #include "base_example.h"
 #include "common.h"
+#include <limits.h>
+#include <errno.h>
 
 // $Id: base_example.cpp,v 1.5 2002/08/20 06:31:16 taku-ku Exp $;
 
@@ -78,13 +80,21 @@ copy_feature_node (const feature_node * f)
   }
 }
 
-feature_node *
-str2feature_node (const char *s)
+// A negative index terminates a feature_node list, and BaseExample reuses
+// that terminator as a reference counter, so a parsed index must be a
+// non-negative int below INT_MAX (so that index + 1 cannot overflow).
+// A token whose index is not is skipped and *invalid is set. Text after
+// '#' is a comment.
+static feature_node *
+_str2feature_node (const char *s, int *invalid)
 {
   int elmnum = 0;
   int len = strlen (s);
 
+  for (int i = 0; i < len; i++) if (s[i] == '#') { len = i; break; }
   for (int i = 0; i < len; i++) if (s[i] == ':') elmnum++;
+
+  *invalid = 0;
 
   try {
     feature_node *_x = new feature_node[elmnum + 1];
@@ -92,7 +102,15 @@ str2feature_node (const char *s)
     int j = 0;
     for (int i = 0; j < elmnum && i < len;) {
       while (i < len && isspace (s[i]))	i++;
-      _x[j].index = atoi (s + i);
+      char *end;
+      errno = 0;
+      long index = strtol (s + i, &end, 10);
+      if (end == s + i || errno == ERANGE || index < 0 || index >= INT_MAX) {
+	*invalid = 1;
+	while (i < len && !isspace (s[i])) i++;
+	continue;
+      }
+      _x[j].index = (int) index;
       while (i + 1 < len && s[i] != ':') i++;
       _x[j].value = atof (s + i + 1);
       j++;
@@ -110,6 +128,13 @@ str2feature_node (const char *s)
     exit (EXIT_FAILURE);
     return 0;
   }
+}
+
+feature_node *
+str2feature_node (const char *s)
+{
+  int invalid;
+  return _str2feature_node (s, &invalid);
 }
 
 feature_node *
@@ -288,16 +313,24 @@ BaseExample::get (int i)
     feature_node *node = x[i];
     for (elmnum = 0; node[elmnum].index >= 0; elmnum++);
 
-    // " %d:%.16g" needs at most 1 + 11 + 1 + 24 bytes per element
-    int len = (elmnum + 1) * 64;
+    // " %d:%.16g" needs at most 1 + 11 + 1 + 24 bytes per element.
+    // strl is an int, so cap the estimate at INT_MAX instead of overflowing.
+    int len = (elmnum < INT_MAX / 64) ? (elmnum + 1) * 64 : INT_MAX;
     if (len > strl) {
       stre = _resize (stre, strl, len, (char)0);
       strl = len;
     }
 
     int pos = snprintf (stre, strl, "%.16g", y[i]);
-    for (feature_node *node = x[i]; node->index >= 0; node++) {
-      pos += snprintf (stre + pos, strl - pos, " %d:%.16g", node->index, node->value);
+    for (feature_node *node = x[i]; node->index >= 0 && pos >= 0 && pos < strl; node++) {
+      int n = snprintf (stre + pos, strl - pos, " %d:%.16g", node->index, node->value);
+      if (n < 0 || n >= strl - pos) pos = -1; // truncated: stop writing
+      else pos += n;
+    }
+
+    if (pos < 0 || pos >= strl) {
+      fprintf (stderr, "BaseExample::get (): Too many elements\n");
+      return 0;
     }
 
     return (const char*)stre;
@@ -330,7 +363,13 @@ BaseExample::set (int i, const double _y, feature_node *_x)
 int 
 BaseExample::set (int i, const double _y, const char *s)
 {
-   return set(i, _y, (feature_node *) str2feature_node (s));
+   int invalid;
+   feature_node *_x = _str2feature_node (s, &invalid);
+   if (invalid) {
+     delete [] _x;
+     return 0;
+   }
+   return set(i, _y, _x);
 }
 
 int 
@@ -390,7 +429,13 @@ BaseExample::add (const double _y, feature_node * _x)
 int
 BaseExample::add (const double _y, const char *s)
 {
-  return add (_y, (feature_node *) str2feature_node (s));
+  int invalid;
+  feature_node *_x = _str2feature_node (s, &invalid);
+  if (invalid) {
+    delete [] _x;
+    return 0;
+  }
+  return add (_y, _x);
 }
 
 int
@@ -435,10 +480,14 @@ BaseExample::readSVindex (const char *filename, const char *mode, const int offs
   }
 
   FILE *fp = fopen (filename, mode);
-  if (!fp) return 0;
 
   delete [] alpha;
   delete [] G;
+  alpha = 0;
+  G = 0;
+  svindex_size = 0;
+
+  if (!fp) return 0;
 
   int _l = 0;
   char *buf;
@@ -448,6 +497,11 @@ BaseExample::readSVindex (const char *filename, const char *mode, const int offs
     if (2 != sscanf (buf, "%lf %lf\n", &alpha_, &G_)) {
       fprintf(stderr, "Fatal: Format error %s, line %d\n", filename, _l);
       fclose (fp);
+      delete [] alpha;
+      delete [] G;
+      alpha = 0;
+      G = 0;
+      svindex_size = 0;
       return 0;
     }
 
